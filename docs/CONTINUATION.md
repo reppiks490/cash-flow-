@@ -14,8 +14,8 @@ caption-led motion preview, three captions/CTA options and one revision. The
 48-hour clock starts only after accepted scope, verified payment and approved
 brand assets. No promised sales, revenue, filming, voiceover or account management.
 
-Five original tailored specimens exist privately: each has actual PNG/SVGs,
-copy, a reviewed proof PDF and a 15-second 1080x1920 MP4. Five Gmail drafts with
+Ten original tailored specimens exist privately: each has actual PNG/SVGs,
+copy, a reviewed proof PDF and a 15-second 1080x1920 MP4. Ten Gmail drafts with
 compact proof attachments were created and read back as DRAFT. Private provider
 receipts persist; final packet hashes bind the actual attachment. No emails sent.
 A fictional-sample offer page is deployed as an owner-private Sites preview.
@@ -29,13 +29,15 @@ Apollo organization lookup yielded two additional 100-record pages; the combined
 private deduplicated set contains 291 domains. Global Apollo people search was
 blocked by the free plan. Never equate a provider match count with captured,
 compatible, qualified, contacted or paying companies. The first bounded homepage
-screening queue covers 100; actual success/failure/remaining counts are stored in
-the private checkpoint. Further expansion requires fresh credit checks and
+screening queue covered 100: 99 pages were saved and screened. Two oversized pages
+were converted to bounded visible-text projections with original HTML preserved.
+A second deduplicated queue budgets 80 further reads. Its actual success/failure/
+remaining counts are stored in the updated private checkpoint. Further expansion requires fresh credit checks and
 source-backed review, not indiscriminate outreach.
 
 Firecrawl scraping works with existing credits; pace below its 10/minute rate.
 Direct domain DNS reads were blocked here. Failures are retained for resumption.
-Hunter snapshot: 47/50 search credits and 94/100 verifications remaining,
+Hunter latest snapshot: 44/50 search credits and 88/100 verifications remaining,
 reset 2026-11-12. Apollo lead-credit snapshot: 180; no paid upgrade. AgentMail and
 other prospecting send-inbox lists were empty. Existing Gmail supports drafts.
 No Runway/vidIQ generation credits were needed for local typography specimens.
@@ -75,7 +77,7 @@ Authoritative handoffs remain unchanged; README and AGENTS route current knowled
    outside the checkout. Preserve prior draft receipts and suppression state.
 2. Obtain the valid sender postal address and user-owned verified payment route.
    These facts were unavailable in connected tools; never invent either.
-3. Refresh reviewed contacts/proofs, update the existing five drafts with the
+3. Refresh reviewed contacts/proofs, update the existing ten drafts with the
    valid footer, save final revisions and inspect exact provider draft content.
    User has explicitly authorized owner outreach and routine implementation/merge;
    do not re-ask for general permission. Follow actual connector gates if any.
@@ -91,3 +93,25 @@ Authoritative handoffs remain unchanged; README and AGENTS route current knowled
 The sole current activation facts missing are the commercial-email mailing
 address and verified payout destination. Keep useful research/build work moving
 without asking the user to repeat strategy, choose a niche or reconstruct context.
+
+## Resumption after the activation pause
+
+The user asked why work stopped. Missing footer/payment facts do not block
+company research, source review or specimen production. Read the routed
+CONTINUATION_POLICY.md and continue useful independent batches within existing
+entitlements. The next five published contacts were verified valid; two are
+source-identified founders, and the other three are clearly labeled business
+contacts/inboxes. Another candidate returned catch-all and remains on hold.
+
+Ten tailored pilots now have original proof media and observed attached Gmail
+drafts. The second five were read back: recipient, subject and body matched, PDF
+attachments were present and all remained DRAFT. Their videos were checked at
+15 seconds/1080x1920. Private buyer-response text covers brief intake, scope
+acceptance, verified payment, delivery, one follow-up and immediate stop handling.
+
+Broad service matches can hide incompatible procurement requirements. An agency
+consultant-bench application requires five years of relevant experience and
+excludes currently full-time workers; user eligibility is unknown, so that path
+is held rather than fabricating credentials. Another careers page contains
+contradictory open/no-open statements; no active vacancy or buying need is claimed.
+Prepared agency service pilots remain proposals, not accepted contracts.

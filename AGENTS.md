@@ -27,3 +27,7 @@ Read `docs/LAUNCH.md` for the implemented launch/order lifecycle and actual
 activation boundaries. Keep discovery counts, suggested fit, reviewed fit, drafts,
 confirmed sends, paid orders and actual delivery distinct. Never record a source
 failure or specimen as a sale.
+
+Read `docs/CONTINUATION_POLICY.md`: missing footer/payout facts block activation,
+not independent screening, contact review, original proof production or durable
+checkpoint work. Do not end the whole task merely because sends are gated.
