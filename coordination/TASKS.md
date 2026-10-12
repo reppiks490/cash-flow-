@@ -23,6 +23,7 @@ Current status: Atlas acknowledged A00, completed A01–A03 reports and initial 
 | C08 | Atlas | P0 on interest / queued | Handle actual replies/opt-outs and accepted scope/payment; fulfill, QA and record real delivery | Genuine replies/orders; approved assets |
 | A06 | Atlas | P1 after evidence / proposed | Analyze measured cohort results and recommend keep/change/stop; separate cash from hypothetical value | C07/C08 evidence |
 | C11 | ChatGPT | P1 / review | Evidence-linked audit producer, fictional sample, exact source/file hashes and optional PDF;64 local tests, independent findings corrected | Atlas exact-head/commercial review; [production contract](../docs/RESEARCH_AUDIT.md) |
+| C12 | ChatGPT | P1 / review | Three portrait layouts, wrapping/contrast safeguards and embedded/fitted proof fonts; PR10, 55 local tests; [77-test compatibility checkpoint](../docs/ENGINEERING_COMPATIBILITY_2026-10-12.md) | Atlas exact-head/commercial review; unchanged $149 scope |
 | C10 | ChatGPT | P1 / queued | Add verified payout-stage/cost reporting only if operational evidence requires code; interim private journal in CURRENT_EXECUTION | Atlas operator measurements; avoid double-counting stage transfers |
 | C09 | ChatGPT | P2 / queued | Evaluate private durable hosting, payment/reply automation and backup recovery; implement only after access/security requirements pass | Measured need; private state sink |
 | J01 | Both | P1 / queued | Review results and decide next bounded batch; record assumptions, resource cap and reversal trigger | First parallel cycle |
