@@ -73,3 +73,5 @@ live payment hosting and unattended reply handling require operational activatio
 ## Two-account cash-flow collaboration
 
 Read [coordination startup and protocol](coordination/README.md), [split plan](coordination/SPLIT_PLAN.md) and [task list](coordination/TASKS.md) after the mandatory handoff reads. Atlas is the other account; ChatGPT/Codex is this account. Read both boards and your inbox, then reserve a bounded task. Keep this collaboration separate from ICARUS and private operational data out of public messages.
+
+Latest engineering and activation evidence: [2026-10-12 audit](docs/ENGINEERING_AUDIT_2026-10-12.md). Launch reservations now enforce linked company suppression as well as contact suppression. Correct private-state/inbox access remains unresolved in this account.

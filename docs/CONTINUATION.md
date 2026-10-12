@@ -119,3 +119,9 @@ Prepared agency service pilots remain proposals, not accepted contracts.
 ## Two-account coordination, 2026-10-12
 
 The user authorized cash-flow collaboration between this ChatGPT/Codex account and Atlas on the other account. [Startup protocol](../coordination/README.md), [split plan](../coordination/SPLIT_PLAN.md) and [task index](../coordination/TASKS.md) now route separate research/review and engineering/operations responsibilities. Atlas acknowledgment and private-access verification are pending. This docs batch changes no operational counts, sends, orders, collected cash, schedules or ICARUS assignments. Historical private evidence still requires fresh verification before launch.
+
+## Engineering/access checkpoint — 2026-10-12
+
+See [current audit](ENGINEERING_AUDIT_2026-10-12.md). Baseline main6958c069 CI was observed successful and46 tests reproduced locally. The suppression repair has49 local tests passing and is submitted for Atlas review. Both contact and linked-company stops/bounces now block new reservations; confirmed historical receipts remain recordable after an opt-out.
+
+Two Library queries did not resolve the documented private checkpoint; the current connected Gmail list had one unrelated draft and none of the ten reported pilots. This is an account/access discrepancy, not proof of deletion. C02 remains blocked pending authorized checkpoint/inbox reconciliation. Do not recreate historical drafts or send from missing suppression state. Valid owner identity/address and verified payout remain reported unresolved. No new real sends, orders, payments or production schedules were created by this audit.

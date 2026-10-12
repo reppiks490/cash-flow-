@@ -113,7 +113,8 @@ class LaunchStore(Store):
             row=self.conn.execute('SELECT recipient,payload,status FROM packets WHERE id=?',(ident,)).fetchone()
             if not row or row[2]!='draft':self.conn.rollback();return False
             packet=json.loads(row[1])
-            if self.is_suppressed(row[0]) or packet.get('gates'):self.conn.rollback();return False
+            if self.is_suppressed(row[0]) or self.suppressed(packet['signal_id']) or packet.get('gates'):
+                self.conn.rollback();return False
             proof=Path(packet['attachment'])
             if not proof.is_file() or hashlib.sha256(proof.read_bytes()).hexdigest()!=packet['attachment_sha256']:self.conn.rollback();return False
             attempt=hashlib.sha256(json.dumps([row[0],packet['offer_id'],packet.get('stage','initial')]).encode()).hexdigest()
@@ -127,7 +128,8 @@ class LaunchStore(Store):
         with self.conn:
             row=self.conn.execute('SELECT recipient,status,receipt FROM packets WHERE id=?',(ident,)).fetchone()
             if not row:raise ValueError('Unknown packet')
-            if self.is_suppressed(row[0]):raise ValueError('Recipient suppressed')
+            # This imports an observed historical receipt; it never sends mail.
+            # A later stop reply must block future reservations, not erase history.
             if row[1]=='sent':
                 if row[2]!=receipt:raise ValueError('Conflicting send receipt')
                 return False
@@ -135,3 +137,4 @@ class LaunchStore(Store):
             if re.fullmatch(r'r\d+',receipt.strip()):raise ValueError('Gmail draft ID is not a send receipt')
             self.conn.execute("UPDATE packets SET status='sent',receipt=? WHERE id=?",(receipt.strip(),ident))
         return True
+

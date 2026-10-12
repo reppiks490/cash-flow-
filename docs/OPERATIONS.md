@@ -93,3 +93,7 @@ mistaken for unfinished code. Documentation review is inline: verify README and
 AGENTS link every new operational artifact. Akinator's installed package lacks
 the referenced `akinator_coverage.py`/ledger/wiki helper scripts; no claim that
 those mechanical knowledge gates ran successfully is made.
+
+## Launch suppression integration, 2026-10-12
+
+The launch builder and reservation now consult contact suppression AND the existing linked signal/company suppression events, including bounces. Reservation rechecks current state rather than trusting only saved packet gates. Confirm signal linkage privately; unknown IDs are not verified company identities. record_sent imports confirmed historical receipts even after a stop reply, preserving an accurate record; it does not authorize or transmit another send. See [audit and readiness](ENGINEERING_AUDIT_2026-10-12.md) for three failing-first regressions, local49-pass verification and unresolved account/state access.
