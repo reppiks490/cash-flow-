@@ -1,0 +1,174 @@
+{
+  "incumbent": "signal-driven-b2b",
+  "promotion_rule": {
+    "minimum_paid_conversions": 3,
+    "relative_advantage": 0.15
+  },
+  "candidates": [
+    {
+      "id": "signal-driven-b2b",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.45,
+        "days": 5,
+        "margin": 0.85,
+        "urgency": 0.8,
+        "reachability": 0.7,
+        "automation": 0.7,
+        "scale": 0.6,
+        "defensibility": 0.4,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "appointment-brokerage",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.3,
+        "days": 7,
+        "margin": 0.75,
+        "urgency": 0.8,
+        "reachability": 0.6,
+        "automation": 0.7,
+        "scale": 0.7,
+        "defensibility": 0.4,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "research-audit",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.4,
+        "days": 5,
+        "margin": 0.9,
+        "urgency": 0.7,
+        "reachability": 0.65,
+        "automation": 0.8,
+        "scale": 0.6,
+        "defensibility": 0.5,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "digital-product",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.15,
+        "days": 14,
+        "margin": 0.95,
+        "urgency": 0.4,
+        "reachability": 0.4,
+        "automation": 0.9,
+        "scale": 0.9,
+        "defensibility": 0.4,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "affiliate-media",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.15,
+        "days": 30,
+        "margin": 0.8,
+        "urgency": 0.4,
+        "reachability": 0.4,
+        "automation": 0.9,
+        "scale": 0.9,
+        "defensibility": 0.4,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "creative-service",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.4,
+        "days": 5,
+        "margin": 0.8,
+        "urgency": 0.7,
+        "reachability": 0.7,
+        "automation": 0.6,
+        "scale": 0.5,
+        "defensibility": 0.2,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "micro-saas",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.1,
+        "days": 30,
+        "margin": 0.9,
+        "urgency": 0.5,
+        "reachability": 0.4,
+        "automation": 0.9,
+        "scale": 0.9,
+        "defensibility": 0.7,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "newsletter",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.1,
+        "days": 45,
+        "margin": 0.9,
+        "urgency": 0.4,
+        "reachability": 0.4,
+        "automation": 0.85,
+        "scale": 0.8,
+        "defensibility": 0.6,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "data-product",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.2,
+        "days": 14,
+        "margin": 0.9,
+        "urgency": 0.6,
+        "reachability": 0.5,
+        "automation": 0.85,
+        "scale": 0.8,
+        "defensibility": 0.6,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "marketplace",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.1,
+        "days": 14,
+        "margin": 0.4,
+        "urgency": 0.5,
+        "reachability": 0.5,
+        "automation": 0.5,
+        "scale": 0.7,
+        "defensibility": 0.3,
+        "upfront_cents": 0
+      }
+    },
+    {
+      "id": "long-term-ip",
+      "basis": "unvalidated planning scenario from handoff; replace with cohort outcomes",
+      "scenario": {
+        "probability": 0.05,
+        "days": 90,
+        "margin": 0.7,
+        "urgency": 0.3,
+        "reachability": 0.3,
+        "automation": 0.6,
+        "scale": 0.95,
+        "defensibility": 0.7,
+        "upfront_cents": 0
+      }
+    }
+  ]
+}
