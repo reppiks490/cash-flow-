@@ -45,3 +45,5 @@ Native isolated implementation; no paid calls or network acquisition. Initial te
 The final fictional sample is three A4 pages; all pages rendered and visually reviewed, readable text extracted and file/input hashes checked. DejaVu fonts are embedded; missing glyphs are rejected. No profit, buyer demand, live source collection or paid order is established.
 
 Design:[spec](superpowers/specs/2026-10-12-research-audit-kit.md). Execution:[plan](superpowers/plans/2026-10-12-research-audit-kit.md). Current commercial roles/objective:[agreement](CURRENT_EXECUTION.md).
+
+Offer-page source now introduces a separately scoped research option and clarifies current typography/motion versus special-asset/native-format requirements. The existing149-dollar creative price is preserved. Source changes are not a deployment or update to the owner-private Sites preview; Atlas must review commercial fit before publication.

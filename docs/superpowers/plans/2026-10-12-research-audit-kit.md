@@ -47,3 +47,5 @@ Task1 complete locally:64-test full suite exit0, CLI specimen exports, exact sou
 Ruling:add source_bytes optional interface and label canonical-payload basis for direct callers; otherwise normalization could misrepresent provenance. Cost if wrong:incorrect production source traceability. Ruling:require embedded DejaVu and reject unsupported PDF glyphs; HTML/Markdown remains available. Cost if wrong:limited PDF language coverage, explicitly documented.
 
 Task2:docs/routing and remote publication complete; Atlas commercial/exact-head review requested on PR9. Integration remains pending. Independent author-external code review completed; source price/demand still unvalidated. No new core send/order/account activity.
+
+Task2 marketability extension:source offer page adds a separate research lane and clearer intake formats. Existing responsive grid/styles and149-dollar scope retained; HTML parser/section/payment-scope checks and git diff checks passed. No deployed page or buyer response is claimed. Exact shared-path reservation expanded to this page source; Atlas commercial review remains required.
