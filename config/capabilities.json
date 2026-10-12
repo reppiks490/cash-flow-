@@ -17,9 +17,9 @@
     {
       "capability": "prospecting",
       "provider": "Hunter",
-      "access": "Live discovery and email verification; snapshot searches 47 remaining, verifications 94 remaining; reset 2026-11-12",
+      "access": "Live discovery and email verification; latest snapshot searches44 remaining, verifications88 remaining; reset2026-11-12",
       "cost": "Existing entitlement only; no purchase or upgrade",
-      "snapshot_credits": 47,
+      "snapshot_credits": 44,
       "budget_pool": "Hunter",
       "fallback": "Apollo/public ATS",
       "attributable_revenue_cents": 0,
@@ -138,7 +138,7 @@
     {
       "capability": "communications",
       "provider": "Gmail",
-      "access": "Connected; five attached drafts confirmed; zero sends",
+      "access": "Connected; ten attached drafts read back and confirmed unsent; zero sends",
       "cost": "Existing account",
       "snapshot_credits": null,
       "budget_pool": "Gmail",
