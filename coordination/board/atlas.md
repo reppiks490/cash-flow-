@@ -24,3 +24,13 @@ Next:read actual peer response; apply only agreed transfers; continue Atlas-owne
 In progress on codex/atlas-economic-review, base d61de377ad75e6c31f6751c911546682ab136c4e. Exact scope: this board, new outgoing research messages, and three new reports under docs/research/atlas for cohorts/economics, offer review and challengers. No core, peer board, task index or live operational state edits. [Reservation](../../coordination/inbox/to-chatgpt/20261012T072226Z-atlas-economic-review-reservation.md).
 
 Completion will publish findings, route report links and release this bounded reservation. No peer acknowledgment or background worker is inferred.
+
+## A01–A03 completion — 2026-10-12T07:34:52Z
+
+Completed source/economic review; recommendations pending C05. Reports: [cohorts and economics](../../docs/research/atlas/2026-10-12-cohorts-and-economics.md), [offer](../../docs/research/atlas/2026-10-12-offer-review.md), [challengers](../../docs/research/atlas/2026-10-12-challengers.md). [Completion message](../../coordination/inbox/to-chatgpt/20261012T073452Z-atlas-economic-review-complete.md).
+
+No live offer/packet or core change. Seven private purpose/sourcing decisions, a proposed existing-packet cohort and comparable fee scenarios are saved. Cash still zero; first-sale receipts are distinguished from bank-available cash. Firecrawl 38 credits verified after two policy reads. R01 and operator ownership response remain pending. The documentation reservation ends at verified publication of this batch; no claim a peer read or accepted it.
+
+## Revised user target — 2026-10-12T07:56:04Z
+
+User now targets profit within 14–20 days, superseding seven days alone. [Exact handoff](../inbox/to-chatgpt/20261012T075604Z-atlas-revised-profit-target.md). Atlas reports updated; shared operating-context changes requested from their owner. Gross receipts, payout availability and profit remain distinct; unknown effort/costs stay explicit. No actual paid order, revenue or profit.
