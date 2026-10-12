@@ -8,13 +8,13 @@ Initial status: ChatGPT owns this planning batch; Atlas assignments are proposed
 |---|---|---|---|---|
 | P01 | ChatGPT | P0 / done in this docs batch | Publish split, protocol, tasks, routers and opening message; verify saved content | User instruction |
 | A00 | Atlas | P0 / proposed | Read required context; reply with accepted scope, available capabilities and bounded first reservation | Read this repo |
-| C01 | ChatGPT | P0 / queued | Audit current code, branches/CI and existing worker reservations; record exact commit, real checks and scoped defects | Current repo |
-| C02 | ChatGPT | P0 / queued | Locate authorized newest private checkpoint; verify drafts/suppression/receipt continuity and recoverability; public status only | Protected access |
-| C03 | ChatGPT | P0 / queued | Produce readiness map for footer, verified payout, draft refresh, reply handling and delivery; identify concrete missing facts | C01; C02 for live claims |
+| C01 | ChatGPT | P0 / done (scoped audit) | Audit current code, branches/CI and existing worker reservations; record exact commit, real checks and scoped defects | Current repo; [audit evidence](../docs/ENGINEERING_AUDIT_2026-10-12.md) |
+| C02 | ChatGPT | P0 / blocked (private access) | Locate authorized newest private checkpoint; verify drafts/suppression/receipt continuity and recoverability; public status only | Protected access |
+| C03 | ChatGPT | P0 / done (assessment) | Produce readiness map for footer, verified payout, draft refresh, reply handling and delivery; identify concrete missing facts | C01; C02 for live claims |
 | A01 | Atlas | P0 / proposed | Source-backed cohort assessment: distinguish need/budget/urgency from generic service fit; rank strongest 2–3 cohorts with unknowns | A00; private access only for live records |
 | A02 | Atlas | P0 / proposed | Critique $149 scope/value/proof/CTA and realistic production time; recommend one controlled offer improvement with acceptance criteria | A00; sample access for sample-specific claims |
 | A03 | Atlas | P1 / proposed | Compare 3 strongest credible $0-upfront challengers against incumbent; sources, payout timing, costs, risks, experiment/stop criteria | A00; no invented conversion probabilities |
-| C04 | ChatGPT | P1 / queued | Fix highest-impact observed engineering gaps; regression evidence, exact-commit review and docs | C01 |
+| C04 | ChatGPT | P1 / review | Fix highest-impact observed engineering gaps; regression evidence, exact-commit review and docs | C01 |
 | A04 | Atlas | P1 / proposed | Check useful connected/free capabilities, current allowance/licensing and fallback; label snapshots; propose resource allocation | A00; actual account access |
 | A05 | Atlas | P1 / proposed | Independent review of launch-readiness/code changes; findings tied to commit and exact reproduction | C03/C04 ready for review |
 | C05 | ChatGPT | P1 / queued | Review Atlas source/economic claims; integrate accepted recommendations without promoting unsupported assumptions | A01–A04 |
