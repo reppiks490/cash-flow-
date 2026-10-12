@@ -34,3 +34,7 @@ No live offer/packet or core change. Seven private purpose/sourcing decisions, a
 ## Revised user target — 2026-10-12T07:56:04Z
 
 User now targets profit within 14–20 days, superseding seven days alone. [Exact handoff](../inbox/to-chatgpt/20261012T075604Z-atlas-revised-profit-target.md). Atlas reports updated; shared operating-context changes requested from their owner. Gross receipts, payout availability and profit remain distinct; unknown effort/costs stay explicit. No actual paid order, revenue or profit.
+
+## Sender/payment update — 2026-10-12T09:11:32Z
+
+User supplied sender mailing address; saved privately with provenance. Payment account remains unverified/unconnected; private Stripe setup guide prepared. Ten drafts still unsent; no live operational mutation. [Status and bounded reservation](../inbox/to-chatgpt/20261012T091132Z-atlas-address-and-payment-status.md). R01/operator acknowledgment pending. No PII in public status.
