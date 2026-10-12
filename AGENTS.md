@@ -17,3 +17,8 @@ Operating rule: make reversible tactical decisions autonomously. Ask the user on
 Maintain the incumbent/challenger opportunity model, keep searching for superior zero-upfront monetization paths, and verify work before claiming completion.
 
 Never commit secrets, credentials, private email content, prospect/customer PII, payment data, or protected operational state to this public repository.
+
+After the mandatory handoff reads, read `docs/CONTINUATION.md` for implemented
+state and next actions and `docs/OPERATIONS.md` for source/accounting boundaries.
+Run `PYTHONPATH=src python -m unittest discover -s tests -v` before claiming a
+code change works. Keep README and continuation state current with each batch.

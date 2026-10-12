@@ -1,0 +1,139 @@
+{
+  "as_of": "2026-10-12",
+  "current_balances_verified": false,
+  "policy": "No paid activation; revalidate live entitlements before consuming credits. Shared workspace counts once.",
+  "providers": [
+    {
+      "capability": "prospecting",
+      "provider": "Apollo",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "Apollo",
+      "fallback": "Hunter/public ATS",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "prospecting",
+      "provider": "Hunter",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "Hunter",
+      "fallback": "Apollo/public ATS",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "communications",
+      "provider": "AgentMail",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "AgentMail",
+      "fallback": "Gmail",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "images",
+      "provider": "Runway",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": 500,
+      "budget_pool": "runway-shared-workspace",
+      "fallback": "Adobe Express/local composition",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "market-intelligence",
+      "provider": "vidIQ",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": 150,
+      "budget_pool": "vidIQ",
+      "fallback": "public platform research",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "design",
+      "provider": "Adobe Express",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "Adobe Express",
+      "fallback": "local composition",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "editing",
+      "provider": "Descript",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "Descript",
+      "fallback": "FFmpeg/client footage",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "distribution",
+      "provider": "Metricool",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "Metricool",
+      "fallback": "official platform/export",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "analytics",
+      "provider": "Windsor.ai",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "Windsor.ai",
+      "fallback": "platform/UTM/receipts",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "storage",
+      "provider": "Google Drive",
+      "access": "connected per handoff; not rechecked",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "Google Drive",
+      "fallback": "private SQLite",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "CRM",
+      "provider": "HubSpot",
+      "access": "pending connection",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "HubSpot",
+      "fallback": "private SQLite",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    },
+    {
+      "capability": "payment",
+      "provider": "Stripe",
+      "access": "pending connection",
+      "cost": "unknown until entitlement check",
+      "snapshot_credits": null,
+      "budget_pool": "Stripe",
+      "fallback": "manual verified receipt",
+      "attributable_revenue_cents": 0,
+      "keep_kill": "unmeasured"
+    }
+  ]
+}
