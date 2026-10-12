@@ -6,8 +6,9 @@ and [current continuation state](docs/CONTINUATION.md).
 
 ## Run locally
 
-Python 3.11+; no third-party packages, API keys or paid services required for the
-implemented public hiring sources. From this checkout:
+Python 3.11+; the core, tests and public hiring sources need no third-party
+packages, API keys or paid services. Optional media rendering needs additional
+local dependencies described in [launch operations](docs/LAUNCH.md). From this checkout:
 
 ```bash
 export PYTHONPATH=src
@@ -56,11 +57,14 @@ email/payment integrations. Never record invoices as payments or drafts as sends
 
 - [Operations, privacy, attribution and source references](docs/OPERATIONS.md)
 - [Continuation / verification / first experiment](docs/CONTINUATION.md)
+- [Screening, outreach packets, orders and fulfillment](docs/LAUNCH.md)
 - [Implementation plan and audit decisions](docs/superpowers/plans/2026-10-12-foundation.md)
 - [Opportunity scenario catalog](config/opportunities.json)
 - [Capability ledger and historical balances](config/capabilities.json)
 
-Implemented: public hiring ingestion, private signal queue, qualification scoring,
-scenario ranking, draft proof briefs and receipt-based event accounting. CI runs
-synthetic verification only. Outreach, billing, fulfillment, unattended private
-hosting and dashboard deployment remain separate integration work.
+Implemented: public hiring ingestion, private company screening, qualification,
+scenario ranking, original media rendering, gated outreach packets, duplicate-send
+reservations, accepted orders, signed payment import, per-order refunds and
+validated production/delivery records. CI runs synthetic verification only.
+Gmail drafts and the private offer preview exist; sending, verified payout setup,
+live payment hosting and unattended reply handling require operational activation.

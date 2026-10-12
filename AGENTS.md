@@ -22,3 +22,8 @@ After the mandatory handoff reads, read `docs/CONTINUATION.md` for implemented
 state and next actions and `docs/OPERATIONS.md` for source/accounting boundaries.
 Run `PYTHONPATH=src python -m unittest discover -s tests -v` before claiming a
 code change works. Keep README and continuation state current with each batch.
+
+Read `docs/LAUNCH.md` for the implemented launch/order lifecycle and actual
+activation boundaries. Keep discovery counts, suggested fit, reviewed fit, drafts,
+confirmed sends, paid orders and actual delivery distinct. Never record a source
+failure or specimen as a sale.
