@@ -1,73 +1,93 @@
 # MONEYFALL ZERO — continuation state, 2026-10-12
 
-## What was actually built
+## Implemented foundation and launch
 
-Read CODEX_START_HERE, both companion handoffs, AGENTS and issue #1. Audited
-baseline e68c096: documentation only; no prior implementation was overwritten.
-Built the first executable Python foundation, not the entire revenue business.
-Read README and OPERATIONS for commands and limits.
+Read CODEX_START_HERE, both authoritative handoffs, AGENTS, README,
+OPERATIONS and LAUNCH. Foundation PR #2 is merged. The launch batch extends it
+with screened private company evidence, original proof media, reviewable outbound
+packets, duplicate-send reservations, scope-bound orders, verified receipt import,
+per-order refunds and a production/delivery lifecycle. Core state stays outside
+public git; no secrets, live contacts, private email or payment data belong here.
 
-- Greenhouse and Lever public GET ingestion with distinct source/retrieval times.
-- Private SQLite queue, signal deduplication, evidence-backed qualification.
-- Eleven explicit opportunity scenarios; incumbent/challenger promotion guard.
-- Historical capability/credit ledger with shared Runway pool handling.
-- Internal $149 offer briefs linked to opportunity, offer, hypothesis and asset
-  content hash. These are research checklists, not completed custom proof assets.
-- Receipt-based payment/refund/direct-cost accounting and company-level metrics.
-  Events snapshot attribution; `metrics --opportunity ID` filters cohort cash.
-- Suppression across same normalized company label; no send implementation.
-- GitHub Actions synthetic verification, no public operational artifacts.
+The $149 offer is three portrait graphics with editable SVGs, one 15-second
+caption-led motion preview, three captions/CTA options and one revision. The
+48-hour clock starts only after accepted scope, verified payment and approved
+brand assets. No promised sales, revenue, filming, voiceover or account management.
 
-## Evidence and resource usage
+Five original tailored specimens exist privately: each has actual PNG/SVGs,
+copy, a reviewed proof PDF and a 15-second 1080x1920 MP4. Five Gmail drafts with
+compact proof attachments were created and read back as DRAFT. Private provider
+receipts persist; final packet hashes bind the actual attachment. No emails sent.
+A fictional-sample offer page is deployed as an owner-private Sites preview.
+It is not a public customer checkout or a configured payment receiver.
 
-22 unittest tests pass (Python 3.12 local). CI targets Python 3.11. `rank` and
-`demo` also run successfully. Live checks returned 30 candidate title matches
-across five distinct company board labels (before addition of the sales keyword).
-These are unqualified hiring signals, not 30 buyers. All 30 now have internal
-briefs/offer attribution. A repeated successful board added zero duplicate
-signals. Two Greenhouse checks had no matching titles; three old Lever tokens
-returned 404. Four current Lever boards were discovered from current public job
-pages and collected successfully. No source failure was counted as a success.
+## Evidence, scope and resources
 
-No outbound send, paid purchase, trial activation or generative-credit use.
-Real collected revenue: $0. The synthetic demo's $100 after refund is not revenue.
-Current Runway/vidIQ balances and Codex usage remain unverified historical
-snapshots; no entitlement-inspection interface was exposed for Codex usage.
+Initial Hunter discovery reported 9,140 broad marketing-service matches but
+returned only 100 records. Natural-language pagination repeated offset zero.
+Apollo organization lookup yielded two additional 100-record pages; the combined
+private deduplicated set contains 291 domains. Global Apollo people search was
+blocked by the free plan. Never equate a provider match count with captured,
+compatible, qualified, contacted or paying companies. The first bounded homepage
+screening queue covers 100; actual success/failure/remaining counts are stored in
+the private checkpoint. Further expansion requires fresh credit checks and
+source-backed review, not indiscriminate outreach.
 
-Independent code review found six issues. Fixes have regression tests: preserve
-qualification on unchanged source refresh and invalidate changed claims;
-normalize financial receipt references; require textual qualification evidence;
-snapshot durable cohort attribution; discover sales hiring; validate promotion
-conversion counts and finite scores. The local full suite passed after fixes.
-Librarian path review: README and AGENTS route all operational knowledge; no
-secrets/live queue/receipt records are in git. Akinator's referenced mechanical
-coverage/ledger/wiki scripts are absent from the installed skill package, so
-those checks could not run; this is not presented as a passed gate.
+Firecrawl scraping works with existing credits; pace below its 10/minute rate.
+Direct domain DNS reads were blocked here. Failures are retained for resumption.
+Hunter snapshot: 47/50 search credits and 94/100 verifications remaining,
+reset 2026-11-12. Apollo lead-credit snapshot: 180; no paid upgrade. AgentMail and
+other prospecting send-inbox lists were empty. Existing Gmail supports drafts.
+No Runway/vidIQ generation credits were needed for local typography specimens.
+Other historical capabilities remain unverified; see the capability ledger.
 
-## First revenue experiment and next autonomous work
+The original 30 ATS title matches and internal briefs remain private and
+unqualified. Agency website service fit is also not demonstrated buying intent.
+Actual collected revenue: $0. No paid purchases, trial activation or real orders.
+No continuous crawler, sender, reply monitor or scheduled business runs beyond
+this interactive execution. Synthetic receipts never represent actual cash.
 
-Keep signal-driven B2B incumbent. Prioritize temporary/freelance creative demand
-and agency white-label fulfillment within the private cohort for a narrow,
-deliverable $149 opportunity strike. Large-enterprise marketing vacancies can
-mean a long sales cycle; do not confuse hiring with willingness to buy a service.
+## Verification and decisions
 
-Next work in order:
-1. Restore the private checkpoint, refresh signals and confirm company identity.
-2. Inspect actual websites/assets, capture deficiency and competitor evidence,
-   score all six dimensions, and narrow to the best five qualified companies.
-3. Create genuine tailored proof concepts and delivery scope for the top targets;
-   do not send these current internal checklists as if they were finished audits.
-4. Inspect existing sender/payment connections read-only; establish verified
-   identity, required commercial-email footer/opt-out and payment destination.
-5. Prepare the exact recipient/subject/body/proof packet before any unavoidable
-   real-send gate; never ask the user to reconstruct strategy or pick a niche.
-6. Integrate authenticated receipts/replies, contact suppression and private
-   persistent hosting before unattended GitHub Action production ingestion.
-7. Compare measured cohort cash and margin; initial rankings are scenarios only.
+46 standard-library unittest tests pass locally. CI runs tests, rank and synthetic
+demo on Python 3.11. The original five media kits were rendered and visually
+reviewed; videos were checked for 15-second duration and 1080x1920 dimensions.
+A disposable commissioned smoke run validates the order-bound production flow;
+it does not create real revenue. Site structure/internal links were checked;
+managed execution lacked a supported browser QA channel.
 
-Private checkpoint filename:
-`MONEYFALL_PRIVATE_RESEARCH_CHECKPOINT_2026-10-12.zip`.
-It contains the private queue and internal draft briefs; restore outside the
-checkout. Do not commit or attach it to a public issue/PR. No continuous process
-or scheduled commercial operation is running yet. The authoritative strategy
-handoffs remain unchanged.
+Independent launch review found six issues, fixed with regression coverage:
+blocked/unreserved drafts could be recorded as sent; edited bodies could duplicate
+attempts; missing/changed proof was unchecked at reservation; unrelated/fake kits
+could stand in for production; refunded orders shared another order's balance;
+acceptance attribution could change before payment. Private-path symlink guards,
+durable draft IDs and cross-order refund-receipt conflicts also have coverage.
+Production validation records produced work separately from an actual delivery
+receipt. Manual external references must come from authenticated observations.
+
+Akinator's referenced mechanical coverage/ledger/wiki scripts are absent from
+the installed skill package. Those unavailable checks are not presented as passed.
+Authoritative handoffs remain unchanged; README and AGENTS route current knowledge.
+
+## Continue autonomously
+
+1. Restore the newest `MONEYFALL_PRIVATE_LAUNCH_CHECKPOINT_2026-10-12.zip`
+   outside the checkout. Preserve prior draft receipts and suppression state.
+2. Obtain the valid sender postal address and user-owned verified payment route.
+   These facts were unavailable in connected tools; never invent either.
+3. Refresh reviewed contacts/proofs, update the existing five drafts with the
+   valid footer, save final revisions and inspect exact provider draft content.
+   User has explicitly authorized owner outreach and routine implementation/merge;
+   do not re-ask for general permission. Follow actual connector gates if any.
+4. Reserve each send atomically, send through Gmail, and record confirmed provider
+   receipts. Reconcile ambiguous outcomes before retrying. Process stop requests.
+5. Respond to actual buyer interest, record accepted scope/payment/approved assets,
+   produce and visually inspect commissioned kits, deliver and record receipts.
+6. Resume the private screening queue and expand source discovery with bounded
+   existing entitlements. Assess buying evidence and payout speed per cohort.
+7. Compare observed cash, margin and workload with challengers. Seven-day cash is
+   the target; there is no proof or guarantee that any candidate will purchase.
+
+The sole current activation facts missing are the commercial-email mailing
+address and verified payout destination. Keep useful research/build work moving
+without asking the user to repeat strategy, choose a niche or reconstruct context.
