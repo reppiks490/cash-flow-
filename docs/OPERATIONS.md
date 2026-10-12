@@ -93,3 +93,7 @@ mistaken for unfinished code. Documentation review is inline: verify README and
 AGENTS link every new operational artifact. Akinator's installed package lacks
 the referenced `akinator_coverage.py`/ledger/wiki helper scripts; no claim that
 those mechanical knowledge gates ran successfully is made.
+
+## Current operator and cash measures
+
+[CURRENT_EXECUTION](CURRENT_EXECUTION.md) is the current14–20-day profit and role amendment. Atlas owns original-cohort C06–C08, ChatGPT owns core engineering/review. Private payment-stage records are interim manual evidence; no automatic payout tracker is implemented. Existing metrics report contribution after recorded direct costs, not proven bank cash/full economic profit. Do not add payment/pending/available/bank amounts together:those can represent the same dollars moving stages.

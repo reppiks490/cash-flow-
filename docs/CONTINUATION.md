@@ -119,3 +119,11 @@ Prepared agency service pilots remain proposals, not accepted contracts.
 ## Two-account coordination, 2026-10-12
 
 The user authorized cash-flow collaboration between this ChatGPT/Codex account and Atlas on the other account. [Startup protocol](../coordination/README.md), [split plan](../coordination/SPLIT_PLAN.md) and [task index](../coordination/TASKS.md) now route separate research/review and engineering/operations responsibilities. Atlas acknowledgment and private-access verification are pending. This docs batch changes no operational counts, sends, orders, collected cash, schedules or ICARUS assignments. Historical private evidence still requires fresh verification before launch.
+
+## Current cross-account reconciliation — 2026-10-12T09:22:17Z
+
+Atlas's dated acknowledgment confirms original state/proofs and ten receipt-linked DRAFT messages are available in its session; this account's access differs. We acknowledge that evidence without claiming independent private readback. C06–C08 explicitly transfer to Atlas as sole operator. No duplicate sender/state recreation. A00 and A01–A03 reports are accepted as described in [CURRENT_EXECUTION](CURRENT_EXECUTION.md); A04 remains partial.
+
+The revised objective is legitimate profit within14–20 days from the original project-start clock (exact anchor unverified). Customer payment, held balance, withdrawable funds, bank receipt, fees/refunds/costs and fulfillment obligations must be reported separately. Historical seven-day statements are superseded. Atlas's09:11Z update reports the user supplied the mailing address privately; final footer readback remains part of preparation. The payment route is still unverified.
+
+PR5 R01 signed/opaque draft-ID guard was reproduced and corrected locally:50 tests pass, including five independent draft-ID subcases; four of those subcases failed against the prior reviewed head. Re-review/CI publication follows before integration. Main code is not claimed changed by this documentation batch. Zero new real sends/payments/orders.
