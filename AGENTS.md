@@ -39,3 +39,5 @@ Read [coordination startup and protocol](coordination/README.md), [split plan](c
 ## Current objective and operator amendment
 
 Read [CURRENT_EXECUTION.md](docs/CURRENT_EXECUTION.md) after the original handoffs. The user's14–20-day profit revision, Atlas C06–C08 operator transfer, C05 decisions and payout/profit distinctions supersede historical seven-day/proposed-role text. Original research is preserved.
+
+Read docs/RESEARCH_AUDIT.md before producing or changing research-audit reports. Live evidence/exports remain private; specimen output is not a sale, claimed independent source read or automatically adopted offer. Keep client scope/price separate from production capability.

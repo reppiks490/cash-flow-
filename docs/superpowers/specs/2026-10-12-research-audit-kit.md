@@ -1,0 +1,15 @@
+# Evidence-linked research audit kit
+
+User2026-10-12:continue autonomously while asleep; branch out if it improves marketability. Existing handoff and Atlas A03 identify a source-backed research audit as the strongest adjacent challenger. Execution choice:native implementation plus independent review; no live offer/send/account change.
+
+Build a bounded offline producer that turns reviewed supplied source excerpts into private Markdown/HTML and optional PDF. One narrow schema and one CLI; no collector, scoring forecast, store migration or sale claim. Use the existing private_path guard. Customer value:a concise prioritized set of observations, untested impact hypotheses, specific actions and counter-evidence, with dated source links.
+
+Interface:validate_audit(payload)->normalized dict; render_markdown(report)->str; render_html(report)->str; write_audit(payload,output,repo,pdf=False,source_bytes=None)->summary dict. CLI:PYTHONPATH=src python scripts/render_audit.py INPUT OUTPUT [--pdf]. Sources are HTTPS public-domain references with timezone-aware observation timestamps; no network request or external URL fetch. Quotes must appear in supplied excerpts; every finding cites a known source. Human review true is required but not treated as authenticated proof. Limit to10 sources,8 findings,8 limitations and500000 input bytes. CLI manifests bind original bytes; direct API without source_bytes explicitly labels canonical-payload hashing. Normalized report hash is separate.
+
+Mode:specimen or review. All output labels mode explicitly. Specimen is fictional/uncommissioned; review uses supplied observations and is not proof of conversion performance, paid commission or delivered work. No new price, deliverable deadline or client rights promises.
+
+Reject missing/malformed evidence, unknown source IDs, nonmatching quotes, invalid timestamps/URLs, empty or excessive content and public-checkout outputs (including symlinks). Escape HTML/Markdown input. Output must be a new private directory; refuse existing directories without overwriting them. Files0600, directory0700 on POSIX. Manifest hashes exact exported files and source input; it is a production record, not a send/payment/delivery receipt.
+
+Core and required tests remain standard-library only. PDF is optional ReportLab, already used by existing production, with lazy dependency import and clear missing-dependency failure. Embed DejaVuSans regular/bold with verified glyph coverage; fail explicitly for unsupported glyphs. Use tested wrapping and page layout, render final PDF and inspect page PNGs before reporting specimen ready. Public fixture uses a fictional company/example.org only; real input/output remains private.
+
+Success:meaningful malformed/escaping/private-path/hash/CLI tests pass; existing suite stays green; fictional PDF visually legible; docs route the feature and Atlas receives an exact-head review and commercial-fit request. Unknown buying demand, pricing and actual costs remain unknown. Rejected alternatives:automatic website findings (unsupported claims), another CRM/sender (duplication), large product catalog before evidence (wasted work).

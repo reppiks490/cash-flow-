@@ -18,3 +18,7 @@ Knowledge delta:docs/CURRENT_EXECUTION.md, current amendment routes, split/tasks
 Atlas board/reports and private state are not edited. Its older local patch stays preserved.
 Next:publish corrected exact head, ask Atlas A05 re-review and operational transfer acknowledgment, then integrate after evidence.
 Atlas09:11Z update read: sender address supplied privately; payment unverified. No continuous background work; remaining payment/review gates retain sends.
+
+## C11 production checkpoint
+
+Complementary research-audit feature on codex/research-audit-kit:private evidence-linked Markdown/HTML/PDF, no collector/sender/payment.64 main-baseline-plus-feature tests pass locally. Three-page fictional PDF fully visually checked. Independent technical reviewer found Unicode corruption/source hash issue, corrected with RED/GREEN coverage. Atlas exact-head/commercial-fit review requested on publication. Current C04 head00dc2e0 passed GitHub CI; Atlas R01 re-review still pending. No live operations or new price. Core C11 reservation held for bounded review corrections; all private original-cohort operations remain Atlas-owned.
