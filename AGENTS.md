@@ -35,3 +35,7 @@ checkpoint work. Do not end the whole task merely because sends are gated.
 ## Two-account cash-flow collaboration
 
 Read [coordination startup and protocol](coordination/README.md), [split plan](coordination/SPLIT_PLAN.md) and [task list](coordination/TASKS.md) after the mandatory handoff reads. Atlas is the other account; ChatGPT/Codex is this account. Read both boards and your inbox, then reserve a bounded task. Keep this collaboration separate from ICARUS and private operational data out of public messages.
+
+## Current objective and operator amendment
+
+Read [CURRENT_EXECUTION.md](docs/CURRENT_EXECUTION.md) after the original handoffs. The user's14–20-day profit revision, Atlas C06–C08 operator transfer, C05 decisions and payout/profit distinctions supersede historical seven-day/proposed-role text. Original research is preserved.

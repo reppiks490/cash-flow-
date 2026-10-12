@@ -191,6 +191,30 @@ class LaunchTests(unittest.TestCase):
             self.assertFalse(db.reserve(packet['id']))
             db.close()
 
+    def test_draft_identifiers_cannot_be_imported_as_sent_receipts(self):
+        import hashlib
+        for receipt in ('r123','r-123','opaque-provider-draft','  r-456  ',
+                        '  opaque-provider-draft  '):
+            with self.subTest(receipt=receipt), tempfile.TemporaryDirectory() as tmp:
+                db=LaunchStore(Path(tmp)/'launch.sqlite',repo=Path.cwd())
+                db.ingest(dict(id='one',company='Example Agency',title='Public content',
+                               url='https://example.org/services',retrieved_at='now'))
+                packet=make_packet(self.profile(),self.prospect(),intro='Hello')
+                proof=Path(tmp)/'proof.pdf';proof.write_bytes(b'synthetic reviewed proof')
+                packet['attachment']=str(proof)
+                packet['attachment_sha256']=hashlib.sha256(proof.read_bytes()).hexdigest()
+                db.save(packet)
+                db.record_draft(packet['id'],'opaque-provider-draft')
+                self.assertTrue(db.reserve(packet['id']))
+                with self.assertRaisesRegex(ValueError,'draft ID'):
+                    db.record_sent(packet['id'],receipt)
+                row=db.packets()[0]
+                self.assertEqual(row['status'],'sending')
+                self.assertIsNone(row['receipt'])
+                self.assertFalse(db.reserve(packet['id']))
+                self.assertTrue(db.record_sent(packet['id'],'confirmed-message'))
+                db.close()
+
     def test_missing_or_changed_proof_prevents_reservation(self):
         with tempfile.TemporaryDirectory() as tmp:
             db=LaunchStore(Path(tmp)/'launch.sqlite',repo=Path.cwd())
@@ -201,4 +225,5 @@ class LaunchTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
 

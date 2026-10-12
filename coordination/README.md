@@ -5,7 +5,7 @@ User authorized this cash-flow collaboration on 2026-10-12. Atlas is the other C
 ## Start each session
 1. Read [AGENTS](../AGENTS.md), [CODEX_START_HERE](../CODEX_START_HERE.md), and both mandatory handoffs in their specified order.
 2. Read [current continuation](../docs/CONTINUATION.md), OPERATIONS, LAUNCH and CONTINUATION_POLICY under docs.
-3. Read [split plan](SPLIT_PLAN.md), [task list](TASKS.md), both [ChatGPT](board/chatgpt.md) and [Atlas](board/atlas.md) boards, and your inbox.
+3. Read [current execution agreement](../docs/CURRENT_EXECUTION.md), then [split plan](SPLIT_PLAN.md), [task list](TASKS.md), both [ChatGPT](board/chatgpt.md) and [Atlas](board/atlas.md) boards, and your inbox.
 4. Inspect current main, open branches/PRs and private state availability. Public documentation may be stale; verify operational facts privately.
 5. Acknowledge messages with a new reply; reserve a bounded task before implementation. Do not infer acknowledgment from delivery.
 
@@ -38,3 +38,7 @@ States: proposed -> accepted -> in_progress -> review -> done; blocked identifie
 Evidence classes: reported / independently verified / synthetic / unknown. A draft is not a send, invoice is not payment, output is not delivery.
 Send only from the designated operational owner, with current suppression, durable reservation, actual provider confirmation and verified identity/payment facts.
 No continuous background execution, inbox polling or scheduler exists merely because these files exist.
+
+## Current operator
+
+Atlas owns C06–C08 for the original cohort following explicit ChatGPT acceptance of its access/transfer request. ChatGPT owns core engineering and integrity review. No parallel sender or private-state migration. Current14–20-day profit objective and evidence distinctions are in CURRENT_EXECUTION.

@@ -94,6 +94,10 @@ AGENTS link every new operational artifact. Akinator's installed package lacks
 the referenced `akinator_coverage.py`/ledger/wiki helper scripts; no claim that
 those mechanical knowledge gates ran successfully is made.
 
-## Launch suppression integration, 2026-10-12
+## Current operator and cash measures
 
-The launch builder and reservation now consult contact suppression AND the existing linked signal/company suppression events, including bounces. Reservation rechecks current state rather than trusting only saved packet gates. Confirm signal linkage privately; unknown IDs are not verified company identities. record_sent imports confirmed historical receipts even after a stop reply, preserving an accurate record; it does not authorize or transmit another send. See [audit and readiness](ENGINEERING_AUDIT_2026-10-12.md) for three failing-first regressions, local49-pass verification and unresolved account/state access.
+[CURRENT_EXECUTION](CURRENT_EXECUTION.md) is the current14–20-day profit and role amendment. Atlas owns original-cohort C06–C08, ChatGPT owns core engineering/review. Private payment-stage records are interim manual evidence; no automatic payout tracker is implemented. Existing metrics report contribution after recorded direct costs, not proven bank cash/full economic profit. Do not add payment/pending/available/bank amounts together:those can represent the same dollars moving stages.
+
+## Launch receipt integrity
+
+Packet preparation and reservation consult both contact suppression and linked signal/company stop/bounce events. Recheck suppression at the connector transmission. Confirmed historical send receipts remain recordable after a stop reply; this never sends mail. Stored provider draft IDs and signed/unsigned Gmail numeric draft patterns are rejected as sent receipts. Rejections leave ambiguous attempts reserved, so they cannot be blindly resent. The guard does not authenticate arbitrary operator-supplied receipts; actual authenticated provider observation is still required. See ENGINEERING_AUDIT_2026-10-12.md for failing-first evidence and verification.

@@ -125,8 +125,9 @@ class LaunchStore(Store):
         except Exception:self.conn.rollback();raise
     def record_sent(self,ident,receipt):
         if not isinstance(receipt,str) or not receipt.strip():raise ValueError('Confirmed provider message ID required')
+        receipt=receipt.strip()
         with self.conn:
-            row=self.conn.execute('SELECT recipient,status,receipt FROM packets WHERE id=?',(ident,)).fetchone()
+            row=self.conn.execute('SELECT recipient,status,receipt,draft_id FROM packets WHERE id=?',(ident,)).fetchone()
             if not row:raise ValueError('Unknown packet')
             # This imports an observed historical receipt; it never sends mail.
             # A later stop reply must block future reservations, not erase history.
@@ -134,7 +135,9 @@ class LaunchStore(Store):
                 if row[2]!=receipt:raise ValueError('Conflicting send receipt')
                 return False
             if row[1]!='sending':raise ValueError('A confirmed send requires a reserved attempt')
-            if re.fullmatch(r'r\d+',receipt.strip()):raise ValueError('Gmail draft ID is not a send receipt')
-            self.conn.execute("UPDATE packets SET status='sent',receipt=? WHERE id=?",(receipt.strip(),ident))
+            if (row[3] and receipt==row[3].strip()) or re.fullmatch(r'r-?\d+',receipt):
+                raise ValueError('Provider draft ID is not a send receipt')
+            self.conn.execute("UPDATE packets SET status='sent',receipt=? WHERE id=?",(receipt,ident))
         return True
+
 

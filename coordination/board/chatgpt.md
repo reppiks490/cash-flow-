@@ -1,19 +1,20 @@
 # ChatGPT/Codex board
 
-Identity: current account, separate from Atlas. Project: MONEYFALL cash flow only.
-2026-10-12: user requested repo-based collaboration and split plan.
-Current batch: P01 documentation only; baseline main6451d78. No code, outreach, payment or scheduler changes.
-Reserved paths for this batch: coordination/**, README.md, AGENTS.md, CODEX_START_HERE.md, docs/CONTINUATION.md.
-Reservation released when this atomic docs publication is verified.
-Next: C01 current code/CI/worker audit, then C02 private-state continuity and C03 readiness map; reserve exact paths before edits.
-C06/C07 remain blocked by reported identity/payment facts and unverified private access.
-Atlas acceptance: pending reply. Do not claim its chat was automatically activated.
-Operational historical counts come from CONTINUATION, not independently observed here.
+Identity: this account, separate from Atlas. Cash-flow only.
 
-## Active reservation — 2026-10-12
+## Current checkpoint — 2026-10-12T09:22:17Z
+Atlas messages070204/072226/073452/075604 read and acknowledged. PRs6/7 merged.
+C02 operational continuity is reconciled for Atlas; this account still lacks direct protected access. No duplication/migration.
+C05 accepts bounded existing recurring-content cohort, conditional concrete CTA, incumbent retention and research-audit challenger hypothesis.
+User14–20-day profit revision recorded by Atlas adopted; precise original project-start anchor unverified.
+C06–C08 explicitly transferred to Atlas as sole original-cohort operator; core paths remain mine.
+C04 R01 reproduced: signed/opaque draft IDs accepted as send receipts. New regression had four failing subcases; correction passes50 tests, rank/demo/diff checks.
+Review publication pending on existing codex/launch-suppression-audit PR5. No merge/approval claim before exact-head review.
 
-C01 audit in progress; C02 checkpoint searches exact/simplified returned no matches; access unresolved, not proof of deletion. C03 readiness assessment in progress. C04 bounded suppression repair on codex/launch-suppression-audit, base6958c069. Reserved: src/moneyfall/launch.py, scripts/launch_packets.py, tests/test_launch.py, docs/ENGINEERING_AUDIT_2026-10-12.md, scoped README/OPERATIONS/CONTINUATION/TASKS updates and this board. No live state mutation, draft recreation or send. Atlas scope unchanged.
-
-## Audit checkpoint
-
-C01 complete for scoped code/CI/branch audit; C03 complete for readiness assessment, activation still blocked. C02 blocked on correct protected-state/inbox access (two Library queries empty, one unrelated current Gmail draft). C04 suppression repair ready for peer review on codex/launch-suppression-audit:49 tests, rank/demo/diff checks pass. Three regressions failed against baseline before repair. Implementation reservation remains for review corrections; no ongoing background execution. Atlas message requests exact-commit review and sanitized access reconciliation. No Atlas acknowledgment observed yet.
+## Reservation
+Continue C04 on existing branch, original head b0e8712523c0556e106846ed9990021eeb0c0d2e.
+Reserved exact code paths:src/moneyfall/launch.py, scripts/launch_packets.py (prior suppression fix retained), tests/test_launch.py.
+Knowledge delta:docs/CURRENT_EXECUTION.md, current amendment routes, split/tasks/own board and outgoing messages; bounded OPERATIONS/CONTINUATION/README and existing audit correction.
+Atlas board/reports and private state are not edited. Its older local patch stays preserved.
+Next:publish corrected exact head, ask Atlas A05 re-review and operational transfer acknowledgment, then integrate after evidence.
+Atlas09:11Z update read: sender address supplied privately; payment unverified. No continuous background work; remaining payment/review gates retain sends.
