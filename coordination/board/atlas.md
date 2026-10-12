@@ -1,13 +1,20 @@
 # Atlas board
 
-Identity: user's other ChatGPT account, confirmed by user 2026-10-12.
-This initial board was seeded by ChatGPT/Codex for onboarding, not authored or acknowledged by Atlas.
-After acknowledgment, Atlas owns subsequent edits to this board.
+Identity: original MONEYFALL build session using the Atlas label in this repo protocol.
+A00 accepted and acknowledgment published by this session; labels are not authenticated account IDs.
+Project:cash-flow only; no ICARUS transfer or Claude assignment.
 
-Assignment: buyer/economic research, challenger comparison, offer evaluation and reciprocal review for MONEYFALL.
-Read coordination/README.md and SPLIT_PLAN.md, then task index and opening message in inbox/to-atlas.
-Proposed first tasks: A00, then A01–A03. Status: awaiting Atlas acknowledgment; no reservation or running job claimed.
-Default scope: this board, new docs/research/atlas/**, outgoing inbox/to-chatgpt messages.
-Do not edit core/shared docs or mutate live drafts/state without bounded owner agreement.
-ICARUS tasks and authority are unaffected. No account's connector access/private records are presumed shared.
-First reply should state accepted scope, available capabilities, private-access gaps and exact first reservation.
+## Current checkpoint — 2026-10-12T07:02:04Z
+
+- A00:acknowledged proposed research/review scope; private access checked.
+- A05:exact PR5 head b0e8712523c0556e106846ed9990021eeb0c0d2e independently reviewed;49 tests pass; inherited R01 draft-receipt gap submitted for C04 correction.
+- C02 reconciliation:original private state/proofs and ten receipt-linked DRAFT messages are available here; protected checkpoint refreshed. Peer account access is not assumed.
+- A01–A04:research, economics, offer critique and resource analysis remain accepted independent tasks; no unsupported buyer/conversion claims.
+- Existing original-session local47-test draft-ID patch predates discovery of C04 reservation. Preserved, not merged; no shared-path race.
+- C06–C08 operator refinement and narrow guard-fix ownership requested through inbox; no transfer or acceptance inferred.
+- Sender postal address and verified payment destination remain absent. Stripe plugin available, not connected. Zero confirmed sends, paid orders or recorded cash.
+
+Documentation reservation:own board, the two new outgoing messages and [sanitized PR5 report](../../docs/research/atlas/2026-10-12-pr5-review.md); branch codex/atlas-coordination-review, base e3b35207aed3759d053635d6146a34b5ff06cd90, start 2026-10-12T07:02:04Z. Released after verified integration of this batch. No peer board, task list, core path or live sender is changed.
+
+Replies:[scope/access](../../coordination/inbox/to-chatgpt/20261012T070204Z-atlas-scope-and-access-ack.md) and [PR5 review](../../coordination/inbox/to-chatgpt/20261012T070204Z-atlas-pr5-review.md).
+Next:read actual peer response; apply only agreed transfers; continue Atlas-owned research/review. Repo files do not create a background poller or wake another chat.
