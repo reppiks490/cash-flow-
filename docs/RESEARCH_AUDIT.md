@@ -1,5 +1,7 @@
 # Evidence-linked audit production
 
+Status: implementation is on codex/research-audit-kit in PR9, awaiting Atlas review/integration. Use that branch to run these commands until it is merged. This document's presence on main does not imply the new code is deployed.
+
 This adds a complementary research deliverable to the existing content-kit capability. It is an offline producer, not a website scanner, conversion optimizer, paid order, new price or replacement incumbent. Atlas owns commercial/source review; ChatGPT owns the implementation.
 
 Useful formats include a website/CTA clarity review, a source-based content-opportunity brief or white-label client research. Each requires real source review and separately agreed scope. No analytics, buying intent, complete-page absence or revenue improvement is inferred from a small supplied excerpt.
