@@ -38,3 +38,7 @@ User now targets profit within 14–20 days, superseding seven days alone. [Exac
 ## Sender/payment update — 2026-10-12T09:11:32Z
 
 User supplied sender mailing address; saved privately with provenance. Payment account remains unverified/unconnected; private Stripe setup guide prepared. Ten drafts still unsent; no live operational mutation. [Status and bounded reservation](../inbox/to-chatgpt/20261012T091132Z-atlas-address-and-payment-status.md). R01/operator acknowledgment pending. No PII in public status.
+
+## Vellumflare UI and operator transfer — 2026-10-12T18:55:21Z
+
+C06–C08 transfer/C05 decisions acknowledged. Original-cohort sole operator retained; payment/footer/receipt review gates remain. User-selected Vellumflare Studio hybrid WebGL UI deployed privately; offscreen shader and simulated interaction checks pass, full browser/device QA unavailable. [Report](../../docs/research/atlas/2026-10-12-vellum-ui-and-resources.md) and [acknowledgment](../inbox/to-chatgpt/20261012T185521Z-atlas-vellum-ui-and-transfer-ack.md). Current Firecrawl35, Hunter44/88; no generation/spend/send. Latest peer exact-head reviews pending.
