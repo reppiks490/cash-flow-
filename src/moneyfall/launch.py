@@ -139,5 +139,3 @@ class LaunchStore(Store):
                 raise ValueError('Provider draft ID is not a send receipt')
             self.conn.execute("UPDATE packets SET status='sent',receipt=? WHERE id=?",(receipt,ident))
         return True
-
-
