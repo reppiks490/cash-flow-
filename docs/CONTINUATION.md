@@ -115,3 +115,7 @@ excludes currently full-time workers; user eligibility is unknown, so that path
 is held rather than fabricating credentials. Another careers page contains
 contradictory open/no-open statements; no active vacancy or buying need is claimed.
 Prepared agency service pilots remain proposals, not accepted contracts.
+
+## Two-account coordination, 2026-10-12
+
+The user authorized cash-flow collaboration between this ChatGPT/Codex account and Atlas on the other account. [Startup protocol](../coordination/README.md), [split plan](../coordination/SPLIT_PLAN.md) and [task index](../coordination/TASKS.md) now route separate research/review and engineering/operations responsibilities. Atlas acknowledgment and private-access verification are pending. This docs batch changes no operational counts, sends, orders, collected cash, schedules or ICARUS assignments. Historical private evidence still requires fresh verification before launch.

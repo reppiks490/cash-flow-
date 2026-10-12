@@ -69,3 +69,7 @@ reservations, accepted orders, signed payment import, per-order refunds and
 validated production/delivery records. CI runs synthetic verification only.
 Gmail drafts and the private offer preview exist; sending, verified payout setup,
 live payment hosting and unattended reply handling require operational activation.
+
+## Two-account cash-flow collaboration
+
+Read [coordination startup and protocol](coordination/README.md), [split plan](coordination/SPLIT_PLAN.md) and [task list](coordination/TASKS.md) after the mandatory handoff reads. Atlas is the other account; ChatGPT/Codex is this account. Read both boards and your inbox, then reserve a bounded task. Keep this collaboration separate from ICARUS and private operational data out of public messages.
