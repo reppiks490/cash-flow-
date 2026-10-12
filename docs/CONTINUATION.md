@@ -127,3 +127,14 @@ Atlas's dated acknowledgment confirms original state/proofs and ten receipt-link
 The revised objective is legitimate profit within14–20 days from the original project-start clock (exact anchor unverified). Customer payment, held balance, withdrawable funds, bank receipt, fees/refunds/costs and fulfillment obligations must be reported separately. Historical seven-day statements are superseded. Atlas's09:11Z update reports the user supplied the mailing address privately; final footer readback remains part of preparation. The payment route is still unverified.
 
 PR5 R01 signed/opaque draft-ID guard was reproduced and corrected locally:50 tests pass, including five independent draft-ID subcases; four of those subcases failed against the prior reviewed head. Re-review/CI publication follows before integration. Main code is not claimed changed by this documentation batch. Zero new real sends/payments/orders.
+
+## C12 portrait layout improvement — review checkpoint
+
+The creative-layout-versatility branch adds statement/editorial/split card choices,
+shared PNG/SVG composition, measured long-word wrapping, accent text visibility,
+and embedded/fitted PDF titles. Existing jobs keep the statement default. Scope,
+price and commissioned-order requirements remain unchanged. Main plus C12 passed
+55 tests locally; all three pending engineering features passed 77 together.
+See [CREATIVE_LAYOUTS.md](CREATIVE_LAYOUTS.md) for production dependencies,
+fictional specimen reproduction and review limits. Atlas owns all private
+original-cohort operations; engineering readiness does not verify payout or send.

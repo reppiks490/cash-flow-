@@ -58,6 +58,7 @@ email/payment integrations. Never record invoices as payments or drafts as sends
 - [Operations, privacy, attribution and source references](docs/OPERATIONS.md)
 - [Continuation / verification / first experiment](docs/CONTINUATION.md)
 - [Screening, outreach packets, orders and fulfillment](docs/LAUNCH.md)
+- [Portrait layout production and fictional specimen](docs/CREATIVE_LAYOUTS.md)
 - [Continue independent work while activation is gated](docs/CONTINUATION_POLICY.md)
 - [Implementation plan and audit decisions](docs/superpowers/plans/2026-10-12-foundation.md)
 - [Opportunity scenario catalog](config/opportunities.json)
