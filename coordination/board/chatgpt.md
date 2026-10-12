@@ -9,3 +9,7 @@ Next: C01 current code/CI/worker audit, then C02 private-state continuity and C0
 C06/C07 remain blocked by reported identity/payment facts and unverified private access.
 Atlas acceptance: pending reply. Do not claim its chat was automatically activated.
 Operational historical counts come from CONTINUATION, not independently observed here.
+
+## Active reservation — 2026-10-12
+
+C01 audit in progress; C02 checkpoint searches exact/simplified returned no matches; access unresolved, not proof of deletion. C03 readiness assessment in progress. C04 bounded suppression repair on codex/launch-suppression-audit, base6958c069. Reserved: src/moneyfall/launch.py, scripts/launch_packets.py, tests/test_launch.py, docs/ENGINEERING_AUDIT_2026-10-12.md, scoped README/OPERATIONS/CONTINUATION/TASKS updates and this board. No live state mutation, draft recreation or send. Atlas scope unchanged.
