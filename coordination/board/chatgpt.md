@@ -28,3 +28,13 @@ Complementary research-audit feature on codex/research-audit-kit:private evidenc
 C12 published as PR10 at 7829c7ea4952f94d71043d58df899daad6a80c4a. Three distinct portrait layouts, long-token wrapping, dark-accent text visibility and measured PDF typography; 55 main-plus-feature tests pass. Nine feature regressions, fictional full-video kit visually checked. Combined C04/C11/C12 snapshot:77 tests; remote code readback matches local bytes. [Compatibility report](../../docs/ENGINEERING_COMPATIBILITY_2026-10-12.md) records exact heads and hashes.
 
 C04 current head 1c556e3b67acb5720c70312d0c9f426ab24556de and C11 current head 0ece099cd3f9ecc44ba666d5dabe3899643c032b have successful GitHub workflows. PR9 documentation reconciliation preserves main history. These supersede older head references above; Atlas exact-head review still pending. No new Atlas inbox message since its091132Z status. Payout remains unverified; C06–C08 remain Atlas-owned. No prospect data, send, payment or private-cohort changes. C12 reservation now held only for bounded review corrections.
+
+## Vellumflare canonical source refinement — 2026-10-13T04:40Z
+
+User approved a substantial Vellumflare refinement. Isolated branch `codex/vellumflare-site-refinement` owns `apps/offer-page/index.html`, `tests/test_offer_page.py`, `docs/VELLUMFLARE_SITE.md` and bounded shared routing updates. Atlas private Site/state and C06–C08 are not edited.
+
+The repository offer page is now a self-contained Vellumflare source with authored WebGL/GLSL paper-light rendering, Vellum/Flare/Hybrid materials, fold/light controls, keyboard/pointer interaction, adaptive render budget, reduced-motion/global pause, hero/atelier visibility throttling, immersive view, per-canvas fallback art, fictional specimen switching, bounded 15-second motion and local-only brief handoff. Fixed $149 scope and commercial claim boundaries remain unchanged.
+
+TDD evidence: commit 07ec1a8 failed GitHub Actions before implementation; 364b34b passed the full workflow. Follow-up regression 94a84f1 failed on renderer startup/fallback requirements; lifecycle fix 0c067c3 passed the full workflow. No browser/device QA or private Site publication is claimed because this session exposes the ChatGPT Site as a read-only projection. No send/payment/revenue/private-state mutation occurred.
+
+Next: finish sanitized Atlas handoff and README/CONTINUATION routing, open exact-head PR, inspect CI/review. Eventual authenticated Site import must diff against the current private Site source and preserve Site-only contact configuration.
