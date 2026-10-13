@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import unittest
 
@@ -46,6 +47,14 @@ class ProofBrandingTests(unittest.TestCase):
         self.assertIn("f'{brand.upper()} / CLIENT CONTENT KIT'", source)
         self.assertNotIn("'MONEYFALL / ORIGINAL SPECIMEN'", source)
         self.assertIn("brand=brand", source)
+
+    def test_fresh_public_layout_example_uses_vellumflare_brand(self):
+        jobs = json.loads(
+            (ROOT / "config" / "examples" / "creative_layouts.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(jobs[0]["brand"], "Vellumflare Studio")
 
 
 if __name__ == "__main__":
