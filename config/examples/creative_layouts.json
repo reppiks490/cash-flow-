@@ -1,0 +1,34 @@
+[
+  {
+    "slug": "creative-layouts-demo",
+    "company": "Northstar Example Studio",
+    "source_url": "https://example.org/",
+    "accent": "#80ead2",
+    "specimen": true,
+    "observed": "Fictional studio specimen. No live company, buying intent or campaign result was observed.",
+    "hypothesis": "Demonstrate three distinct original typography directions within the same fixed creative scope. Layout choice is subject to the approved theme; no commercial outcome is promised.",
+    "cards": [
+      {
+        "layout": "statement",
+        "headline": "One brief. Three clear angles.",
+        "body": "Start with an audience, a theme and the next step you want to explain.",
+        "cta": "Start with one brief",
+        "caption": "One approved theme can support several original directions. Fictional, uncommissioned specimen."
+      },
+      {
+        "layout": "editorial",
+        "headline": "Good content starts with a clear question.",
+        "body": "Give your audience something concrete to understand before asking them to act.",
+        "cta": "Make the message clear",
+        "caption": "An editorial direction for a focused, useful message. Fictional, uncommissioned specimen."
+      },
+      {
+        "layout": "split",
+        "headline": "Make the next step obvious.",
+        "body": "One message. One useful action. Space for the important part to stand out.",
+        "cta": "Plan the next step",
+        "caption": "A bold split-panel direction for a single action. Fictional, uncommissioned specimen."
+      }
+    ]
+  }
+]

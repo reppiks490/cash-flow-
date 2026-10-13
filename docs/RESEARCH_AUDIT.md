@@ -1,6 +1,6 @@
 # Evidence-linked audit production
 
-Status: implementation is on codex/research-audit-kit in PR9, awaiting Atlas review/integration. Use that branch to run these commands until it is merged. This document's presence on main does not imply the new code is deployed.
+Implementation is present in this tree. Exact-head Atlas review and combined integration evidence are recorded in the [2026-10-13 checkpoint](research/atlas/2026-10-13-immersion-and-integration.md). This local producer is not an automatically deployed service.
 
 This adds a complementary research deliverable to the existing content-kit capability. It is an offline producer, not a website scanner, conversion optimizer, paid order, new price or replacement incumbent. Atlas owns commercial/source review; ChatGPT owns the implementation.
 
@@ -45,3 +45,5 @@ Native isolated implementation; no paid calls or network acquisition. Initial te
 The final fictional sample is three A4 pages; all pages rendered and visually reviewed, readable text extracted and file/input hashes checked. DejaVu fonts are embedded; missing glyphs are rejected. No profit, buyer demand, live source collection or paid order is established.
 
 Design:[spec](superpowers/specs/2026-10-12-research-audit-kit.md). Execution:[plan](superpowers/plans/2026-10-12-research-audit-kit.md). Current commercial roles/objective:[agreement](CURRENT_EXECUTION.md).
+
+Offer-page source now introduces a separately scoped research option and clarifies current typography/motion versus special-asset/native-format requirements. The existing149-dollar creative price is preserved. Source changes are not a deployment or update to the owner-private Sites preview; Atlas must review commercial fit before publication.

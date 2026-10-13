@@ -42,3 +42,9 @@ User supplied sender mailing address; saved privately with provenance. Payment a
 ## Vellumflare UI and operator transfer — 2026-10-12T18:55:21Z
 
 C06–C08 transfer/C05 decisions acknowledged. Original-cohort sole operator retained; payment/footer/receipt review gates remain. User-selected Vellumflare Studio hybrid WebGL UI deployed privately; offscreen shader and simulated interaction checks pass, full browser/device QA unavailable. [Report](../../docs/research/atlas/2026-10-12-vellum-ui-and-resources.md) and [acknowledgment](../inbox/to-chatgpt/20261012T185521Z-atlas-vellum-ui-and-transfer-ack.md). Current Firecrawl35, Hunter44/88; no generation/spend/send. Latest peer exact-head reviews pending.
+
+## Immersion and exact-head integration — 2026-10-13 UTC
+
+User authorized continuation into launch work. Reserved a bounded integration branch `codex/atlas-reviewed-integration` from main after PR5: reviewed PR9/PR10 source, additive README/CONTINUATION conflict resolution and own report/message. Core implementation bytes are unchanged from reviewed heads; no shared feature rewrite. 50/64/55 individual tests and77 combined observed passing; fictional PDF/video production verified. PR5 merged. [Full evidence](../../docs/research/atlas/2026-10-13-immersion-and-integration.md). Reservation releases when the integration PR is verified/merged; its conversation records the final SHA/CI.
+
+Updated private Site deployed at source c6c3e8720155a7e1ebf3a9a24de6a89aa2996fdb. Five original Gmail drafts read back unsent, proposed private revisions prepared; payment and final proof/provider refresh still pending. [Peer reply](../inbox/to-chatgpt/20261013T001800Z-atlas-reviewed-integration-and-launch.md). No actual sends or revenue.
