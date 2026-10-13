@@ -38,6 +38,14 @@ python scripts/launch_packets.py --profile /PRIVATE/profile.json \
   --output /PRIVATE/packets
 ```
 
+For new Vellumflare outreach, the private sender profile may explicitly set
+`"brand": "Vellumflare Studio"`. That validated one-line brand is added to the
+new packet's provenance, subject and signature. A profile that omits `brand`
+keeps the historical packet shape, subject and signature unchanged; do not add
+the field merely to rewrite old drafts or evidence. Brand values are trimmed,
+must be non-empty one-line text and are capped at 64 characters. This identity
+field does not bypass payment, proof, contact, suppression or send gates.
+
 Check `--help` for renderer options. Media generation additionally requires
 Pillow, ReportLab, FFmpeg and DejaVu fonts. Core CLI and tests use the standard
 library. Proof jobs include original copy, company, source URL, observed service,

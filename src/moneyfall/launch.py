@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 from datetime import datetime,timezone
 from urllib.parse import urlparse
+from .branding import proof_brand
 from .store import Store
 
 
@@ -42,8 +43,10 @@ def make_packet(profile,prospect,*,intro):
     if not isinstance(intro,str) or not intro.strip():raise ValueError('Personalized intro is required')
     company=prospect['company']
     if '\n' in company or '\r' in company:raise ValueError('Company name cannot contain header delimiters')
-    subject=f'An original content pilot for {company}'
+    brand=proof_brand(profile) if 'brand' in profile else None
+    subject=f'{brand} — an original content pilot for {company}' if brand else f'An original content pilot for {company}'
     address=profile.get('postal_address') or '[REQUIRED: VALID SENDER POSTAL ADDRESS]'
+    brand_line=f'{brand}\n' if brand else ''
     body=f'''Hi,
 
 {intro.strip()}
@@ -60,7 +63,7 @@ No promised leads or revenue. Filming, voiceover and account management excluded
 Would a one-project pilot be useful for your current content workload?
 
 {profile['sender_name']}
-Commercial offer. Reply "stop" to receive no further marketing emails.
+{brand_line}Commercial offer. Reply "stop" to receive no further marketing emails.
 {address}
 '''
     packet=dict(signal_id=prospect['id'],company=company,to=recipient,from_email=sender,
@@ -69,6 +72,7 @@ Commercial offer. Reply "stop" to receive no further marketing emails.
                 opportunity_id='signal-driven-b2b',price_cents=14900,
                 gates=launch_gates(profile,prospect),recipient_source=prospect['recipient_source'],
                 evidence_url=prospect['evidence_url'])
+    if brand:packet['brand']=brand
     packet['id']=hashlib.sha256(json.dumps(packet,sort_keys=True).encode()).hexdigest()
     return packet
 
