@@ -103,7 +103,7 @@ production only. After actual customer delivery, record `orders.py delivered
 ORDER_ID --receipt ACTUAL_DELIVERY_RECEIPT`. Do not mark a local export delivered.
 Visually inspect the PDF/cards and inspect video duration/dimensions before sending.
 
-## Seven-day execution
+## Current 14–20 day execution goal
 
 1. Activate the verified footer and payment route, then send the five reviewed
    attached pilots through existing Gmail drafts. Record actual sends.
@@ -117,5 +117,9 @@ Visually inspect the PDF/cards and inspect video duration/dimensions before send
 5. Compare observed replies, orders, net cash, direct costs and delivery effort.
    Expand a measured winning cohort; keep challenger opportunities active.
 
-Seven days is a revenue target, not a guaranteed outcome. No continuous sender,
-reply monitor or scheduled background business runs after a session ends.
+The current goal is legitimate attributable profit within 14–20 days, not a
+guarantee. It does not reset the original project-start clock; that clock's exact
+timestamp remains unverified and must not be invented. Earlier seven-day language
+is historical. First payment, processor availability, bank cash and completed
+profitable fulfillment remain distinct outcomes. No continuous sender, reply
+monitor or scheduled background business runs after a session ends.
