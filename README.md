@@ -59,6 +59,7 @@ email/payment integrations. Never record invoices as payments or drafts as sends
 - [Continuation / verification / first experiment](docs/CONTINUATION.md)
 - [Screening, outreach packets, orders and fulfillment](docs/LAUNCH.md)
 - [Portrait layout production and fictional specimen](docs/CREATIVE_LAYOUTS.md)
+- [Canonical Vellumflare Site source and deployment boundary](docs/VELLUMFLARE_SITE.md)
 - [Continue independent work while activation is gated](docs/CONTINUATION_POLICY.md)
 - [Implementation plan and audit decisions](docs/superpowers/plans/2026-10-12-foundation.md)
 - [Opportunity scenario catalog](config/opportunities.json)
@@ -70,6 +71,13 @@ reservations, accepted orders, signed payment import, per-order refunds and
 validated production/delivery records. CI runs synthetic verification only.
 Gmail drafts and the private offer preview exist; sending, verified payout setup,
 live payment hosting and unattended reply handling require operational activation.
+
+The repository offer page is now the canonical self-contained Vellumflare source
+for review/import. It contains dependency-free WebGL identity artwork, accessible
+motion/fallback controls, fictional specimens, the unchanged $149 pilot and a
+local-only brief composer. This does **not** mean the owner-private ChatGPT Site
+was overwritten: the 2026-10-12 session exposed only a read-only Site projection,
+so authenticated Site import and browser/device QA remain separate deployment work.
 
 ## Two-account cash-flow collaboration
 
