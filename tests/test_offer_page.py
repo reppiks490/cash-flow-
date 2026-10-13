@@ -68,6 +68,8 @@ class OfferPageContractTests(unittest.TestCase):
         expected_ids = {
             "atelier-canvas",
             "webgl-fallback",
+            "stage-fallback",
+            "dialog-fallback",
             "immersive-dialog",
             "immersive-canvas",
             "motion-toggle",
@@ -115,6 +117,23 @@ class OfferPageContractTests(unittest.TestCase):
                 "brief-email",
             }:
                 self.assertIn(control_id, self.parser.labels_for)
+
+    def test_renderer_startup_waits_for_renderer_and_motion_state(self):
+        initial_pause = self.html.index("setGlobalPause(globalPaused);")
+        renderer_init = self.html.index("const heroRenderer")
+        motion_state = self.html.index("let motionRaf")
+        self.assertGreater(initial_pause, renderer_init)
+        self.assertGreater(initial_pause, motion_state)
+        self.assertIn("let heroVisible", self.html)
+        self.assertIn("let stageVisible", self.html)
+        self.assertRegex(
+            self.html,
+            r"heroRenderer\.setPaused\([^;]*!heroVisible",
+        )
+        self.assertRegex(
+            self.html,
+            r"stageRenderer\.setPaused\([^;]*!stageVisible",
+        )
 
     def test_motion_study_is_bounded_to_fifteen_seconds(self):
         self.assertRegex(self.html, r"MOTION_DURATION\s*=\s*15(?:\.0+)?")
