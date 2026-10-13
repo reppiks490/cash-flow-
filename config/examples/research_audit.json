@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "mode": "specimen",
+  "reviewed": true,
+  "company": "Northstar Example Studio (fictional)",
+  "objective": "Make the next step clearer for a visitor evaluating recurring content support.",
+  "sources": [
+    {
+      "id": "services",
+      "url": "https://example.org/services",
+      "observed_at": "2026-10-12T00:00:00Z",
+      "excerpt": "Our studio creates recurring social content for service businesses. Contact us to learn more. Every engagement starts with an agreed brief."
+    },
+    {
+      "id": "contact",
+      "url": "https://example.org/contact",
+      "observed_at": "2026-10-12T00:00:00Z",
+      "excerpt": "Tell us about your project. Share your name, email and a message."
+    }
+  ],
+  "findings": [
+    {
+      "title": "Give the service page one concrete next step",
+      "priority": "P1",
+      "source_id": "services",
+      "evidence_quote": "Contact us to learn more.",
+      "observation": "The supplied excerpt uses a broad contact invitation rather than naming the information needed to scope an engagement.",
+      "impact_hypothesis": "A specific brief request may make it easier for a visitor to start a useful conversation. Conversion impact has not been measured.",
+      "recommended_action": "Test: Send us your audience, theme and intended publication date, and we will confirm whether the scope fits.",
+      "counter_evidence": "The full page may already contain another more specific CTA. Review the whole page before adopting the change."
+    },
+    {
+      "title": "Help visitors prepare a useful project message",
+      "priority": "P2",
+      "source_id": "contact",
+      "evidence_quote": "Share your name, email and a message.",
+      "observation": "The supplied form excerpt requests a general message but does not specify audience, desired formats or timing.",
+      "impact_hypothesis": "Optional briefing prompts may reduce clarification work. The effect on form completion and buyer quality remains unknown.",
+      "recommended_action": "Add optional audience, deliverable-format and timing prompts; measure whether completed inquiries become easier to scope.",
+      "counter_evidence": "Additional fields may reduce completion. Keep prompts optional and compare actual inquiry quality."
+    }
+  ],
+  "limitations": [
+    "All source content and this company are fictional. No live company was audited.",
+    "No analytics, conversion rates, advertising spend or buyer intent was observed.",
+    "This is a production specimen, not a paid engagement or a promise of business results."
+  ]
+}

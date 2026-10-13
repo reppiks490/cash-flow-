@@ -58,6 +58,7 @@ email/payment integrations. Never record invoices as payments or drafts as sends
 - [Operations, privacy, attribution and source references](docs/OPERATIONS.md)
 - [Continuation / verification / first experiment](docs/CONTINUATION.md)
 - [Screening, outreach packets, orders and fulfillment](docs/LAUNCH.md)
+- [Portrait layout production and fictional specimen](docs/CREATIVE_LAYOUTS.md)
 - [Continue independent work while activation is gated](docs/CONTINUATION_POLICY.md)
 - [Implementation plan and audit decisions](docs/superpowers/plans/2026-10-12-foundation.md)
 - [Opportunity scenario catalog](config/opportunities.json)
@@ -77,3 +78,6 @@ Read [coordination startup and protocol](coordination/README.md), [split plan](c
 Current goal, operator and cohort decisions: [CURRENT_EXECUTION.md](docs/CURRENT_EXECUTION.md). Atlas operates the original private cohort; ChatGPT maintains core engineering and integrity review. Target:legitimate profit within14–20 days, with costs/payout availability disclosed. PR5 correction remains under review; no live launch is claimed.
 
 PR5 adds linked-company suppression checks and signed/opaque draft-ID rejection. See [audit](docs/ENGINEERING_AUDIT_2026-10-12.md) for50-test local verification and pending peer review; core changes are not a live sender or proof of profit.
+Complementary production capability: [evidence-linked research audits](docs/RESEARCH_AUDIT.md), with supplied source quotes, actions, counter-evidence and private Markdown/HTML/optional PDF exports. Fictional fixture only; no new charged scope or buyer demand is established.
+
+Latest reviewed integration and website/launch evidence: [Atlas checkpoint](docs/research/atlas/2026-10-13-immersion-and-integration.md). Historical pending-review notes above are retained as dated checkpoints.

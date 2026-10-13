@@ -28,3 +28,5 @@ Read [coordination startup and protocol](coordination/README.md), [split plan](c
 ## Current objective and operator amendment
 
 Read [CURRENT_EXECUTION.md](docs/CURRENT_EXECUTION.md) after the original handoffs. The user's14–20-day profit revision, Atlas C06–C08 operator transfer, C05 decisions and payout/profit distinctions supersede historical seven-day/proposed-role text. Original research is preserved.
+
+New complementary research-report capability is routed through docs/RESEARCH_AUDIT.md; source/pricing/demand review remains separate from exporter verification.
