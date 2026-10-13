@@ -10,6 +10,7 @@ from PIL import Image,ImageDraw,ImageFont
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import HexColor
 from reportlab.lib.utils import ImageReader
+from moneyfall.branding import proof_brand
 from moneyfall.private import private_path
 
 FONT=Path('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf')
@@ -127,13 +128,14 @@ def render_card(card,index,folder,accent,*,specimen=True):
 def pdf(job,images,path):
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
+    brand=proof_brand(job)
     pdfmetrics.registerFont(TTFont('MoneyfallProofRegular',str(FONT)))
     pdfmetrics.registerFont(TTFont('MoneyfallProofBold',str(BOLD)))
-    c=canvas.Canvas(str(path),pagesize=(612,792));c.setTitle('Original content pilot - '+job['company'])
+    c=canvas.Canvas(str(path),pagesize=(612,792));c.setTitle(brand+' content pilot - '+job['company'])
     c.setFillColor(HexColor('#101a23'));c.rect(0,0,612,792,fill=1,stroke=0)
     c.setFillColor(HexColor(job['accent']));c.setFont('MoneyfallProofBold',10)
     specimen=job.get('specimen',True)
-    c.drawString(40,752,'MONEYFALL / ORIGINAL SPECIMEN' if specimen else 'MONEYFALL / CLIENT CONTENT KIT')
+    c.drawString(40,752,f'{brand.upper()} / ORIGINAL SPECIMEN' if specimen else f'{brand.upper()} / CLIENT CONTENT KIT')
     company_title=job['company'][:43]
     title_width=pdfmetrics.stringWidth(company_title,'MoneyfallProofBold',22)
     title_size=min(22,22*532/title_width) if title_width else 22
@@ -168,6 +170,7 @@ def render(job,folder,*,video=True):
     from urllib.parse import urlparse
     if urlparse(job['source_url']).scheme!='https':raise ValueError('Source link must use HTTPS')
     if len(job['observed'])>220 or len(job['hypothesis'])>280:raise ValueError('Proof context exceeds page layout budget')
+    brand=proof_brand(job)
     folder.mkdir(parents=True,exist_ok=True)
     specimen=job.get('specimen',True)
     images=[render_card(card,i,folder,job['accent'],specimen=specimen) for i,card in enumerate(job['cards'],1)]
@@ -182,7 +185,7 @@ def render(job,folder,*,video=True):
                         '-vf',"zoompan=z='min(1.02,1+0.00005*on)':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=125:s=1080x1920:fps=25",
                         '-frames:v','375','-c:v','libx264','-preset','veryfast','-crf','22','-pix_fmt','yuv420p','-an','-movflags','+faststart',str(folder/'motion-preview.mp4')],check=True)
     files={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in folder.iterdir() if p.is_file() and p.name!='manifest.json'}
-    (folder/'manifest.json').write_text(json.dumps(dict(company=job['company'],specimen=specimen,source_url=job['source_url'],order_id=job.get('order_id'),scope_sha256=job.get('scope_sha256'),files=files),indent=2))
+    (folder/'manifest.json').write_text(json.dumps(dict(company=job['company'],brand=brand,specimen=specimen,source_url=job['source_url'],order_id=job.get('order_id'),scope_sha256=job.get('scope_sha256'),files=files),indent=2))
     return dict(company=job['company'],files=len(files),proof_sha256=files['proof.pdf'])
 
 

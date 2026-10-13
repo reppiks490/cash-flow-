@@ -37,4 +37,12 @@ The repository offer page is now a self-contained Vellumflare source with author
 
 TDD evidence: commit 07ec1a8 failed GitHub Actions before implementation; 364b34b passed the full workflow. Follow-up regression 94a84f1 failed on renderer startup/fallback requirements; lifecycle fix 0c067c3 passed the full workflow. No browser/device QA or private Site publication is claimed because this session exposes the ChatGPT Site as a read-only projection. No send/payment/revenue/private-state mutation occurred.
 
-Next: finish sanitized Atlas handoff and README/CONTINUATION routing, open exact-head PR, inspect CI/review. Eventual authenticated Site import must diff against the current private Site source and preserve Site-only contact configuration.
+PR13 merged to main at 35bc7d42791356fbb5150c21f41628a1687882ec after branch and PR CI passed; post-merge main CI also passed. The private ChatGPT Site remained untouched.
+
+## Vellumflare proof-branding compatibility — 2026-10-13T04:49Z
+
+Follow-up core branch `codex/vellumflare-proof-branding` addresses the remaining customer-facing `MONEYFALL / ...` proof-PDF header without silently rewriting historical jobs. `src/moneyfall/branding.py` defines a validated optional proof brand with legacy `MONEYFALL` default. `scripts/render_proof.py` now uses that brand in the proof PDF title/header and records it in `manifest.json`. Values must be non-empty, one line and at most 64 characters.
+
+Fresh public proof example `config/examples/creative_layouts.json` explicitly selects `Vellumflare Studio`; jobs that omit `brand` remain legacy MONEYFALL for deterministic historical reproduction. TDD evidence includes a failing module-contract run before implementation and a later failing example-brand regression before the public example was changed. Exact documentation head `4187fa07bb2365b9852218eff3a1c8d434550c47` passed standard CI: unittest discovery, rank and demo.
+
+No private job, manifest, proof artifact, draft, send, payment, revenue event or Atlas-owned state was modified. Standard CI does not render/visually inspect optional Pillow/ReportLab/FFmpeg media; any newly branded private proof still needs normal production visual QA before send. Next: publish exact-head PR, request Atlas review/usage acknowledgment, integrate after green PR CI under standing routine merge authorization.
