@@ -134,7 +134,7 @@ User requested versatile marketability improvements while asleep. Isolated resea
 ## C12 portrait layout improvement — review checkpoint
 
 The creative-layout-versatility branch adds statement/editorial/split card choices,
-shared PNG/SVG composition, measured long-word wrapping, accent text visibility,
+shared PNG/SVG composition, measured long-word wrapping, dark-accent text visibility,
 and embedded/fitted PDF titles. Existing jobs keep the statement default. Scope,
 price and commissioned-order requirements remain unchanged. Main plus C12 passed
 55 tests locally; all three pending engineering features passed 77 together.
@@ -145,3 +145,27 @@ original-cohort operations; engineering readiness does not verify payout or send
 ## Latest reviewed integration
 
 [Atlas 2026-10-13 checkpoint](research/atlas/2026-10-13-immersion-and-integration.md) records completed exact-head reviews, 77 combined tests, additive merge resolution, deployed Vellumflare UI and actual remaining launch dependencies. Historical review-pending statements above are superseded by that dated evidence; no real sends/payments are claimed.
+
+## Canonical Vellumflare source refinement — 2026-10-13 UTC
+
+`apps/offer-page/index.html` now carries a repository-canonical, dependency-free
+Vellumflare source for review and eventual authenticated Sites import. It preserves
+the known private-Site interaction model while adding/pinning an authored WebGL
+paper/light renderer, material/form/light controls, immersive viewing, separate
+hero/atelier visibility throttling, per-canvas context-loss fallbacks, fictional
+specimen switching, a bounded 15-second motion study, and a local-only brief
+composer. The $149 scope, exclusions, no-performance-claim boundary and payment-
+after-agreement flow are unchanged. See [VELLUMFLARE_SITE.md](VELLUMFLARE_SITE.md).
+
+TDD evidence on branch `codex/vellumflare-site-refinement`: the first offer-page
+contract commit failed the repository test step before implementation, then the
+immersive implementation passed the full GitHub workflow. A second regression for
+renderer initialization order and missing secondary fallbacks failed first, then
+its lifecycle correction passed the full workflow. These checks establish repo
+contracts; they do not establish browser/device QA or successful Site publication.
+
+The linked ChatGPT Site remains owner-private and unchanged by this branch because
+this session can read only the Site projection, not its editable source. Before
+private import, diff against the current editable Site source and preserve any
+private Site-only contact configuration. No send, checkout, payment connection,
+customer data mutation or revenue event occurred in this refinement.
