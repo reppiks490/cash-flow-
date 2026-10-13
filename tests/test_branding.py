@@ -1,6 +1,10 @@
+from pathlib import Path
 import unittest
 
 from moneyfall.branding import proof_brand
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class ProofBrandingTests(unittest.TestCase):
@@ -33,6 +37,15 @@ class ProofBrandingTests(unittest.TestCase):
             with self.subTest(value=value):
                 with self.assertRaises(ValueError):
                     proof_brand({"brand": value})
+
+    def test_renderer_uses_validated_brand_in_visible_header_and_manifest(self):
+        source = (ROOT / "scripts" / "render_proof.py").read_text(encoding="utf-8")
+        self.assertIn("from moneyfall.branding import proof_brand", source)
+        self.assertIn("brand=proof_brand(job)", source)
+        self.assertIn("f'{brand.upper()} / ORIGINAL SPECIMEN'", source)
+        self.assertIn("f'{brand.upper()} / CLIENT CONTENT KIT'", source)
+        self.assertNotIn("'MONEYFALL / ORIGINAL SPECIMEN'", source)
+        self.assertIn("brand=brand", source)
 
 
 if __name__ == "__main__":
