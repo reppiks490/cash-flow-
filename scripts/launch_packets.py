@@ -25,7 +25,8 @@ def main():
             file=Path(prospect['proof_path'])
             if hashlib.sha256(file.read_bytes()).hexdigest()!=prospect['proof_sha256']:raise ValueError('Proof changed after review')
             packet=make_packet(profile,prospect,intro=prospect['intro'])
-            if db.is_suppressed(packet['to']):packet['gates'].append('suppression')
+            if db.is_suppressed(packet['to']) or db.suppressed(packet['signal_id']):
+                packet['gates'].append('suppression')
             db.save(packet)
             (args.output/(packet['id']+'.json')).write_text(json.dumps(packet,indent=2))
             summaries.append(dict(id=packet['id'],company=packet['company'],gates=packet['gates']))

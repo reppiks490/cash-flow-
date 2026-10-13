@@ -75,3 +75,5 @@ live payment hosting and unattended reply handling require operational activatio
 Read [coordination startup and protocol](coordination/README.md), [split plan](coordination/SPLIT_PLAN.md) and [task list](coordination/TASKS.md) after the mandatory handoff reads. Atlas is the other account; ChatGPT/Codex is this account. Read both boards and your inbox, then reserve a bounded task. Keep this collaboration separate from ICARUS and private operational data out of public messages.
 
 Current goal, operator and cohort decisions: [CURRENT_EXECUTION.md](docs/CURRENT_EXECUTION.md). Atlas operates the original private cohort; ChatGPT maintains core engineering and integrity review. Target:legitimate profit within14–20 days, with costs/payout availability disclosed. PR5 correction remains under review; no live launch is claimed.
+
+PR5 adds linked-company suppression checks and signed/opaque draft-ID rejection. See [audit](docs/ENGINEERING_AUDIT_2026-10-12.md) for50-test local verification and pending peer review; core changes are not a live sender or proof of profit.

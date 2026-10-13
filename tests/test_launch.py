@@ -128,6 +128,93 @@ class LaunchTests(unittest.TestCase):
                 self.assertEqual(db.reserve(packet['id']),n==0)
             db.close()
 
+    def test_company_suppression_blocks_a_different_contact_at_reservation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db=LaunchStore(Path(tmp)/'launch.sqlite',repo=Path.cwd())
+            for ident in ('old-signal','one'):
+                db.ingest(dict(id=ident,company='Example Agency',title='Public content',
+                               url='https://example.org/services',retrieved_at='now'))
+            packet=make_packet(self.profile(),self.prospect(),intro='Hello')
+            proof=Path(tmp)/'proof.pdf';proof.write_bytes(b'synthetic reviewed proof')
+            import hashlib
+            packet['attachment']=str(proof)
+            packet['attachment_sha256']=hashlib.sha256(proof.read_bytes()).hexdigest()
+            db.save(packet)
+            # Suppression arrived AFTER this packet was prepared.
+            db.event('stop-company','old-signal','suppressed',evidence='observed stop reply')
+            self.assertFalse(db.reserve(packet['id']))
+            self.assertEqual(db.packets()[0]['status'],'draft')
+            self.assertEqual(db.conn.execute('SELECT COUNT(*) FROM send_attempts').fetchone()[0],0)
+            db.close()
+
+    def test_packet_cli_includes_company_suppression_gate(self):
+        import hashlib
+        import json
+        import os
+        import subprocess
+        import sys
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);state=root/'launch.sqlite'
+            db=LaunchStore(state,repo=Path.cwd())
+            db.ingest(dict(id='one',company='Example Agency',title='Public content',
+                           url='https://example.org/services',retrieved_at='now'))
+            db.event('bounce-company','one','bounced',evidence='observed bounce')
+            db.close()
+            proof=root/'proof.pdf';proof.write_bytes(b'synthetic reviewed proof')
+            prospect=dict(self.prospect(),proof_path=str(proof),
+                          proof_sha256=hashlib.sha256(proof.read_bytes()).hexdigest(),intro='Hello')
+            (root/'profile.json').write_text(json.dumps(self.profile()))
+            (root/'prospects.json').write_text(json.dumps([prospect]))
+            env=dict(os.environ,PYTHONPATH=str(Path.cwd()/'src'))
+            result=subprocess.run([sys.executable,'scripts/launch_packets.py',
+                '--profile',str(root/'profile.json'),'--prospects',str(root/'prospects.json'),
+                '--state',str(state),'--output',str(root/'packets')],
+                capture_output=True,text=True,env=env)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertIn('suppression',json.loads(result.stdout)[0]['gates'])
+
+    def test_stop_after_send_does_not_erase_confirmed_send_history(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db=LaunchStore(Path(tmp)/'launch.sqlite',repo=Path.cwd())
+            packet=make_packet(self.profile(),self.prospect(),intro='Hello')
+            proof=Path(tmp)/'proof.pdf';proof.write_bytes(b'synthetic reviewed proof')
+            import hashlib
+            packet['attachment']=str(proof)
+            packet['attachment_sha256']=hashlib.sha256(proof.read_bytes()).hexdigest()
+            db.save(packet)
+            self.assertTrue(db.reserve(packet['id']))
+            # A reply can arrive before the operator imports the send receipt.
+            db.suppress(packet['to'],'observed stop reply')
+            self.assertTrue(db.record_sent(packet['id'],'confirmed-message'))
+            self.assertFalse(db.record_sent(packet['id'],'confirmed-message'))
+            self.assertTrue(db.is_suppressed(packet['to']))
+            self.assertFalse(db.reserve(packet['id']))
+            db.close()
+
+    def test_draft_identifiers_cannot_be_imported_as_sent_receipts(self):
+        import hashlib
+        for receipt in ('r123','r-123','opaque-provider-draft','  r-456  ',
+                        '  opaque-provider-draft  '):
+            with self.subTest(receipt=receipt), tempfile.TemporaryDirectory() as tmp:
+                db=LaunchStore(Path(tmp)/'launch.sqlite',repo=Path.cwd())
+                db.ingest(dict(id='one',company='Example Agency',title='Public content',
+                               url='https://example.org/services',retrieved_at='now'))
+                packet=make_packet(self.profile(),self.prospect(),intro='Hello')
+                proof=Path(tmp)/'proof.pdf';proof.write_bytes(b'synthetic reviewed proof')
+                packet['attachment']=str(proof)
+                packet['attachment_sha256']=hashlib.sha256(proof.read_bytes()).hexdigest()
+                db.save(packet)
+                db.record_draft(packet['id'],'opaque-provider-draft')
+                self.assertTrue(db.reserve(packet['id']))
+                with self.assertRaisesRegex(ValueError,'draft ID'):
+                    db.record_sent(packet['id'],receipt)
+                row=db.packets()[0]
+                self.assertEqual(row['status'],'sending')
+                self.assertIsNone(row['receipt'])
+                self.assertFalse(db.reserve(packet['id']))
+                self.assertTrue(db.record_sent(packet['id'],'confirmed-message'))
+                db.close()
+
     def test_missing_or_changed_proof_prevents_reservation(self):
         with tempfile.TemporaryDirectory() as tmp:
             db=LaunchStore(Path(tmp)/'launch.sqlite',repo=Path.cwd())

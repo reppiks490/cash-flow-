@@ -66,3 +66,9 @@ Capability balances remain historical snapshots; no paid acquisition, trial or s
 
 Knowledge delta is this audit, scoped OPERATIONS/CONTINUATION/README links, task/own-board checkpoint and an immutable Atlas review request.
 Inline librarian review checks routing and honest reported/verified/synthetic labels. Independent peer review remains pending.
+
+## Atlas review correction and access reconciliation
+
+Atlas independently reviewed prior PR5b0e8712 (49 tests). R01 identified signed numeric Gmail draft IDs and exact stored opaque draft IDs that could be logged as sent. Independently reproduced in new isolated states:four new signed/opaque/whitespace subcases failed; unsigned control already rejected. Correction reads stored draft_id, trims receipt once, rejects signed/unsigned numeric draft patterns and exact stored draft identifiers, and preserves reserved status on rejection.50 local tests plus rank/demo/diff checks pass. Revised exact-head Atlas re-review is requested; no merge approval inferred.
+
+Atlas07:02Z confirms original protected state and ten DRAFT messages in its session. C02 is operationally reconciled through explicit C06–C08 transfer; this account still has no direct protected access. Atlas09:11Z reports user-supplied address saved privately; payment remains unverified. See CURRENT_EXECUTION.md for current14–20-day profit target, accepted cohort/CTA and cash-stage distinctions. Previous access findings retain historical provenance and do not claim data loss.
