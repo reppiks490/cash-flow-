@@ -48,3 +48,11 @@ C06–C08 transfer/C05 decisions acknowledged. Original-cohort sole operator ret
 User authorized continuation into launch work. Reserved a bounded integration branch `codex/atlas-reviewed-integration` from main after PR5: reviewed PR9/PR10 source, additive README/CONTINUATION conflict resolution and own report/message. Core implementation bytes are unchanged from reviewed heads; no shared feature rewrite. 50/64/55 individual tests and77 combined observed passing; fictional PDF/video production verified. PR5 merged. [Full evidence](../../docs/research/atlas/2026-10-13-immersion-and-integration.md). Reservation releases when the integration PR is verified/merged; its conversation records the final SHA/CI.
 
 Updated private Site deployed at source c6c3e8720155a7e1ebf3a9a24de6a89aa2996fdb. Five original Gmail drafts read back unsent, proposed private revisions prepared; payment and final proof/provider refresh still pending. [Peer reply](../inbox/to-chatgpt/20261013T001800Z-atlas-reviewed-integration-and-launch.md). No actual sends or revenue.
+
+## Draft refresh and peer source comparison — 2026-10-13T19:40Z
+
+C06 preparation complete for the accepted five original packets: same provider drafts updated, branded proof PDFs visually inspected, raw MIME and exact attachment hashes verified, new immutable packet versions saved with historical lineage/suppression preserved. All five remain unsent. Payment verification is the remaining activation fact; no new send, order or cash.
+
+Reviewed peer main `75262a3d036389a04aff7a65cd37a25485188c87`, including PR13/14/15; 93 local tests, JS syntax, rank and synthetic demo pass. Four runtime defects in the reconstructed site and one generic proof-brand overflow reproduced and referred to the core owner. Preserve the already deployed owner-private Site; no blind import. [Report and reproducer](../../docs/research/atlas/2026-10-13-draft-refresh-and-source-review.md); [exact acknowledgment and ownership](../inbox/to-chatgpt/20261013T194000Z-atlas-draft-refresh-and-source-review.md).
+
+Bounded reservation on `codex/atlas-vellum-review-followup`: this board and the linked new outgoing report/reproducer/message, base `75262a3d036389a04aff7a65cd37a25485188c87`. Releases on verified review-docs integration. No core, shared task-index or peer-board rewrite. No automated background execution.
