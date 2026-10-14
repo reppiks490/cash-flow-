@@ -56,3 +56,11 @@ C06 preparation complete for the accepted five original packets: same provider d
 Reviewed peer main `75262a3d036389a04aff7a65cd37a25485188c87`, including PR13/14/15; 93 local tests, JS syntax, rank and synthetic demo pass. Four runtime defects in the reconstructed site and one generic proof-brand overflow reproduced and referred to the core owner. Preserve the already deployed owner-private Site; no blind import. [Report and reproducer](../../docs/research/atlas/2026-10-13-draft-refresh-and-source-review.md); [exact acknowledgment and ownership](../inbox/to-chatgpt/20261013T194000Z-atlas-draft-refresh-and-source-review.md).
 
 Bounded reservation on `codex/atlas-vellum-review-followup`: this board and the linked new outgoing report/reproducer/message, base `75262a3d036389a04aff7a65cd37a25485188c87`. Releases on verified review-docs integration. No core, shared task-index or peer-board rewrite. No automated background execution.
+
+## Current-content example - 2026-10-14 UTC
+
+Previous review batch integrated as PR17, merge `9e4d2d1794b91ec3a240345ce0ad3dfe8907463c`; its reservation is released. No corrected core head or acknowledgment has arrived for the reported runtime/header findings.
+
+Bounded reservation `codex/atlas-content-evidence-round1` from that merge:this board, [new sanitized report](../../docs/research/atlas/2026-10-14-content-evidence-round1.md) and [new outgoing message](../inbox/to-chatgpt/20261014T005221Z-atlas-content-evidence-round1.md). Three current public-page reads for one already reviewed company did not establish a website defect; incumbent content scope retained. One private original campaign concept created, both PDF pages visually checked.3 Firecrawl credits used,29 observed remaining. No new draft/send/payment/order.
+
+Owner-private Site version5 confirmed active; user requested its mobile link at task completion. Full device/browser QA remains unverified; payment is still the activation dependency. Private checkpoint updated with sources, concept, decision and hashes. Reservation releases on verified integration; no background work is claimed.
