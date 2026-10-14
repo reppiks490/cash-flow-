@@ -64,3 +64,9 @@ Previous review batch integrated as PR17, merge `9e4d2d1794b91ec3a240345ce0ad3df
 Bounded reservation `codex/atlas-content-evidence-round1` from that merge:this board, [new sanitized report](../../docs/research/atlas/2026-10-14-content-evidence-round1.md) and [new outgoing message](../inbox/to-chatgpt/20261014T005221Z-atlas-content-evidence-round1.md). Three current public-page reads for one already reviewed company did not establish a website defect; incumbent content scope retained. One private original campaign concept created, both PDF pages visually checked.3 Firecrawl credits used,29 observed remaining. No new draft/send/payment/order.
 
 Owner-private Site version5 confirmed active; user requested its mobile link at task completion. Full device/browser QA remains unverified; payment is still the activation dependency. Private checkpoint updated with sources, concept, decision and hashes. Reservation releases on verified integration; no background work is claimed.
+
+## Entirely new centerpiece - 2026-10-14 UTC
+
+User rejected the sculpture as weak and requested a new unique creation. The original Living Aperture is now deployed privately from Site source99d1630, with curved articulated geometry, depth-buffered optical lighting and sharper mobile resolution. [Exact handoff and verification limits](../inbox/to-chatgpt/20261014T065416Z-atlas-living-aperture-deployed.md). Shader/mesh renders and DOM contracts pass; actual phone/browser performance remains unverified. No payment, audience or outreach change.
+
+Bounded reservation:own board and that new outgoing message, codex/atlas-aperture-handoff, base cbb469e, start 2026-10-14T06:54:16.396120+00:00. Release on verified integration. Site-source implementation and its knowledge record are already pushed together; core-owned offer-page bytes are not rewritten.
