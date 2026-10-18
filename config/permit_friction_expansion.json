@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "retrieved_at": "2026-10-18",
+  "method": "Heuristic market-prioritization scores from reviewed official government sources. Scores measure research friction, not legal risk or permit eligibility.",
+  "municipalities": [
+    {
+      "name": "Aurora",
+      "official_domains": ["aurora.il.us", "www.aurora.il.us"],
+      "source_urls": [
+        "https://www.aurora.il.us/Government-and-Engagement/Finance/Revenue-Collection/Mobile-Food-Unit-Rules-Regulations-and-Information"
+      ],
+      "factors": {
+        "agency_handoffs": 0.95,
+        "sequential_dependencies": 0.90,
+        "manual_or_offline_steps": 0.45,
+        "inspection_dependencies": 0.95,
+        "deadline_pressure": 0.70,
+        "geographic_restrictions": 0.80,
+        "fee_complexity": 0.80
+      },
+      "evidence_basis": [
+        "Aurora mobile-food operators must satisfy City revenue/registration requirements and operate only at approved locations.",
+        "The City's rules distinguish mobile food units, food carts and special-event operations and identify additional event requirements.",
+        "City guidance for qualifying event/farmers-market operations references health and fire inspection dependencies alongside municipal registration."
+      ],
+      "requirements": [
+        {
+          "label": "Confirm the applicable Aurora mobile-food registration and approved operating location",
+          "status": "required",
+          "source_url": "https://www.aurora.il.us/Government-and-Engagement/Finance/Revenue-Collection/Mobile-Food-Unit-Rules-Regulations-and-Information"
+        },
+        {
+          "label": "Confirm health/fire inspection documentation required for the intended event or market operation",
+          "status": "may_require",
+          "source_url": "https://www.aurora.il.us/Government-and-Engagement/Finance/Revenue-Collection/Mobile-Food-Unit-Rules-Regulations-and-Information"
+        }
+      ]
+    },
+    {
+      "name": "DeKalb",
+      "official_domains": ["cityofdekalb.com", "www.cityofdekalb.com", "health.dekalbcounty.org", "dekalbcounty.org"],
+      "source_urls": [
+        "https://www.cityofdekalb.com/589/Business-License-Permit-Applications",
+        "https://www.cityofdekalb.com/1336/Food-Licenses",
+        "https://health.dekalbcounty.org/services/food-safety/"
+      ],
+      "factors": {
+        "agency_handoffs": 0.80,
+        "sequential_dependencies": 0.85,
+        "manual_or_offline_steps": 0.55,
+        "inspection_dependencies": 0.75,
+        "deadline_pressure": 0.85,
+        "geographic_restrictions": 0.60,
+        "fee_complexity": 0.85
+      },
+      "evidence_basis": [
+        "Food-vendor readiness can span City licensing/tax requirements and DeKalb County Health Department food permits.",
+        "The County publishes distinct temporary, seasonal and mobile food-establishment permit paths and fee schedules.",
+        "The County states a temporary-food application timing threshold before late fees apply.",
+        "City food licensing can add local restaurant/bar tax or fire-life-safety dependencies depending on operation type."
+      ],
+      "requirements": [
+        {
+          "label": "Identify the applicable City of DeKalb business/food license and local tax path",
+          "status": "required",
+          "source_url": "https://www.cityofdekalb.com/589/Business-License-Permit-Applications"
+        },
+        {
+          "label": "Identify the applicable County temporary, seasonal or mobile food permit",
+          "status": "required",
+          "source_url": "https://health.dekalbcounty.org/services/food-safety/"
+        },
+        {
+          "label": "Confirm whether Fire-Life Safety licensing applies to the operating model",
+          "status": "may_require",
+          "source_url": "https://www.cityofdekalb.com/1336/Food-Licenses"
+        }
+      ]
+    },
+    {
+      "name": "Downers Grove",
+      "official_domains": ["downers.us", "www.downers.us"],
+      "source_urls": [
+        "https://www.downers.us/food-trucks",
+        "https://www.downers.us/business-licenses"
+      ],
+      "factors": {
+        "agency_handoffs": 0.75,
+        "sequential_dependencies": 0.80,
+        "manual_or_offline_steps": 0.35,
+        "inspection_dependencies": 0.65,
+        "deadline_pressure": 0.80,
+        "geographic_restrictions": 0.95,
+        "fee_complexity": 0.55
+      },
+      "evidence_basis": [
+        "The Village publishes a capped annual mobile-food-vendor permit program and separate renewal timing/fees.",
+        "Village application materials depend on a DuPage County Health permit and other operator/vehicle documentation.",
+        "Food-truck operation is subject to location, property-consent, hours and distance restrictions.",
+        "Village-sponsored festival/event operation can add temporary-use implications depending on location."
+      ],
+      "requirements": [
+        {
+          "label": "Obtain the applicable Village mobile-food-vendor permit",
+          "status": "required",
+          "source_url": "https://www.downers.us/food-trucks"
+        },
+        {
+          "label": "Provide the applicable county health permit and supporting operator/vehicle documents",
+          "status": "required",
+          "source_url": "https://www.downers.us/food-trucks"
+        },
+        {
+          "label": "Check location, distance, event and temporary-use restrictions before committing to a site",
+          "status": "required",
+          "source_url": "https://www.downers.us/food-trucks"
+        }
+      ]
+    }
+  ]
+}
