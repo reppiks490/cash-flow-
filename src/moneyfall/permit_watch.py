@@ -8,8 +8,8 @@ claims are refreshed.
 from __future__ import annotations
 
 import hashlib
-import re
 from html.parser import HTMLParser
+from urllib.error import HTTPError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
@@ -46,7 +46,12 @@ def host_allowed(host, allowed_domains):
 
 
 def catalog_urls(datasets):
-    """Build a stable, deduplicated source catalog from permit-friction datasets."""
+    """Build a stable, deduplicated source catalog from permit-friction datasets.
+
+    ``watch_exclusions`` is an explicit manual-review lane for official research
+    pages that reject automated retrieval. An exclusion must still be an official
+    HTTPS URL already present in ``source_urls``.
+    """
     ordered = []
     index = {}
     for dataset in datasets:
@@ -59,17 +64,26 @@ def catalog_urls(datasets):
             domains = [str(d).lower().strip().rstrip(".") for d in market.get("official_domains", []) if str(d).strip()]
             if not name or not domains:
                 raise ValueError("Municipality name and official_domains are required")
-            for url in market.get("source_urls", []):
-                parsed = urlparse(str(url))
+
+            source_urls = [str(url) for url in market.get("source_urls", [])]
+            exclusions = [str(url) for url in market.get("watch_exclusions", [])]
+            for url in exclusions:
+                parsed = urlparse(url)
+                if url not in source_urls or parsed.scheme != "https" or not parsed.hostname or not host_allowed(parsed.hostname, domains):
+                    raise ValueError(f"Invalid watch_exclusion for {name}: {url}")
+
+            for url in source_urls:
+                parsed = urlparse(url)
                 if parsed.scheme != "https" or not parsed.hostname or not host_allowed(parsed.hostname, domains):
                     raise ValueError(f"Non-official or non-HTTPS permit source: {url}")
-                key = str(url)
-                if key not in index:
-                    entry = {"url": key, "markets": [name], "allowed_domains": list(domains)}
-                    index[key] = entry
+                if url in exclusions:
+                    continue
+                if url not in index:
+                    entry = {"url": url, "markets": [name], "allowed_domains": list(domains)}
+                    index[url] = entry
                     ordered.append(entry)
                 else:
-                    entry = index[key]
+                    entry = index[url]
                     if name not in entry["markets"]:
                         entry["markets"].append(name)
                     for domain in domains:
@@ -95,7 +109,7 @@ def fingerprint_content(content, content_type):
 
 
 def compare_snapshots(previous, current):
-    """Classify each current URL as baseline, unchanged, changed or error."""
+    """Classify each current URL as baseline, unchanged, changed, manual or error."""
     previous = previous or {}
     if not isinstance(previous, dict) or not isinstance(current, dict):
         raise ValueError("Snapshots must be objects")
@@ -104,11 +118,16 @@ def compare_snapshots(previous, current):
         if not isinstance(observation, dict):
             raise ValueError("Snapshot observations must be objects")
         record = dict(observation)
-        if record.get("error"):
+        old_fingerprint = previous.get(url, {}).get("fingerprint") if isinstance(previous.get(url, {}), dict) else None
+        if record.get("manual_only"):
+            state = "error" if old_fingerprint else "manual"
+            if state == "error" and not record.get("error"):
+                record["error"] = "Previously monitorable official source now blocks automated retrieval"
+        elif record.get("error"):
             state = "error"
-        elif url not in previous or not previous[url].get("fingerprint"):
+        elif not old_fingerprint:
             state = "baseline"
-        elif previous[url].get("fingerprint") == record.get("fingerprint"):
+        elif old_fingerprint == record.get("fingerprint"):
             state = "unchanged"
         else:
             state = "changed"
@@ -148,12 +167,22 @@ def fetch_source(entry, *, timeout=20, max_bytes=2_000_000):
 
 
 def scan_sources(catalog):
-    """Fetch every source, retaining errors as data instead of hiding them."""
+    """Fetch every source, retaining failures and access blocks as explicit state."""
     current = {}
     for entry in catalog:
         url = entry["url"]
         try:
             current[url] = fetch_source(entry)
+        except HTTPError as exc:
+            if exc.code == 403:
+                current[url] = {
+                    "manual_only": True,
+                    "status_code": 403,
+                    "reason": "Official source denies automated retrieval; review manually without bypassing access controls",
+                    "markets": list(entry.get("markets", [])),
+                }
+            else:
+                current[url] = {"error": f"HTTPError: HTTP Error {exc.code}: {exc.reason}", "markets": list(entry.get("markets", []))}
         except Exception as exc:  # network/provider failures are reportable state
             current[url] = {"error": f"{type(exc).__name__}: {exc}", "markets": list(entry.get("markets", []))}
     return current

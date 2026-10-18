@@ -19,6 +19,28 @@ class PermitWatchTests(unittest.TestCase):
         ])
         self.assertEqual(catalog[0]["markets"], ["A", "B"])
 
+    def test_catalog_excludes_declared_manual_only_sources_without_dropping_research_source(self):
+        blocked = "https://city.gov/protected-food-page"
+        dataset = {"municipalities": [{
+            "name": "Protected City",
+            "official_domains": ["city.gov"],
+            "source_urls": ["https://city.gov/watchable", blocked],
+            "watch_exclusions": [blocked],
+        }]}
+        catalog = catalog_urls([dataset])
+        self.assertEqual([entry["url"] for entry in catalog], ["https://city.gov/watchable"])
+        self.assertIn(blocked, dataset["municipalities"][0]["source_urls"])
+
+    def test_watch_exclusion_must_reference_an_official_source_in_same_market(self):
+        dataset = {"municipalities": [{
+            "name": "Bad City",
+            "official_domains": ["city.gov"],
+            "source_urls": ["https://city.gov/watchable"],
+            "watch_exclusions": ["https://evil.example/not-a-source"],
+        }]}
+        with self.assertRaises(ValueError):
+            catalog_urls([dataset])
+
     def test_fingerprint_ignores_html_noise_but_not_visible_requirement_changes(self):
         a = b"<html><style>.x{}</style><script>nonce=123</script><body>Permit required   before event</body></html>"
         b = b"<html><script>nonce=999</script><body> Permit required before event </body></html>"
@@ -43,6 +65,12 @@ class PermitWatchTests(unittest.TestCase):
         self.assertEqual(result["https://b.gov/y"]["state"], "changed")
         self.assertEqual(result["https://c.gov/z"]["state"], "baseline")
         self.assertEqual(result["https://d.gov/q"]["state"], "error")
+
+    def test_access_block_is_manual_on_first_sighting_but_error_after_prior_fingerprint(self):
+        url = "https://protected.gov/food"
+        current = {url: {"manual_only": True, "status_code": 403, "markets": ["Protected"]}}
+        self.assertEqual(compare_snapshots({}, current)[url]["state"], "manual")
+        self.assertEqual(compare_snapshots({url: {"fingerprint": "known-good"}}, current)[url]["state"], "error")
 
     def test_host_allowlist_accepts_exact_or_subdomain_only(self):
         self.assertTrue(host_allowed("www.city.gov", ["city.gov"]))
