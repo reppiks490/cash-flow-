@@ -1,0 +1,72 @@
+name: Permit source watch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 13 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Restore last accepted source snapshot
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: .permit-watch-cache
+          key: permit-source-watch-${{ github.run_id }}
+          restore-keys: |
+            permit-source-watch-
+
+      - name: Scan official permit sources
+        id: scan
+        continue-on-error: true
+        run: |
+          mkdir -p .permit-watch-cache
+          PYTHONPATH=src python scripts/permit_source_watch.py \
+            --previous .permit-watch-cache/snapshot.json \
+            --snapshot .permit-watch-cache/snapshot.json \
+            --report permit-watch-report.json \
+            --summary permit-watch-summary.md \
+            --fail-on-change
+
+      - name: Publish watch summary
+        if: always()
+        run: |
+          if [ -f permit-watch-summary.md ]; then
+            cat permit-watch-summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Permit source watch failed before producing a summary.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload watch report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: permit-watch-report-${{ github.run_id }}
+          path: |
+            permit-watch-report.json
+            permit-watch-summary.md
+          if-no-files-found: warn
+
+      - name: Accept snapshot only when scan is clean
+        if: steps.scan.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: .permit-watch-cache
+          key: permit-source-watch-${{ github.run_id }}
+
+      - name: Require review on source change or fetch failure
+        if: steps.scan.outcome == 'failure'
+        run: |
+          echo 'Official permit source changed or failed to load. Review the uploaded report before refreshing client-facing claims.' >&2
+          exit 1
