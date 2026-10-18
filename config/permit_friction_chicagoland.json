@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "retrieved_at": "2026-10-18",
+  "method": "Heuristic market-prioritization scores from reviewed official municipal sources. Scores measure research friction, not legal risk or permit eligibility.",
+  "municipalities": [
+    {
+      "name": "Chicago",
+      "official_domains": ["chicago.gov", "www.chicago.gov"],
+      "source_urls": [
+        "https://chicago.gov/city/en/depts/cdph/supp_info/food-safety/fps-special-events.html"
+      ],
+      "factors": {
+        "agency_handoffs": 0.9,
+        "sequential_dependencies": 0.95,
+        "manual_or_offline_steps": 0.55,
+        "inspection_dependencies": 0.9,
+        "deadline_pressure": 0.75,
+        "geographic_restrictions": 0.7,
+        "fee_complexity": 0.65
+      },
+      "evidence_basis": [
+        "Single-event and 180-day special-event paths are distinct.",
+        "Multi-event applications move through BACP to CDPH Food Protection Services.",
+        "A commissary, restaurant or shared kitchen must have an inspection within six months of application.",
+        "Mobile Food Preparers must already hold a Chicago license and sanitation certificate before applying for a special event."
+      ],
+      "requirements": [
+        {
+          "label": "Choose the applicable single-event or 180-day special-event path",
+          "status": "required",
+          "source_url": "https://chicago.gov/city/en/depts/cdph/supp_info/food-safety/fps-special-events.html"
+        },
+        {
+          "label": "Provide applicable sanitation certificate and existing City mobile-food license for Mobile Food Preparers",
+          "status": "required",
+          "source_url": "https://chicago.gov/city/en/depts/cdph/supp_info/food-safety/fps-special-events.html"
+        },
+        {
+          "label": "Confirm commissary, restaurant or shared-kitchen inspection recency",
+          "status": "required",
+          "source_url": "https://chicago.gov/city/en/depts/cdph/supp_info/food-safety/fps-special-events.html"
+        }
+      ]
+    },
+    {
+      "name": "Evanston",
+      "official_domains": ["cityofevanston.org", "www.cityofevanston.org"],
+      "source_urls": [
+        "https://www.cityofevanston.org/business_detail_T7_R376.php",
+        "https://www.cityofevanston.org/business_detail_T7_R434.php"
+      ],
+      "factors": {
+        "agency_handoffs": 0.7,
+        "sequential_dependencies": 0.8,
+        "manual_or_offline_steps": 0.25,
+        "inspection_dependencies": 0.7,
+        "deadline_pressure": 0.95,
+        "geographic_restrictions": 0.85,
+        "fee_complexity": 0.7
+      },
+      "evidence_basis": [
+        "Mobile Food Vehicle licenses are annual and non-transferable.",
+        "Temporary and seasonal event food permits have separate terms and fees.",
+        "Event submissions are requested at least ten business days before the event; late and near-event submissions face penalties or non-approval risk.",
+        "Food trucks at temporary events must provide their current Food Establishment License and outside-Evanston kitchens must provide a recent local health inspection report.",
+        "Mobile vending has time and location restrictions, including school-distance restrictions."
+      ],
+      "requirements": [
+        {
+          "label": "Hold the applicable Evanston mobile food vendor license",
+          "status": "required",
+          "source_url": "https://www.cityofevanston.org/business_detail_T7_R376.php"
+        },
+        {
+          "label": "Obtain event-organizer approval before applying for a temporary or seasonal food permit",
+          "status": "required",
+          "source_url": "https://www.cityofevanston.org/business_detail_T7_R434.php"
+        },
+        {
+          "label": "Provide current food-establishment license and outside-jurisdiction inspection report when applicable",
+          "status": "required",
+          "source_url": "https://www.cityofevanston.org/business_detail_T7_R434.php"
+        }
+      ]
+    },
+    {
+      "name": "Skokie",
+      "official_domains": ["skokie.org", "www.skokie.org"],
+      "source_urls": [
+        "https://www.skokie.org/1520/Mobile-Food-Trucks"
+      ],
+      "factors": {
+        "agency_handoffs": 0.4,
+        "sequential_dependencies": 0.5,
+        "manual_or_offline_steps": 0.2,
+        "inspection_dependencies": 0.4,
+        "deadline_pressure": 0.45,
+        "geographic_restrictions": 0.45,
+        "fee_complexity": 0.55
+      },
+      "evidence_basis": [
+        "Public-event mobile food trucks require an Environmental Health license.",
+        "Multiple-event and single-event license paths are distinct.",
+        "Multiple-event licenses renew annually on a May 1-April 30 cycle and fees vary by service type."
+      ],
+      "requirements": [
+        {
+          "label": "Select single-event or multiple-event mobile-food-truck licensure",
+          "status": "required",
+          "source_url": "https://www.skokie.org/1520/Mobile-Food-Trucks"
+        },
+        {
+          "label": "Renew a multiple-event license for each May-April licensing period",
+          "status": "required",
+          "source_url": "https://www.skokie.org/1520/Mobile-Food-Trucks"
+        }
+      ]
+    },
+    {
+      "name": "Elgin",
+      "official_domains": ["elginil.gov", "www.elginil.gov"],
+      "source_urls": [
+        "https://elginil.gov/2608/Vendors",
+        "https://elginil.gov/2910/Temporary-Food-Handling-Seasonal-Food-Ha",
+        "https://elginil.gov/1221/Special-Event-Permits"
+      ],
+      "factors": {
+        "agency_handoffs": 0.8,
+        "sequential_dependencies": 0.8,
+        "manual_or_offline_steps": 0.45,
+        "inspection_dependencies": 0.9,
+        "deadline_pressure": 0.85,
+        "geographic_restrictions": 0.75,
+        "fee_complexity": 0.6
+      },
+      "evidence_basis": [
+        "For the 2026 season, applicable food trucks, trailers, grills and deep fryers require a pre-event fire inspection.",
+        "Day-of fire inspection carries a stated $100 fee while scheduled pre-inspection can be free.",
+        "Temporary and seasonal food-handling paths differ, and private-property events can add a temporary-use permit dependency.",
+        "Temporary food handling applications for special events are due no later than seven days before the event.",
+        "Food may not be sold in Elgin parks or streets or from moving vehicles under the cited seasonal/temporary food-handling page."
+      ],
+      "requirements": [
+        {
+          "label": "Complete annual fire inspection when operating an applicable truck, trailer, grill or deep fryer",
+          "status": "required",
+          "source_url": "https://elginil.gov/2608/Vendors"
+        },
+        {
+          "label": "Obtain host or property-owner pre-approval before temporary-food application when applicable",
+          "status": "required",
+          "source_url": "https://elginil.gov/2910/Temporary-Food-Handling-Seasonal-Food-Ha"
+        },
+        {
+          "label": "Add a temporary-use permit for qualifying private-property events",
+          "status": "may_require",
+          "source_url": "https://elginil.gov/2910/Temporary-Food-Handling-Seasonal-Food-Ha"
+        }
+      ]
+    },
+    {
+      "name": "Oak Park",
+      "official_domains": ["oak-park.us", "www.oak-park.us"],
+      "source_urls": [
+        "https://www.oak-park.us/Public-Safety/Public-Health/Environmental-Health"
+      ],
+      "factors": {
+        "agency_handoffs": 0.55,
+        "sequential_dependencies": 0.7,
+        "manual_or_offline_steps": 0.5,
+        "inspection_dependencies": 0.8,
+        "deadline_pressure": 0.85,
+        "geographic_restrictions": 0.45,
+        "fee_complexity": 0.65
+      },
+      "evidence_basis": [
+        "A Temporary Food License is required before serving food or beverages at a public event, subject to stated exceptions.",
+        "The official Environmental Health page routes applicants to a Temporary Food License Application and Commissary Agreement Form.",
+        "Oak Park inspects temporary food establishments and regulates food-safety compliance."
+      ],
+      "requirements": [
+        {
+          "label": "Obtain a Temporary Food License before qualifying public-event food service",
+          "status": "required",
+          "source_url": "https://www.oak-park.us/Public-Safety/Public-Health/Environmental-Health"
+        },
+        {
+          "label": "Confirm whether a commissary agreement applies to the vendor's preparation model",
+          "status": "may_require",
+          "source_url": "https://www.oak-park.us/Public-Safety/Public-Health/Environmental-Health"
+        }
+      ]
+    },
+    {
+      "name": "Naperville",
+      "official_domains": ["naperville.il.us", "www.naperville.il.us"],
+      "source_urls": [
+        "https://www.naperville.il.us/services/permits--licenses/solicitorspeddlersfood-vendorstag-days/"
+      ],
+      "factors": {
+        "agency_handoffs": 0.4,
+        "sequential_dependencies": 0.5,
+        "manual_or_offline_steps": 0.2,
+        "inspection_dependencies": 0.35,
+        "deadline_pressure": 0.4,
+        "geographic_restrictions": 0.95,
+        "fee_complexity": 0.4
+      },
+      "evidence_basis": [
+        "Food vendors must be permitted.",
+        "Food trucks are prohibited from vending on public streets in Naperville.",
+        "Applications are managed through the City's Civic Access portal."
+      ],
+      "requirements": [
+        {
+          "label": "Obtain the applicable food-vendor permit",
+          "status": "required",
+          "source_url": "https://www.naperville.il.us/services/permits--licenses/solicitorspeddlersfood-vendorstag-days/"
+        },
+        {
+          "label": "Plan operations around the prohibition on food-truck vending on public streets",
+          "status": "required",
+          "source_url": "https://www.naperville.il.us/services/permits--licenses/solicitorspeddlersfood-vendorstag-days/"
+        }
+      ]
+    },
+    {
+      "name": "Cicero",
+      "official_domains": ["thetownofcicero.com", "www.thetownofcicero.com"],
+      "source_urls": [
+        "https://thetownofcicero.com/government/business-licenses/"
+      ],
+      "factors": {
+        "agency_handoffs": 0.95,
+        "sequential_dependencies": 0.95,
+        "manual_or_offline_steps": 0.9,
+        "inspection_dependencies": 0.95,
+        "deadline_pressure": 0.45,
+        "geographic_restrictions": 0.65,
+        "fee_complexity": 0.65
+      },
+      "evidence_scope": "Base Town business-license workflow only; food-specific requirements require a separate Health Department review before client delivery.",
+      "evidence_basis": [
+        "All businesses must obtain a Town business license before operating.",
+        "The cited workflow starts with an in-person Business License Department application and a non-refundable application fee.",
+        "Zoning approval is required, followed by inspections involving Fire, Building, Electrical and Health departments.",
+        "Additional business and insurance/tax documentation follows the department-approval sequence."
+      ],
+      "requirements": [
+        {
+          "label": "Complete the Town business-license application before operating",
+          "status": "required",
+          "source_url": "https://thetownofcicero.com/government/business-licenses/"
+        },
+        {
+          "label": "Obtain zoning approval for the intended business use",
+          "status": "required",
+          "source_url": "https://thetownofcicero.com/government/business-licenses/"
+        },
+        {
+          "label": "Schedule Fire, Building, Electrical and Health property inspections in the Town workflow",
+          "status": "required",
+          "source_url": "https://thetownofcicero.com/government/business-licenses/"
+        },
+        {
+          "label": "Confirm food-vendor-specific Health Department requirements before relying on this base-license map",
+          "status": "unknown",
+          "source_url": "https://thetownofcicero.com/government/business-licenses/"
+        }
+      ]
+    }
+  ]
+}
