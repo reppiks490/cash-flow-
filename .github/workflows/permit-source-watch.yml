@@ -2,6 +2,13 @@ name: Permit source watch
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'config/permit_friction_*.json'
+      - 'src/moneyfall/permit_watch.py'
+      - 'scripts/permit_source_watch.py'
+      - '.github/workflows/permit-source-watch.yml'
   schedule:
     - cron: '17 13 * * *'
 
