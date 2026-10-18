@@ -8,7 +8,7 @@ class PermitWatchTests(unittest.TestCase):
         datasets = [
             {"municipalities": [
                 {"name": "A", "official_domains": ["city-a.gov"], "source_urls": ["https://city-a.gov/food", "https://city-a.gov/fire"]},
-                {"name": "B", "official_domains": ["city-b.gov"], "source_urls": ["https://city-b.gov/vendors", "https://city-a.gov/food"]},
+                {"name": "B", "official_domains": ["city-b.gov", "city-a.gov"], "source_urls": ["https://city-b.gov/vendors", "https://city-a.gov/food"]},
             ]}
         ]
         catalog = catalog_urls(datasets)
