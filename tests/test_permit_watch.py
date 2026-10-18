@@ -66,6 +66,12 @@ class PermitWatchTests(unittest.TestCase):
         self.assertEqual(result["https://c.gov/z"]["state"], "baseline")
         self.assertEqual(result["https://d.gov/q"]["state"], "error")
 
+    def test_access_block_is_manual_on_first_sighting_but_error_after_prior_fingerprint(self):
+        url = "https://protected.gov/food"
+        current = {url: {"manual_only": True, "status_code": 403, "markets": ["Protected"]}}
+        self.assertEqual(compare_snapshots({}, current)[url]["state"], "manual")
+        self.assertEqual(compare_snapshots({url: {"fingerprint": "known-good"}}, current)[url]["state"], "error")
+
     def test_host_allowlist_accepts_exact_or_subdomain_only(self):
         self.assertTrue(host_allowed("www.city.gov", ["city.gov"]))
         self.assertTrue(host_allowed("city.gov", ["city.gov"]))
