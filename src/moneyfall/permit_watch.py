@@ -8,7 +8,6 @@ claims are refreshed.
 from __future__ import annotations
 
 import hashlib
-import re
 from html.parser import HTMLParser
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
@@ -46,7 +45,13 @@ def host_allowed(host, allowed_domains):
 
 
 def catalog_urls(datasets):
-    """Build a stable, deduplicated source catalog from permit-friction datasets."""
+    """Build a stable, deduplicated source catalog from permit-friction datasets.
+
+    ``watch_exclusions`` is an explicit manual-review lane for official research
+    pages that reject automated retrieval (for example with HTTP 403). An
+    exclusion must still be an official HTTPS URL already present in
+    ``source_urls``; it is never a way to add an unreviewed external source.
+    """
     ordered = []
     index = {}
     for dataset in datasets:
@@ -59,17 +64,26 @@ def catalog_urls(datasets):
             domains = [str(d).lower().strip().rstrip(".") for d in market.get("official_domains", []) if str(d).strip()]
             if not name or not domains:
                 raise ValueError("Municipality name and official_domains are required")
-            for url in market.get("source_urls", []):
-                parsed = urlparse(str(url))
+
+            source_urls = [str(url) for url in market.get("source_urls", [])]
+            exclusions = [str(url) for url in market.get("watch_exclusions", [])]
+            for url in exclusions:
+                parsed = urlparse(url)
+                if url not in source_urls or parsed.scheme != "https" or not parsed.hostname or not host_allowed(parsed.hostname, domains):
+                    raise ValueError(f"Invalid watch_exclusion for {name}: {url}")
+
+            for url in source_urls:
+                parsed = urlparse(url)
                 if parsed.scheme != "https" or not parsed.hostname or not host_allowed(parsed.hostname, domains):
                     raise ValueError(f"Non-official or non-HTTPS permit source: {url}")
-                key = str(url)
-                if key not in index:
-                    entry = {"url": key, "markets": [name], "allowed_domains": list(domains)}
-                    index[key] = entry
+                if url in exclusions:
+                    continue
+                if url not in index:
+                    entry = {"url": url, "markets": [name], "allowed_domains": list(domains)}
+                    index[url] = entry
                     ordered.append(entry)
                 else:
-                    entry = index[key]
+                    entry = index[url]
                     if name not in entry["markets"]:
                         entry["markets"].append(name)
                     for domain in domains:
