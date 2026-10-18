@@ -37,7 +37,7 @@ def load_previous(path):
 
 
 def write_summary(path, compared, retrieved_at):
-    groups = {state: [] for state in ("changed", "error", "baseline", "unchanged")}
+    groups = {state: [] for state in ("changed", "error", "manual", "baseline", "unchanged")}
     for url, record in compared.items():
         groups.setdefault(record["state"], []).append((url, record))
     lines = [
@@ -45,20 +45,24 @@ def write_summary(path, compared, retrieved_at):
         "",
         f"Retrieved: `{retrieved_at}`",
         f"Sources checked: **{len(compared)}**",
-        f"Changed: **{len(groups['changed'])}** · Errors: **{len(groups['error'])}** · Baseline: **{len(groups['baseline'])}** · Unchanged: **{len(groups['unchanged'])}**",
+        f"Changed: **{len(groups['changed'])}** · Errors: **{len(groups['error'])}** · Manual: **{len(groups['manual'])}** · Baseline: **{len(groups['baseline'])}** · Unchanged: **{len(groups['unchanged'])}**",
         "",
     ]
-    for state in ("changed", "error", "baseline"):
+    for state in ("changed", "error", "manual", "baseline"):
         if not groups[state]:
             continue
         lines += [f"## {state.title()}", ""]
         for url, record in groups[state]:
             markets = ", ".join(record.get("markets", [])) or "unmapped"
-            suffix = f" — {record.get('error')}" if record.get("error") else ""
+            suffix = ""
+            if record.get("error"):
+                suffix = f" — {record['error']}"
+            elif record.get("reason"):
+                suffix = f" — {record['reason']}"
             lines.append(f"- `{markets}` — {url}{suffix}")
         lines.append("")
     lines += [
-        "Changed/error states are review triggers only. They do not automatically alter a municipal requirement or client-facing conclusion.",
+        "Changed/error states are review triggers only. Manual sources remain valid research inputs but are not bypassed when the authority denies automated retrieval.",
         "",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
@@ -106,7 +110,8 @@ def main(argv=None):
     args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     write_summary(args.summary, compared, retrieved_at)
 
-    counts = {state: sum(1 for item in compared.values() if item["state"] == state) for state in ("changed", "error", "baseline", "unchanged")}
+    states = ("changed", "error", "manual", "baseline", "unchanged")
+    counts = {state: sum(1 for item in compared.values() if item["state"] == state) for state in states}
     print(json.dumps({"sources": len(compared), **counts}, sort_keys=True))
     if args.fail_on_change and (counts["changed"] or counts["error"]):
         return 2
