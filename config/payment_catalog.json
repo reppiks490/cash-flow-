@@ -1,0 +1,80 @@
+{
+  "currency": "usd",
+  "mode": "one_time",
+  "stripe_live_objects_created": false,
+  "reconciliation": {
+    "required_checkout_field": "client_reference_id",
+    "format": "moneyfall_<offer_id>_<order_nonce>",
+    "constraints": "Alphanumeric, dashes, underscores; max 200 chars; no secrets or PII",
+    "accepted_webhook_events": [
+      "checkout.session.completed",
+      "checkout.session.async_payment_succeeded"
+    ]
+  },
+  "offers": [
+    {
+      "prompt_id": "539",
+      "offer_id": "dispatcher-overflow-starter",
+      "product_name": "Dispatcher Overflow Starter Kit",
+      "price_cents": 14900,
+      "fulfillment_profile": "document-v1",
+      "delivery_hours": 24
+    },
+    {
+      "prompt_id": "543",
+      "offer_id": "no-show-recovery-pack",
+      "product_name": "No-Show Recovery Pack",
+      "price_cents": 4900,
+      "fulfillment_profile": "document-v1",
+      "delivery_hours": 24
+    },
+    {
+      "prompt_id": "544",
+      "offer_id": "reinspection-evidence-binder",
+      "product_name": "Restaurant Reinspection Evidence Binder",
+      "price_cents": 7900,
+      "fulfillment_profile": "document-v1",
+      "delivery_hours": 24
+    },
+    {
+      "prompt_id": "546",
+      "offer_id": "revenue-leak-audit",
+      "product_name": "Revenue Leak Audit + Recovery Blueprint",
+      "price_cents": 19900,
+      "fulfillment_profile": "document-v1",
+      "delivery_hours": 48
+    },
+    {
+      "prompt_id": "559",
+      "offer_id": "permit-readiness-research",
+      "product_name": "Food Vendor Permit Readiness Research Pack",
+      "price_cents": 14900,
+      "fulfillment_profile": "document-v1",
+      "delivery_hours": 24
+    },
+    {
+      "prompt_id": "560",
+      "offer_id": "rfp-submission-control",
+      "product_name": "Chicago RFP Submission Control Pack",
+      "price_cents": 24900,
+      "fulfillment_profile": "document-v1",
+      "delivery_hours": 24
+    },
+    {
+      "prompt_id": "561-562",
+      "offer_id": "hiring-signal-lead-brief",
+      "product_name": "Chicago Home-Service Hiring Signal Brief",
+      "price_cents": 9900,
+      "fulfillment_profile": "document-v1",
+      "delivery_hours": 24
+    },
+    {
+      "prompt_id": "564",
+      "offer_id": "reinspection-readiness-brief",
+      "product_name": "24-Hour Reinspection Readiness Brief",
+      "price_cents": 14900,
+      "fulfillment_profile": "document-v1",
+      "delivery_hours": 24
+    }
+  ]
+}
