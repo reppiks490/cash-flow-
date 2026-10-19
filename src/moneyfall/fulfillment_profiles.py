@@ -32,3 +32,13 @@ def validate_bundle(folder, *, order_id: str, scope: str) -> str:
     if not data.startswith(b'%PDF-') or not data.rstrip().endswith(b'%%EOF'):
         raise ValueError('Invalid proof PDF')
     return hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+
+
+def record_document_fulfillment(orders, ident: str, folder) -> str:
+    if not orders.ready(ident):
+        raise ValueError('Order is not ready for document fulfillment')
+    order = orders.get_order(ident)
+    reference = validate_bundle(folder, order_id=ident, scope=order['scope'])
+    with orders.conn:
+        orders.conn.execute('UPDATE orders SET produced_reference=? WHERE id=?', (reference, ident))
+    return reference
