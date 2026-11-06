@@ -68,3 +68,9 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - Evidence: GitHub contents update returned a commit SHA. Python demo execution and tests **not run**; the new flow is not verified as passing. No external provider was contacted by this GitHub-only change.
 - Integration risk: current demo uses global lead identifiers; persistent multi-tenant auth, scoped event APIs, provider adapters, evidence-backed closed revenue, and release QA remain unimplemented. Synthetic output is not a customer outcome.
 - Next critical path: QA execute `python products/revenue_recovery/backend/app.py demo` and negative cases; AI/Experience consume `rre.v1`; principal integrate only after passing checks. Keep PR draft until verified.
+
+## Principal checkpoint — 2026-11-06 (third run)
+
+- Commit `7d2788e89a359def1f409d3144c970db97e9d20b` adds an offline `selfcheck` CLI to `backend/app.py`, checking qualified intake, pending draft, mock event counts, null verified money, zero outbound, suppression, duplicate rejection and tenant-filtered counts. Mock event identifiers now reject empty strings and translate duplicate event IDs to `ValueError`.
+- Invocation: `python products/revenue_recovery/backend/app.py selfcheck`; existing `demo` command remains supported. **GitHub commit confirmed; Python execution NOT observed in this run.** These checks are committed assertions, not a passing test claim. QA must independently execute both commands and its negative tests before merge.
+- PR #38 remains draft. No live services, outreach, customer records, payments, or deployments. Next critical path: obtain independent runtime evidence and review compatible lane PRs against `rre.v1`; do not merge untested changes.
