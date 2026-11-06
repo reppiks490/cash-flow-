@@ -19,7 +19,7 @@ class ScenarioError(ValueError):
 
 def usd(value: str) -> Decimal:
     """Parse a finite nonnegative USD amount, strictly from a decimal string."""
-    if type(value) is not str or not re.fullmatch(r"(?:0|[1-9][0-9]{0,6})(?:\\.[0-9]{1,2})?\\Z", value, flags=re.ASCII):
+    if type(value) is not str or not re.fullmatch(r"(?:0|[1-9][0-9]{0,6})(?:\.[0-9]{1,2})?\Z", value, flags=re.ASCII):
         raise ScenarioError("Amounts must be decimal strings")
     try:
         amount = Decimal(value)
