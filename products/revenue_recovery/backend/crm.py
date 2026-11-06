@@ -10,11 +10,13 @@ from dataclasses import dataclass
 from typing import Mapping
 import re
 
-_REFERENCE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}\Z", re.ASCII)
-# These enums mirror the synthetic demo intake contract; arbitrary free text can
-# contain personal data and must not enter a public-repository demonstration.
-_SOURCES = frozenset({"website", "phone", "referral"})
-_NEEDS = frozenset({"AC not cooling", "estimate follow-up", "AC maintenance"})
+_REFERENCE = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\Z", re.I | re.ASCII)
+# Keep the exact allowlists in sync with backend.app.ALLOWED_SOURCES and
+# backend.app.ALLOWED_NEEDS. New categories require contract review in #23.
+# Arbitrary free text can contain personal data and remains rejected.
+_SOURCES = frozenset({"demo", "website", "phone", "referral"})
+_NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance",
+                    "estimate follow-up", "heating issue"})
 
 
 @dataclass(frozen=True)
@@ -40,7 +42,7 @@ def preview_crm_record(lead: Mapping[str, object]) -> CRMPreview:
         if not isinstance(value, str) or not 1 <= len(value.strip()) <= 240:
             raise ValueError(f"{key} must be a nonempty string of at most 240 characters")
     if not _REFERENCE.fullmatch(str(lead["external_ref"])):
-        raise ValueError("external_ref must be an ASCII synthetic token")
+        raise ValueError("external_ref must be a DEMO- or QA-prefixed ASCII synthetic token")
     if lead["source"] not in _SOURCES:
         raise ValueError("Unsupported synthetic source")
     if lead["need"] not in _NEEDS:
