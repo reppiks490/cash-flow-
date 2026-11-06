@@ -47,11 +47,22 @@ def build_offline_review_envelope(
     provider = get_provider(provider_name)
     if provider.uses_model is not False or provider.external_calls is not False:
         raise ValueError("Only a proven offline deterministic provider is permitted")
-    qualification = provider.qualify(lead, opted_out=opted_out)
-    followup = provider.draft(lead, opted_out=opted_out, objection=objection)
+    # Freeze the expected deterministic result before any provider method runs.
+    # A falsely labelled offline adapter must not introduce forged confidence,
+    # a different reference, unsupported text, or a send-enabled response.
+    expected_qualification = qualify_lead(lead, opted_out=opted_out)
+    expected_followup = prepare_followup(
+        lead, opted_out=opted_out, objection=objection
+    )
+    qualification = provider.qualify(dict(lead), opted_out=opted_out)
+    followup = provider.draft(dict(lead), opted_out=opted_out, objection=objection)
     suppressed = opted_out is True
     if (
-        qualification.get("synthetic") is not True
+        not isinstance(qualification, Mapping)
+        or not isinstance(followup, Mapping)
+        or dict(qualification) != expected_qualification
+        or dict(followup) != expected_followup
+        or qualification.get("synthetic") is not True
         or followup.get("synthetic") is not True
         or qualification.get("external_ref") != followup.get("external_ref")
         or followup.get("qualification") != qualification
