@@ -4,6 +4,8 @@ This is a rule engine, not an LLM or a claim of model-derived confidence.
 """
 from __future__ import annotations
 import re
+import hashlib
+import json
 from collections.abc import Mapping
 
 SOURCES = frozenset({"demo", "website", "phone", "referral"})
@@ -50,6 +52,12 @@ def qualify_lead(lead: Mapping[str, object], *, opted_out: bool | None = None) -
         raise ValueError("opted_out must be true, false, or unknown")
     category, priority, rule = RULES[row["need"]]
     suppressed = opted_out is True
+    # Bind keys to the accepted content, not only an identifier. The HTTP store
+    # rejects conflicting replays; this defense protects standalone pure callers.
+    fingerprint = hashlib.sha256(json.dumps(
+        [RUBRIC_VERSION, row["external_ref"], row["source"], row["need"]],
+        separators=(",", ":"), ensure_ascii=True,
+    ).encode("ascii")).hexdigest()
     return {
         "schema_version": "rre-qualification-v1",
         "rubric_version": RUBRIC_VERSION,
@@ -67,5 +75,5 @@ def qualify_lead(lead: Mapping[str, object], *, opted_out: bool | None = None) -
         ],
         "outreach_allowed": False,
         "opted_out": opted_out,
-        "idempotency_key": f"{RUBRIC_VERSION}:{row['external_ref']}",
+        "idempotency_key": f"{RUBRIC_VERSION}:{fingerprint}",
     }
