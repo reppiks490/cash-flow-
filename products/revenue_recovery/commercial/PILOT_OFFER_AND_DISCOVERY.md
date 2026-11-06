@@ -1,6 +1,6 @@
 # HVAC Revenue Recovery — Pilot offer and discovery protocol
 
-**Status:** unvalidated commercial hypothesis, synthetic-only demo. No customers, appointments, closed revenue, receipts, or conversion lift verified. **No outreach authorized.**
+**Status:** unvalidated commercial hypothesis, synthetic-only demo. No actual paying customers, appointments, closed revenue, receipts, or conversion lift have been verified from a connected commercial source. **No outreach authorized.**
 
 ## Positioning and exclusions
 For owner-operated HVAC service contractors with existing inbound inquiries, the proposed workflow helps operators review missed inquiries and outstanding quotes, prioritize follow-up, and prepare *unsent* drafts. It is not a lead-generation service, booking guarantee, autonomous texting service, or revenue guarantee. Do not describe any synthetic appointment or revenue as recovered.
