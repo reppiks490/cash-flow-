@@ -47,6 +47,12 @@
       <button type="button" id="runScenario">Preview synthetic event trail</button>
       <p id="scorecardInfo" class="hint" role="status">Scorecard has no live data source.</p>
       <pre id="auditEvents" class="audit-events" role="status">Select a lead above to inspect the synthetic evidence path.</pre>
+      <h3>Contact consent and suppression simulation</h3>
+      <p class="muted">Mock consent cannot authorize communication. Revocation suppresses even the draft.</p>
+      <label for="policyChoice">Synthetic consent case</label>
+      <select id="policyChoice"><option value="unknown">Unknown consent</option><option value="revoked_mock">Mock opt-out / revocation</option><option value="consent_record_mock">Mock consent record (unverified)</option></select>
+      <button type="button" id="runPolicy">Preview fail-closed policy</button>
+      <pre id="policyEvents" class="audit-events" role="status">No real communication is enabled.</pre>
     </section>
     <footer>REVENUE RECOVERY ENGINE · SYNTHETIC PROTOTYPE · NOT FOR CUSTOMER DATA</footer>
   </main>
