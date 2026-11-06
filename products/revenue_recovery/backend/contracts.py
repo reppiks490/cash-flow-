@@ -12,4 +12,4 @@ NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair",
                    "maintenance", "estimate follow-up", "heating issue"})
 # re.IGNORECASE alone matches Unicode casefold lookalikes (e.g. Kelvin sign).
 # Require ASCII-only identifiers in all demo intake, qualification and CRM paths.
-REF = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\\Z", re.IGNORECASE | re.ASCII)
+REF = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\Z", re.IGNORECASE | re.ASCII)
