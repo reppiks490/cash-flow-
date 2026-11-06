@@ -14,6 +14,6 @@ curl -s -X POST http://127.0.0.1:8765/api/demo/leads -H 'Content-Type: applicati
 curl -s http://127.0.0.1:8765/api/demo/leads
 ```
 
-The initial UI under `web/` is static and currently not hosted by `backend.app`; its offline fallback is labeled synthetic. No claim is made of browser-to-backend integration until a combined contract test passes. See `ARCHITECTURE.md`, `PROJECT_LEDGER.md`, `QA_LEDGER.md` and the commercial measurement protocol.
+With the local service running, open **http://127.0.0.1:8765/demo/**. The server now serves the static UI from the same origin as the synthetic lead API; refresh the dashboard after a synthetic POST. The browser's draft remains a client-side unsent preview. A separate read-only backend workflow response is available at `/api/demo/recovery/DEMO-001` after ingesting `DEMO-001`; it explicitly requires human review and does not book/send/collect anything. No full AI qualification or real customer interaction is connected. GitHub Actions ran 24/24 product tests on integration commit `a7d692f` (run 42250319834), but release gates are still outstanding. See `ARCHITECTURE.md`, `PROJECT_LEDGER.md`, `QA_LEDGER.md` and the commercial measurement protocol.
 
 This branch combines source snapshots from principal PR #31, QA PR #30, experience PR #28, and commercial PR #29. The original contributor PRs remain open and untouched; this integration candidate does not contain AI agent qualifications yet. All new financial numbers are scenarios, never verified cash.
