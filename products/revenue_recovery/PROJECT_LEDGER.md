@@ -54,3 +54,10 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - Existing repository contains reusable MONEYFALL discovery, qualification, orders and evidence modules; reusing anything requires interface, permission, safety and regression review.
 - **Not yet verified:** runnable new product, integration tests, production provider connectivity, paying customers or recurring profit.
 - Next action: create independent runnable skeleton and pass a synthetic end-to-end acceptance test. Engineering lanes should coordinate interfaces before integrating.
+
+## Principal implementation checkpoint — 2026-11-06
+
+- Isolated branch `rre/principal-mvp-scaffold-20261106` adds `backend/app.py`, `ARCHITECTURE.md`, `README.md` (all new files). No existing MONEYFALL or ICARUS files modified.
+- Contract **rre.v1** frozen for review: synthetic lead DTO, deterministic consent gate, pending draft, mock events, tenant-filtered aggregates, null verified money. See ARCHITECTURE.md.
+- **Observed:** GitHub file commits succeeded. **Not observed:** Python runtime execution, QA regression, integration with other lanes, external integration, revenue or profit. PR remains subject to review; do not merge without checks.
+- Critical path: QA execute demo and negative tests; AI/Experience integrate against rre.v1; harden tenant auth, audit, consent and receipts before any pilot. No production readiness claim.
