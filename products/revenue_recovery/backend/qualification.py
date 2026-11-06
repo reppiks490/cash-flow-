@@ -50,7 +50,9 @@ def qualify_lead(lead: Mapping[str, object], *, opted_out: bool | None = None) -
     category, priority, rule = RULES[row["need"]]
     suppressed = opted_out is True
     # Key replay identity to all validated lead fields; the HTTP store separately
-    # rejects conflicting references. Caller-supplied suppression fixtures\n    # (unknown/false/true) must not share replay identity across revocations.\n    # These flags are NOT evidence of lawful real-world consent.
+    # rejects conflicting references. Caller-supplied suppression fixtures
+    # (unknown/false/true) must not share replay identity across revocations.
+    # These flags are NOT evidence of lawful real-world consent.
     fingerprint = hashlib.sha256(json.dumps(
         [RUBRIC_VERSION, row["external_ref"], row["source"], row["need"], opted_out],
         separators=(",", ":"), ensure_ascii=True,
