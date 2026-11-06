@@ -60,3 +60,16 @@ Open http://127.0.0.1:8765/demo/ and use a separate terminal to POST a synthetic
 - Reference identifiers now require `DEMO-` or `QA-` style prefixes; prefix checks reduce accidental PII insertion but do not establish data privacy or authorize real data ingestion.
 - Browser static assets and active same-origin preview are regression-tested. GitHub Actions tests Python modules and `node --check` for JavaScript syntax; these are **not** headless visual/browser-interaction tests and cannot prove production quality.
 - Latest completed exact-source verification as of this addendum: `fac3d74dbf2011d109266ecc336673580435ce41`, **35/35 RRE tests passed**, run 42252156846. Follow-up commit validation must be checked before any merge. All results are synthetic with no external services.
+
+
+## Contract v0.3.1 — strict synthetic JSON ingress (principal PR #46)
+
+The documented `POST /api/demo/leads` payload remains the only write endpoint, with the existing four-field allowlist and synthetic enum vocabulary unchanged. A new fail-closed parser rejects **duplicate keys at any JSON object depth** (HTTP 400, `Duplicate JSON field`) instead of allowing Python's default last-value-wins behavior. Nonstandard `NaN`, `Infinity`, and `-Infinity` tokens also return HTTP 400. This prevents ambiguous object interpretation, including attempts to supply both `"synthetic":false` and `"synthetic":true`. No additional data is persisted on rejection.
+
+Run the principal-owned HTTP regressions (Python 3.11+, local loopback only):
+
+```bash
+PYTHONPATH=products/revenue_recovery python -m unittest backend.test_ingress_contract -v
+```
+
+The broader product CI is the acceptance gate; branch-local unit results are not evidence of real identity, consent, durable storage, revenue or production authorization. The integration sequence is #46 -> #37 -> #33 -> `main`, with independent QA and exact-head CI verification at every promotion. The alternative SQLite-oriented scaffold in #38 implements a *different* `rre.v1` shape and must not be merged into the current `v0.3` HTTP runtime without explicit contract reconciliation. Preserve original contributor branches and prevent accidental side effects.
