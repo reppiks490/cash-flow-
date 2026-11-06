@@ -4,7 +4,7 @@
 
 ## Who this is for / the proposition to falsify
 
-**Hypothesis:** an owner-operated HVAC contractor already receiving calls, web requests and estimates may value an *operator-supervised leakage audit* that identifies missed follow-up or unexplained pipeline stages **after** checking whether their existing CRM already solves it. RRE is not a substitute for Jobber/Housecall Pro/ServiceTitan or an autonomous texting service. The proposed $700/month managed-support price is **unvalidated**, negotiable only after private, authorized buyer research. There are no paying customers or verified saved jobs in the present evidence.
+**Hypothesis:** an owner-operated HVAC contractor already receiving calls, web requests and estimates may value an *operator-supervised leakage audit* that identifies missed follow-up or unexplained pipeline stages **after** checking whether their existing CRM already solves it. RRE is not a substitute for Jobber/Housecall Pro/ServiceTitan or an autonomous texting service. The proposed $700/month managed-support price is **unvalidated**, negotiable only after private, authorized buyer research. No paying customers or recovered jobs have been independently verified in the present evidence.
 
 ### 12-minute demonstration: local machine only
 
@@ -26,7 +26,7 @@ PYTHONPATH=products/revenue_recovery python -m commercial.demo_cli
 PYTHONPATH=products/revenue_recovery python -m backend.app --port 8765
 ```
 
-Open `http://127.0.0.1:8765/demo/` **only on the same computer**. The default CLI returns a *blocked* demo-readiness plan; it does not provision an account. For the detailed PowerShell/Git Bash procedure and limits, use [RUNBOOK_LOCAL.md](../RUNBOOK_LOCAL.md). Never expose the unauthenticated demo on LAN, 5G tunnel or public IP.
+Open `http://127.0.0.1:8765/demo/` **only on the same computer**. The default CLI returns a *blocked* demo-readiness plan; it does not provision an account. For the detailed PowerShell/Git Bash procedure and limits, use [RUNBOOK_LOCAL.md](../RUNBOOK_LOCAL.md), **but do not follow its historical checkout instruction to an old integration branch**; run this packet against the latest reviewed `main` checkout instead. Never expose the unauthenticated demo on LAN, 5G tunnel or public IP.
 
 ## Buyer objection handling (for an authorized future discussion only)
 
