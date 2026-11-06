@@ -42,3 +42,10 @@ Revenue attribution requires a real provider receipt identifier, verified settle
 Principal: identity/data architecture, common contracts, ingress, and this release boundary. AI: reviewable drafts and no-send enforcement. Experience: UI evidence, CRM dry-run and accessibility. Commercial: receipts/cost provenance and owner-controlled onboarding. QA: negative tests, threat model and exact-head release verdict. Cross-lane contract changes require review through RRE-01.
 
 **Current status:** the integrated M1 synthetic demo is already on main; this document does not recreate it. Existing Python/Node checks demonstrate bounded synthetic behavior only. RB-04 through RB-11 and RB-13 remain unverified as production controls. No verified customers, receipts or net profit.
+
+
+## External communications compliance research boundary (not implemented)
+
+Before any prospective U.S. commercial-email pilot, obtain counsel and documented sender/recipient/channel approval. The FTC's [CAN-SPAM Act compliance guide](https://www.ftc.gov/business-guidance/resources/can-spam-act-compliance-guide-business) states that commercial messages are covered, including business-to-business email; sender identification, truthful messaging and functioning opt-out handling require separate implementation and legal review. The [FTC's statute overview](https://www.ftc.gov/legal-library/browse/statutes/controlling-assault-non-solicited-pornography-marketing-act-2003-can-spam-act) is a primary source. These references do not cover all telephone/SMS, state privacy, consumer-protection, recordkeeping, or service-provider requirements. Never infer that a synthetic consent flag, mock revocation or offline approval template authorizes contacting a real person. No outbound adapters are added by this document.
+
+The ASCII reference contract uses Python `re.IGNORECASE | re.ASCII` because the [official Python regular expression reference](https://docs.python.org/3/library/re.html) documents that `IGNORECASE` with `[A-Z]` also matches several non-ASCII Unicode letters unless `ASCII` is specified. This is an internal demo-identifier validation constraint, **not** a privacy guarantee.
