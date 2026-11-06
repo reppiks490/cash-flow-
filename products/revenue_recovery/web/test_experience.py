@@ -9,7 +9,7 @@ class ExperienceTests(unittest.TestCase):
     def test_crm_preview_has_no_side_effects(self):
         preview = preview_crm_record({
             "synthetic": True, "external_ref": "DEMO-1",
-            "source": "website", "need": "Cooling repair", "status": "received"
+            "source": "website", "need": "AC not cooling", "status": "received"
         })
         self.assertTrue(preview.dry_run)
         self.assertFalse(preview.transmitted)
