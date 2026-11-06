@@ -45,5 +45,27 @@ class QualificationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             qualify({"message":"repair"})
 
+    def test_no_substring_false_positive_for_service(self):
+        lead = self.lead()
+        lead["message"] = "We are researching priceless options"
+        result = qualify(lead)
+        self.assertEqual(result["status"], "needs_review")
+        self.assertEqual(result["score"], 0)
+        self.assertEqual(result["objections"], [])
+
+    def test_complete_opt_out_phrase_still_suppresses(self):
+        lead = self.lead()
+        lead["message"] = "Please REMOVE ME from your list; furnace stopped"
+        result = qualify(lead)
+        self.assertEqual(result["status"], "suppressed")
+        self.assertTrue(result["opt_out"])
+
+    def test_word_boundaries_preserve_normal_hvac_matches(self):
+        lead = self.lead()
+        lead["message"] = "Need an AC repair estimate; price is a concern"
+        result = qualify(lead)
+        self.assertEqual(result["status"], "qualified")
+        self.assertIn("price", result["objections"])
+
 if __name__ == "__main__":
     unittest.main()
