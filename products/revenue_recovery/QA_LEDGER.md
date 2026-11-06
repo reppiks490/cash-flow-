@@ -2,6 +2,35 @@
 
 **Release classification: NOT PILOT READY.** This ledger documents the available source and evidence, not a claim that the entire system has been integrated.
 
+## Current release gate — 2026-11-06 (supersedes historical snapshots below)
+
+**Overall: NOT PILOT READY.** Scope is a *local-only synthetic HVAC demonstration*.
+This update records repository/CI evidence, not production approval.
+
+| Gate | Exact source and measured outcome | Disposition |
+| --- | --- | --- |
+| Current `main` synthetic integration | `2acfe6a342bad39c1f156d6964c839be1c0a7449` after Principal strict-JSON/smoke integration; [RRE Actions 42283814362](https://github.com/reppiks490/cash-flow-/actions/runs/42283814362) **97/97 Python**, **11/11 Node**, JS syntax passed; [MONEYFALL foundation 42283814382](https://github.com/reppiks490/cash-flow-/actions/runs/42283814382) passed separately. | PASS — synthetic demo only |
+| Strict JSON ingress | `main` now rejects duplicate JSON keys and NaN/Infinity, with new Principal smoke/ingress tests. This was **merged by the Principal lane**, not a QA authorization for external data. | PASS — demo ingress |
+| ASCII reference validation | QA draft [#63](https://github.com/reppiks490/cash-flow-/pull/63), test-only SHA `fc3b416c6d8556e10742293d8cfbd3aa4b28429f`; [RRE 42283741728](https://github.com/reppiks490/cash-flow-/actions/runs/42283741728) **RED** (95 Python tests executed, eight failed subtests): `re.I` allows U+212A, U+0130, U+0131, U+017F despite ASCII-token contract; HTTP returns 201 and persists them. | FAIL — Principal owns regex fix; do not merge red QA alone |
+| Offline commercial calculator | Commercial draft [#60](https://github.com/reppiks490/cash-flow-/pull/60), revised SHA `58010c4ecb701b936fa9300aad2e7fcda6082500`; [RRE 42283657685](https://github.com/reppiks490/cash-flow-/actions/runs/42283657685) **98/98 Python**, **11/11 Node**, JS syntax passed. Earlier SHA `8e230f1` failed product CI on test import and was corrected. | PASS — branch-only synthetic economics; no authenticated receipts |
+| Commercial onboarding forward-port | Draft [#58](https://github.com/reppiks490/cash-flow-/pull/58), revised head `66d9105104860ee9df6ce9285919410eff6de082`; [RRE 42284002373](https://github.com/reppiks490/cash-flow-/actions/runs/42284002373) **119/119 Python**, **11/11 Node**, JS syntax passed. Parent/QA stacked branches remain subject to review and integration order. | PASS — branch-only tests; not a pilot release |
+| Opt-out, authentication, tenancy | Consent revocation is a *stateless mock fixture*; no production verified suppression source, identity provider, tenant row-level authorization, or private persistent storage. HTTP 404 for missing auth/tenant routes is not a security test of an implemented system. | BLOCKED |
+| CRM, bookings and communications | No authorized live provider, authenticated human review/send, real appointment confirmation or reliable audit pipeline. | BLOCKED |
+| Attributed receipts and $2,500/month NET target | No authenticated receipts, actual subscriber counts, refunds, expense reconciliation or verified net profit. A hypothetical 5×$700 scenario is not customer revenue evidence. | BLOCKED |
+| Real browser, threat model, operations | No full browser visual/accessibility/security signoff, secure deployment review, incident response/rollback, retention or deletion process. | BLOCKED |
+
+**Outstanding QA actions:** (1) replay unchanged #63 regressions against a
+Principal-owned ASCII regex correction; (2) review/merge only safe, green,
+scope-limited PRs after owner-approved gates, preserving all branches; (3)
+build negative-path auth/tenant/consent/receipt tests when real contracts
+arrive; (4) maintain exact-head Python/Node/MONEYFALL evidence separately.
+
+**Boundaries:** no Codex; no secrets or customer PII in public GitHub; no live
+outreach, billing, CRM/calendar actions, deployment, expenditures or trading.
+Do not translate a green synthetic suite into pilot or commercial readiness.
+
+## Historical evidence (retained for provenance)
+
 ## Source snapshot
 
 - Base: feature/rre-synthetic-bootstrap-20261106; QA branch: feature/rre-qa-http-contract-20261106.
