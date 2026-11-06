@@ -50,7 +50,7 @@ class ScenarioHttpTests(unittest.TestCase):
         code, after = self.call("GET", "/api/demo/scorecard")
         self.assertEqual(code, 200)
         self.assertEqual(after["counts"]["received_demo_leads"], base_count + 1)
-        self.assertEqual(after["counts"]["real_customers"], 0)
+        self.assertIsNone(after["counts"]["real_customers"])
         self.assertEqual(after["verified"]["rre_subscription_revenue_cents"], 0)
         self.assertEqual(after["verified"]["contractor_recovered_revenue_cents"], 0)
 
