@@ -2,7 +2,41 @@
 
 **Release classification: NOT PILOT READY.** This ledger documents the available source and evidence, not a claim that the entire system has been integrated.
 
-## Source snapshot
+
+## Current QA checkpoint — 2026-11-06 (integration-follow-up PR #37)
+
+**This section supersedes the historical source snapshot below.** Older
+notes describe bootstrap conditions, not the current integration.
+
+- **Integration head:** PR #37 commit 2782d4c569f56acaaa9c033c78929ae345985b30.
+  Product GitHub Actions run https://github.com/reppiks490/cash-flow-/actions/runs/42257662573
+  concluded success on that exact commit. Tests were synthetic-only; this is
+  not production security or full browser evidence.
+- **Separate QA stack:** PR #44 commit 252eb043e0d19fc057c66554559c00963c004900
+  has a successful product run at
+  https://github.com/reppiks490/cash-flow-/actions/runs/42274693872 .
+  It does not validate PR #37's different branch tree.
+- **This QA branch:** tests/test_policy_attribution_negative.py adds six tests:
+  policy modes never authorize contact; mocked revocation suppresses its own
+  draft; separate recovery stays unsent; fake payment/privileged POSTs return
+  404 with unchanged scorecard; mock closed jobs do not have verified receipts;
+  PII, forged receipt fields, invalid tenant claims and policy paths fail.
+  **Execution on this branch: PENDING** until its workflow completes.
+- **Consent blocker:** revoked_mock is read-only and not persisted. A separate
+  GET /api/demo/recovery/{ref} still generates an UNSENT review draft after
+  simulated revocation. Implement durable tenant-specific suppression plus
+  authenticated human approval and fresh checks before any real transport.
+- **Authorization blocker:** synthetic GET /api/demo/leads lacks auth;
+  tenant_id is rejected and there is no tenant model. A missing tenant route
+  proves absence of implementation, not isolation or authorization.
+- **Attribution blocker:** mock appointments, closed jobs and subscription
+  values are not authenticated provider receipts or recovered collections.
+  Observed verified revenue/profit evidence remains absent.
+- **Release classification:** NOT PILOT READY; no deployment, live data,
+  messaging, billing, paid services, trading or Codex. Draft PRs must not
+  merge solely on passing prototype tests.
+
+## Historical source snapshot
 
 - Base: feature/rre-synthetic-bootstrap-20261106; QA branch: feature/rre-qa-http-contract-20261106.
 - Principal prototype: backend/app.py (loopback HTTP intake, process-local DemoStore).
