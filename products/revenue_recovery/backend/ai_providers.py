@@ -11,7 +11,7 @@ from .followups import prepare_followup
 
 class QualificationProvider(Protocol):
     def qualify(self, lead: Mapping[str, object], *, opted_out: bool | None = None) -> dict[str, object]: ...
-    def draft(self, lead: Mapping[str, object], *, opted_out: bool | None = None) -> dict[str, object]: ...
+    def draft(self, lead: Mapping[str, object], *, opted_out: bool | None = None, objection: str | None = None) -> dict[str, object]: ...
 
 class OfflineRulesProvider:
     provider_id = "offline-deterministic-rules-v1"
@@ -21,8 +21,9 @@ class OfflineRulesProvider:
     def qualify(self, lead: Mapping[str, object], *, opted_out: bool | None = None) -> dict[str, object]:
         return qualify_lead(lead, opted_out=opted_out)
 
-    def draft(self, lead: Mapping[str, object], *, opted_out: bool | None = None) -> dict[str, object]:
-        return prepare_followup(lead, opted_out=opted_out)
+    def draft(self, lead: Mapping[str, object], *, opted_out: bool | None = None,
+              objection: str | None = None) -> dict[str, object]:
+        return prepare_followup(lead, opted_out=opted_out, objection=objection)
 
 def get_provider(name: str = "offline") -> QualificationProvider:
     if name != "offline":

@@ -3,6 +3,8 @@
 This is a rule engine, not an LLM or a claim of model-derived confidence.
 """
 from __future__ import annotations
+import hashlib
+import json
 from collections.abc import Mapping
 from backend.contracts import SOURCES, NEEDS, REF
 
@@ -17,7 +19,11 @@ RULES = {
 }
 
 def validate_lead(lead: Mapping[str, object]) -> dict[str, object]:
-    """Strictly accept the principal's v0.1a lead contract, no free text."""
+    """Accept only the shared synthetic v0.1a lead contract.
+
+    DEMO/QA prefixes do not prove a value is free of personal information.
+    Real customer data must not enter this untrusted synthetic demo.
+    """
     if not isinstance(lead, Mapping):
         raise ValueError("Lead must be a mapping")
     if set(lead) != {"synthetic", "external_ref", "source", "need", "status"}:
@@ -43,6 +49,12 @@ def qualify_lead(lead: Mapping[str, object], *, opted_out: bool | None = None) -
         raise ValueError("opted_out must be true, false, or unknown")
     category, priority, rule = RULES[row["need"]]
     suppressed = opted_out is True
+    # Key replay identity to all validated lead fields; the HTTP store separately
+    # rejects conflicting references. This guard also protects pure callers.
+    fingerprint = hashlib.sha256(json.dumps(
+        [RUBRIC_VERSION, row["external_ref"], row["source"], row["need"]],
+        separators=(",", ":"), ensure_ascii=True,
+    ).encode("ascii")).hexdigest()
     return {
         "schema_version": "rre-qualification-v1",
         "rubric_version": RUBRIC_VERSION,
@@ -60,5 +72,5 @@ def qualify_lead(lead: Mapping[str, object], *, opted_out: bool | None = None) -
         ],
         "outreach_allowed": False,
         "opted_out": opted_out,
-        "idempotency_key": f"{RUBRIC_VERSION}:{row['external_ref']}",
+        "idempotency_key": f"{RUBRIC_VERSION}:{fingerprint}",
     }
