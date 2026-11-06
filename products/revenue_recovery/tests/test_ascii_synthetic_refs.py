@@ -57,6 +57,17 @@ class AsciiSyntheticReferenceTests(unittest.TestCase):
             server.server_close()
             worker.join(timeout=5)
 
+    def test_all_shared_contract_consumers_reject_unicode_ids(self):
+        from backend.qualification import validate_lead
+        from backend.crm import preview_crm_envelope
+        for ref in ("QA-\u212a", "QA-\u0130", "QA-\u0131", "QA-\u017f"):
+            with self.subTest(ref=ref):
+                original = self.payload(ref)
+                with self.assertRaises(ValueError):
+                    validate_lead({**original, "status": "received"})
+                with self.assertRaises(ValueError):
+                    preview_crm_envelope(original)
+
     def test_legitimate_ascii_synthetic_reference_still_works(self):
         store = DemoStore()
         row, created = store.add(self.payload("QA-ASCII-001"))
