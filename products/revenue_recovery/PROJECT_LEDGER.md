@@ -76,3 +76,12 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - **Remaining M2/M3/M4 gates:** authentication, tenant isolation, private durable state, consent/suppression audit, real integrations, legal review, validated pilot demand, signed contracts, explicit authorizations and real signed financial receipts. Not pilot-ready or commercially deployable.
 - **Business evidence:** no verified paying customers, real product payments, recurring revenue or net profit.
 - **Next priority for Principal:** hold all branch merges until QA reviews exact integration SHA; request cross-lane API wiring and coordinate incremental integration PR with no Codex involvement.
+
+
+## Five-lane integration checkpoint — 2026-11-06 (supersedes older PR/run counts)
+
+- **Draft PR:** https://github.com/reppiks490/cash-flow-/pull/33 on `integration/rre-synthetic-m1-20261106` (not merged to main). Source snapshots now include *all five* engineers, including offline rule-based AI PR #32. Independent PR branches #28–#32 remain preserved for attribution and review.
+- **Verified CI:** Python 3.11, `35/35` product unittest checks passed on exact commit `fac3d74dbf2011d109266ecc336673580435ce41`, https://github.com/reppiks490/cash-flow-/actions/runs/42252156846 . Node's `--check` also passed for the dashboard JS; MONEYFALL foundation workflow passed separately. Subsequent documentation commits need their own exact-head checks.
+- **Synthetic M1 features:** same-origin local dashboard, three click-to-load synthetic HVAC leads, idempotent intake, rejection of raw customer fields/unknown IDs, read-only recovery preview composed from deterministic qualification, rule source/evidence/unknowns, unsent follow-up, CRM dry-run, fake appointment explicitly unbooked, no authenticated revenue. Browser falls back to labeled offline fixtures.
+- **What is not established:** Actual LLM/AI inference, authenticated multi-tenancy, encrypted private persistence, CRM/calendar/telephony/SMS/email connections, genuine human approval identity, safe consent capture, signed receipts, payments, accurate recovered-revenue attribution, customer contracts, verified income, production hosting or security assurance. End-to-end browser automation/visual QA has not been executed.
+- **Next critical gate:** QA reviews exact integration PR head, browser visual/functional verification, and owner/QA approval before any merge. Then implement authenticated tenant data boundaries and consent audit; only after those may authorized real pilot records be considered.
