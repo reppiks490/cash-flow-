@@ -8,15 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Mapping
-import re
-
-_REFERENCE = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\Z", re.I | re.ASCII)
-# Keep the exact allowlists in sync with backend.app.ALLOWED_SOURCES and
-# backend.app.ALLOWED_NEEDS. New categories require contract review in #23.
-# Arbitrary free text can contain personal data and remains rejected.
-_SOURCES = frozenset({"demo", "website", "phone", "referral"})
-_NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance",
-                    "estimate follow-up", "heating issue"})
+from backend.qualification import validate_lead  # canonical synthetic intake vocabulary
 
 
 @dataclass(frozen=True)
@@ -32,27 +24,20 @@ class CRMPreview:
 
 def preview_crm_record(lead: Mapping[str, object]) -> CRMPreview:
     """Return a safe mapping preview without network, disk or CRM side effects."""
-    if lead.get("synthetic") is not True:
-        raise ValueError("Only explicitly synthetic leads are supported")
+    if not isinstance(lead, Mapping):
+        raise ValueError("Lead must be a mapping")
     allowed = {"synthetic", "external_ref", "source", "need", "status"}
     if set(lead) - allowed:
-        raise ValueError("Unexpected fields: do not submit PII to the demo adapter")
-    for key in ("external_ref", "source", "need"):
-        value = lead.get(key)
-        if not isinstance(value, str) or not 1 <= len(value.strip()) <= 240:
-            raise ValueError(f"{key} must be a nonempty string of at most 240 characters")
-    if not _REFERENCE.fullmatch(str(lead["external_ref"])):
-        raise ValueError("external_ref must be a DEMO- or QA-prefixed ASCII synthetic token")
-    if lead["source"] not in _SOURCES:
-        raise ValueError("Unsupported synthetic source")
-    if lead["need"] not in _NEEDS:
-        raise ValueError("Unsupported synthetic need")
-    if lead.get("status") not in (None, "received"):
-        raise ValueError("Unsupported lead stage")
+        raise ValueError("Unexpected fields: customer information is not permitted")
+    # An adapter may receive a valid intake payload without the stored status.
+    # Normalize only that missing field; never silently accept 'paid' or 'booked'.
+    complete = dict(lead)
+    complete.setdefault("status", "received")
+    row = validate_lead(complete)
     return CRMPreview(
         synthetic=True,
-        external_ref=str(lead["external_ref"]).strip(),
-        source=str(lead["source"]).strip(),
-        need=str(lead["need"]).strip(),
+        external_ref=str(row["external_ref"]),
+        source=str(row["source"]),
+        need=str(row["need"]),
         proposed_stage="new_inquiry",
     )
