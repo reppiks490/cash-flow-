@@ -173,3 +173,9 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - **Validation:** Exact-head CI for this new branch is pending at the time of writing; do not claim a passing suite or merge until both product and foundation runs report success and scope review is complete.
 - **Critical path:** QA/Principal review of PR #91's bounded Content-Length fix, duplicate-header/framing negative tests, authenticated tenant and storage design, private durable consent/suppression audit, explicit human approvals, legally reviewed integrations and receipt verification. No outreach, payment, deployment, live data, Codex or trading is authorized.
 - **Financial evidence:** Real customers, authenticated receipts, and recurring net profit remain unknown/unverified; the $2,500/month NET target is a goal only.
+
+### Validation addendum for the isolated release-boundary branch
+
+- **Pre-addendum code/docs head:** `2c769db17574430c569294e79311a31499cc1e55`; RRE push run [42304409997](https://github.com/reppiks490/cash-flow-/actions/runs/42304409997) **SUCCESS**, showing **163 Python tests and 15 Node tests** with 0 failures. RRE pull-request run [42304434482](https://github.com/reppiks490/cash-flow-/actions/runs/42304434482) **SUCCESS**. Independent MONEYFALL push [42304410106](https://github.com/reppiks490/cash-flow-/actions/runs/42304410106) and pull-request [42304434450](https://github.com/reppiks490/cash-flow-/actions/runs/42304434450) **SUCCESS**.
+- The change is **draft PR #97** and unmerged. Subsequent main updates belong to concurrent lanes; reconcile exact base/CI before any merge. Keep draft while any ready-for-review transition might activate prohibited Codex automation; no Codex reviews, tasks or tokens permitted.
+- This addendum is documentation-only and creates a new commit; its own exact-head CI must be checked separately. Passing synthetic tests is not a pilot/production or security certification.
