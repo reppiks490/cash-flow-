@@ -143,14 +143,14 @@ test("scenario view labels mock stages and refuses a corrupt evidence event", as
   const safe = harness();
   await safe.sandbox.refresh();
   await safe.sandbox.selectLead(0);
-  safe.nodes.get("scenarioChoice").value = "closed_job_mock";
+  safe.sandbox.document.getElementById("scenarioChoice").value = "closed_job_mock";
   await safe.sandbox.loadScenario();
   assert.match(safe.nodes.get("auditEvents").textContent, /SYNTHETIC/);
   assert.match(safe.nodes.get("auditEvents").textContent, /Verified recovered revenue: \$0/);
   const broken = harness({brokenScenario:true});
   await broken.sandbox.refresh();
   await broken.sandbox.selectLead(0);
-  broken.nodes.get("scenarioChoice").value = "closed_job_mock";
+  broken.sandbox.document.getElementById("scenarioChoice").value = "closed_job_mock";
   await broken.sandbox.loadScenario();
   assert.match(broken.nodes.get("auditEvents").textContent, /timeline unavailable/);
 });
