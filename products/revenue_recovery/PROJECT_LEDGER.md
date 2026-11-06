@@ -61,3 +61,10 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - Contract **rre.v1** frozen for review: synthetic lead DTO, deterministic consent gate, pending draft, mock events, tenant-filtered aggregates, null verified money. See ARCHITECTURE.md.
 - **Observed:** GitHub file commits succeeded. **Not observed:** Python runtime execution, QA regression, integration with other lanes, external integration, revenue or profit. PR remains subject to review; do not merge without checks.
 - Critical path: QA execute demo and negative tests; AI/Experience integrate against rre.v1; harden tenant auth, audit, consent and receipts before any pilot. No production readiness claim.
+
+## Principal checkpoint 2 — 2026-11-06
+
+- Commit `83bb32d10fcd5546c9311959344ade4ea1f09409` on draft PR #38 extends the offline demo response to include the actual pending review draft and a second mock `appointment_mock` event alongside `crm_mock`. This makes the synthetic review and scheduling path inspectable in one CLI invocation.
+- Evidence: GitHub contents update returned a commit SHA. Python demo execution and tests **not run**; the new flow is not verified as passing. No external provider was contacted by this GitHub-only change.
+- Integration risk: current demo uses global lead identifiers; persistent multi-tenant auth, scoped event APIs, provider adapters, evidence-backed closed revenue, and release QA remain unimplemented. Synthetic output is not a customer outcome.
+- Next critical path: QA execute `python products/revenue_recovery/backend/app.py demo` and negative cases; AI/Experience consume `rre.v1`; principal integrate only after passing checks. Keep PR draft until verified.
