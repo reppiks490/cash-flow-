@@ -34,7 +34,8 @@ def prepare_followup(lead: Mapping[str, object], *, opted_out: bool | None = Non
             "external_ref": row["external_ref"], "status": "suppressed",
             "draft": None, "sent": False, "send_enabled": False,
             "requires_human_approval": True, "qualification": q,
-            "idempotency_key": q["idempotency_key"] + ":suppressed",
+            "idempotency_key": q["idempotency_key"] + ":suppressed" +
+                               (":objection-" + objection if objection is not None else ""),
             **meta,
         }
     body = ("Hello,\n\nRegarding synthetic reference " + row["external_ref"] +
