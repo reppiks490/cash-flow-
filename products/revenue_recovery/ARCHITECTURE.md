@@ -60,3 +60,17 @@ Open http://127.0.0.1:8765/demo/ and use a separate terminal to POST a synthetic
 - Reference identifiers now require `DEMO-` or `QA-` style prefixes; prefix checks reduce accidental PII insertion but do not establish data privacy or authorize real data ingestion.
 - Browser static assets and active same-origin preview are regression-tested. GitHub Actions tests Python modules and `node --check` for JavaScript syntax; these are **not** headless visual/browser-interaction tests and cannot prove production quality.
 - Latest completed exact-source verification as of this addendum: `fac3d74dbf2011d109266ecc336673580435ce41`, **35/35 RRE tests passed**, run 42252156846. Follow-up commit validation must be checked before any merge. All results are synthetic with no external services.
+
+
+## v0.3.1 — strict JSON ingress, compatible with consolidated main
+
+**Canonical data contract remains unchanged:** `backend.contracts` defines allowed synthetic source/need values and `DEMO-/QA-` references; `backend.app.DemoStore` provides only in-memory, synthetic records. The only JSON mutation endpoint is `POST /api/demo/leads`.
+
+- Decoder rejects duplicate keys at any depth (`HTTP 400`, `Duplicate JSON field`); Python's default last-value-wins behavior is not permitted.
+- Decoder rejects nonstandard numeric constants `NaN`, `Infinity`, `-Infinity` (`HTTP 400`, `Nonstandard JSON numeric constant`).
+- Rejected payloads create no synthetic lead. Valid equivalent replay stays `200 created=false`; new synthetic records stay `201 created=true`.
+- No new outbound, CRM-write, booking, payment, public network, authentication or tenancy endpoints. `backend.smoke` is a local-only assertion runner with 12 checks, not a product endpoint.
+
+**Test-first provenance:** On main-derived PR #61, the six ingress tests ran RED before the decoder fix (5 failures out of 98, RRE run 42283415781); after the fix the same suite ran GREEN (98/98 Python plus 11/11 Node, RRE run 42283532167). The smoke test also ran RED on missing `backend.smoke` (99 tests, one import error, run 42283651979) then GREEN after implementation (99/99 Python plus 11/11 Node, RRE run 42283740015). Both green commits passed MONEYFALL foundation verification independently. Subsequent documentation commits require exact-head checks.
+
+**Integration ruling:** Forward-port to a clean branch from `main` rather than merging older #46 as-is, because #33/#37 and newer shared-contract/commercial updates already landed. Never overwrite later ledger appendices or AI/Experience/QA-owned files with old complete-file snapshots. Before main merge, check changed paths, exact final SHA checks, QA findings and repo release rules; synthetic success is **not** pilot authorization.
