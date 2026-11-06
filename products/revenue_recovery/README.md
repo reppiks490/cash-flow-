@@ -22,3 +22,27 @@ This branch combines source snapshots from principal PR #31, QA PR #30, experien
 ## Current five-lane contract
 
 All five engineering source lanes are assembled in draft integration PR #33 (other branches and PRs retained). The qualification provider is a **deterministic offline rules engine**, not a paid API or LLM. Workflow previews expose explicit source evidence, non-calibrated priority scores, unknown consent, unsent draft text, dry-run CRM, no confirmed appointment, and no authenticated revenue. Do not connect a public tunnel or enter real customer information.
+
+
+## Principal v0.3.1: exact-head synthetic intake and smoke acceptance
+
+This main-derived update preserves the existing shared lead vocabulary in `backend.contracts` and adds fail-closed parsing of duplicate JSON keys and invalid `NaN`/`Infinity` tokens. Six HTTP regression cases prove the parser rejects ambiguous requests before the in-memory store is modified. Input is still a fixed **synthetic-only** four-field payload; this does **not** authorize real customer information.
+
+Run from repository root (Python 3.11+), no paid dependencies or outside network:
+
+```bash
+PYTHONPATH=products/revenue_recovery python -m backend.smoke
+PYTHONPATH=products/revenue_recovery python -m unittest discover -s products/revenue_recovery -p 'test_*.py' -v
+```
+
+PowerShell:
+
+```powershell
+$env:PYTHONPATH = "products/revenue_recovery"
+python -m backend.smoke
+python -m unittest discover -s products/revenue_recovery -p 'test_*.py' -v
+```
+
+The smoke spins up `127.0.0.1` on an ephemeral port and performs 12 assertions for synthetic intake/idempotency, ambiguous JSON rejection, review-only unsent draft, CRM dry-run, mock job closure (zero real jobs/payments), synthetic opt-out revocation, evidence-honest scorecard, and disabled send/billing routes. It closes its listener and exits nonzero when an assertion fails. No real consent, authenticated tenant isolation, durable private storage, genuine external integration or payment receipt is established.
+
+**Evidence:** on the main-derived code commit `1f16400fadf6a275592ea59f12401503a5c8ad4e`, GitHub Actions RRE [run 42283740015](https://github.com/reppiks490/cash-flow-/actions/runs/42283740015) passed **99 Python + 11 Node** tests; separate MONEYFALL [run 42283739905](https://github.com/reppiks490/cash-flow-/actions/runs/42283739905) passed. This is a *synthetic prototype* acceptance result, not production certification or proof of customers, revenue or profit.
