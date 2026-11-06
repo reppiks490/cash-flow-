@@ -120,7 +120,7 @@ def aggregate_synthetic_scorecard(leads: list[Mapping[str, object]]) -> dict[str
             "mock_confirmed_appointments": 0,
             "mock_closed_jobs": 0,
             "actual_bookings_confirmed": 0,
-            "real_customers": 0,
+            "real_customers": None,  # Unconnected private subscription records are unknown
         },
         "verified": {
             "business_subscription_customers": 0,
