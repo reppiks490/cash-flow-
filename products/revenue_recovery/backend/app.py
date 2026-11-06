@@ -16,12 +16,12 @@ from pathlib import Path
 
 from backend.crm import preview_crm_record
 from backend.ai_providers import get_provider
+from backend.demo_evidence import SCENARIOS, aggregate_synthetic_scorecard, simulate_evidence_path
+from backend.consent_simulation import POLICY_SCENARIOS, simulate_contact_policy
+from backend.contracts import SOURCES as ALLOWED_SOURCES, NEEDS as ALLOWED_NEEDS, REF as DEMO_REF
 
 MAX_BODY_BYTES = 16_384
 MAX_LEADS = 2_000
-ALLOWED_SOURCES = frozenset({"demo", "website", "phone", "referral"})
-ALLOWED_NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance", "estimate follow-up", "heating issue"})
-DEMO_REF = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\Z", re.I)
 
 
 class LeadConflictError(ValueError):
@@ -158,6 +158,17 @@ def make_handler(store: DemoStore):
     class Handler(BaseHTTPRequestHandler):
         server_version = "RRE-Demo/0.2"
 
+        def log_message(self, format: str, *args: object) -> None:
+            """No raw request-line logging in a synthetic-only local prototype.
+
+            http.server's default logger reflects the entire user-supplied
+            URL (including accidental identifiers or query strings).
+            Disable it until authenticated structured redacted audit logging
+            exists. Never treat this no-log mode as production security.
+            """
+            return
+
+
         def _valid_host(self) -> bool:
             host = self.headers.get("Host", "")
             return re.fullmatch(r"(?:localhost|127\.0\.0\.1)(?::[0-9]{1,5})?", host, re.I) is not None
@@ -192,6 +203,32 @@ def make_handler(store: DemoStore):
                                  "synthetic_only": True})
             elif self.path == "/api/demo/leads":
                 self._json(200, {"synthetic": True, "leads": store.list()})
+            elif self.path == "/api/demo/scorecard":
+                self._json(200, aggregate_synthetic_scorecard(store.list()))
+            elif self.path.startswith("/api/demo/policy/"):
+                parts = self.path[len("/api/demo/policy/"):].split("/")
+                if (len(parts) != 2 or DEMO_REF.fullmatch(parts[0]) is None
+                        or parts[1] not in POLICY_SCENARIOS):
+                    self._json(404, {"error": "Unknown synthetic policy fixture"})
+                    return
+                lead = store.get(parts[0])
+                if lead is None:
+                    self._json(404, {"error": "Unknown synthetic reference"})
+                    return
+                self._json(200, {"synthetic": True,
+                                 "policy": simulate_contact_policy(lead, parts[1])})
+            elif self.path.startswith("/api/demo/scenarios/"):
+                parts = self.path[len("/api/demo/scenarios/"):].split("/")
+                if (len(parts) != 2 or DEMO_REF.fullmatch(parts[0]) is None
+                        or parts[1] not in SCENARIOS):
+                    self._json(404, {"error": "Unknown synthetic scenario"})
+                    return
+                lead = store.get(parts[0])
+                if lead is None:
+                    self._json(404, {"error": "Unknown synthetic reference"})
+                    return
+                self._json(200, {"synthetic": True,
+                                 "scenario": simulate_evidence_path(lead, parts[1])})
             elif self.path.startswith("/api/demo/recovery/"):
                 ref = self.path[len("/api/demo/recovery/"):]
                 if DEMO_REF.fullmatch(ref) is None:

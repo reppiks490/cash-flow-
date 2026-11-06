@@ -9,6 +9,7 @@ const FIXTURES = Object.freeze([
 const $ = id => document.getElementById(id);
 let leads = [];
 let selectionSequence = 0;
+let selectedReference = null;
 
 function safeLead(value) {
   if (!value || typeof value !== "object" || value.synthetic !== true) return null;
@@ -28,6 +29,8 @@ function draftFor(lead) {
 async function selectLead(index) {
   const lead = leads[index];
   if (!lead) return;
+  selectedReference = lead.external_ref;
+  $("auditEvents").textContent = "Lead " + selectedReference + " selected. Choose a mock scenario to inspect.";
   const requestNumber = ++selectionSequence;
   $("draft").value = "Preparing local synthetic preview...";
   $("copyStatus").textContent = "Checking read-only preview for " + lead.external_ref + " (no messages sent).";
@@ -65,6 +68,9 @@ async function selectLead(index) {
 
 function render(rows, source) {
   selectionSequence += 1;
+  selectedReference = null;
+  $("auditEvents").textContent = "Select a lead above to inspect the synthetic evidence path.";
+  $("policyEvents").textContent = "No real communication is enabled.";
   $("draft").value = "Select a synthetic lead above.";
   $("copyStatus").textContent = "";
   leads = rows.map(safeLead).filter(Boolean);
@@ -108,11 +114,119 @@ async function refresh() {
     const payload = await response.json();
     if (payload.synthetic !== true || !Array.isArray(payload.leads)) throw new Error("Unexpected response");
     render(payload.leads, "Local API");
+    await refreshScorecard();
     $("connection").textContent = "Connected to local synthetic API. No real customers or payments.";
   } catch (_error) {
     render(FIXTURES, "Offline fixtures");
+    $("scorecardInfo").textContent = "Offline examples only. No payment sources connected.";
     $("connection").textContent = "Offline fixture mode. This is a demonstration only; no customer records or payments are connected.";
   } finally {clearTimeout(timeout);}
+}
+
+async function refreshScorecard() {
+  try {
+    const response = await fetch("/api/demo/scorecard", {cache:"no-store",credentials:"omit"});
+    if (!response.ok) throw new Error("scorecard unavailable");
+    const data = await response.json();
+    const v = data && data.verified;
+    if (data.synthetic !== true || !data.counts || !v ||
+        !Number.isInteger(data.counts.received_demo_leads) ||
+        v.payment_receipts !== 0 ||
+        v.contractor_recovered_revenue_cents !== 0 ||
+        v.rre_subscription_revenue_cents !== 0 ||
+        v.rre_monthly_profit_cents !== 0) {
+      throw new Error("unexpected or unverified scorecard");
+    }
+    $("scorecardInfo").textContent =
+      "Synthetic process-memory inquiries: " + data.counts.received_demo_leads +
+      ". Real customer count: unknown (no billing source connected). No confirmed bookings.";
+  } catch (_error) {
+    $("scorecardInfo").textContent = "Scorecard disconnected — fixture mode only. No real financial results.";
+  }
+}
+
+async function loadScenario() {
+  if (!selectedReference) {
+    $("auditEvents").textContent = "Select a synthetic lead first. No customer data is connected.";
+    return;
+  }
+  const choice = $("scenarioChoice").value;
+  if (!["review", "appointment_mock", "closed_job_mock"].includes(choice)) {
+    $("auditEvents").textContent = "Unsupported scenario.";
+    return;
+  }
+  const ref = selectedReference;
+  $("auditEvents").textContent = "Loading read-only synthetic timeline...";
+  try {
+    const path = "/api/demo/scenarios/" + encodeURIComponent(ref) + "/" + choice;
+    const response = await fetch(path, {cache:"no-store",credentials:"omit"});
+    if (!response.ok) throw new Error("scenario unavailable");
+    const data = await response.json();
+    const result = data && data.scenario;
+    const metrics = result && result.metrics;
+    if (data.synthetic !== true || !result || result.synthetic !== true ||
+        result.external_ref !== ref || result.scenario !== choice ||
+        !Array.isArray(result.events) || !metrics ||
+        metrics.actual_messages_sent !== 0 ||
+        metrics.actual_bookings_confirmed !== 0 ||
+        metrics.actual_jobs_closed !== 0 ||
+        metrics.verified_recovered_revenue_cents !== 0 ||
+        metrics.verified_rre_subscription_revenue_cents !== 0 ||
+        metrics.verified_payment_receipts !== 0 ||
+        result.events.some(e => e.synthetic !== true ||
+          e.source_evidence_verified !== false || e.external_side_effect !== false)) {
+      throw new Error("invalid unverified evidence payload");
+    }
+    if (selectedReference !== ref) return;
+    const entries = result.events.map(e => e.sequence + ". " + e.event_type.replaceAll("_", " ")).join("\n");
+    $("auditEvents").textContent = "SYNTHETIC / " + choice.toUpperCase() + "\n" +
+      entries + "\n\nActual confirmed appointments: 0. Actual jobs: 0. " +
+      "Verified recovered revenue: $0. No payment receipts. No messages sent.\n" +
+      "This is a process demonstration, NOT proof of income or customer activity.";
+  } catch (_error) {
+    if (selectedReference === ref) {
+      $("auditEvents").textContent = "Synthetic timeline unavailable. No action was taken.";
+    }
+  }
+}
+
+async function loadPolicy() {
+  if (!selectedReference) {
+    $("policyEvents").textContent = "Select a synthetic lead first.";
+    return;
+  }
+  const choice = $("policyChoice").value;
+  if (!["unknown", "revoked_mock", "consent_record_mock"].includes(choice)) {
+    $("policyEvents").textContent = "Unsupported policy scenario.";
+    return;
+  }
+  const ref = selectedReference;
+  $("policyEvents").textContent = "Checking read-only synthetic suppression...";
+  try {
+    const path = "/api/demo/policy/" + encodeURIComponent(ref) + "/" + choice;
+    const response = await fetch(path, {cache:"no-store",credentials:"omit"});
+    if (!response.ok) throw new Error("Policy unavailable");
+    const result = await response.json();
+    const policy = result && result.policy;
+    if (result.synthetic !== true || !policy || policy.synthetic !== true ||
+        policy.external_ref !== ref || policy.mode !== choice ||
+        policy.consent_verified !== false || policy.operator_authorized !== false ||
+        policy.may_contact_real_person !== false || policy.actual_message_sent !== false ||
+        !Array.isArray(policy.reasons) ||
+        (choice === "revoked_mock" && (policy.draft !== null || policy.suppressed !== true))) {
+      throw new Error("Unsafe synthetic policy response");
+    }
+    if (selectedReference !== ref) return;
+    $("policyEvents").textContent = "SYNTHETIC POLICY: " + choice + "\n" +
+      "Real outreach: DISABLED\nActual sends: 0\nHuman identity: UNVERIFIED\n" +
+      "Internal draft: " + (policy.draft === null ? "SUPPRESSED" : "UNSENT / REVIEW ONLY") +
+      "\nReasons:\n" + policy.reasons.join("\n") +
+      "\nNo customer consent or legal authorization is established.";
+  } catch (_error) {
+    if (selectedReference === ref) {
+      $("policyEvents").textContent = "Policy preview unavailable. No action was taken.";
+    }
+  }
 }
 
 async function seedDemo() {
@@ -142,6 +256,8 @@ async function seedDemo() {
 
 document.addEventListener("DOMContentLoaded", () => {
   $("seedDemo").addEventListener("click", seedDemo);
+  $("runScenario").addEventListener("click", loadScenario);
+  $("runPolicy").addEventListener("click", loadPolicy);
   $("refresh").addEventListener("click", refresh);
   $("copyDraft").addEventListener("click", async () => {
     try {

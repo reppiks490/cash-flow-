@@ -22,7 +22,7 @@
     <section id="overview" aria-labelledby="overview-heading"><h2 id="overview-heading">Pipeline snapshot <span class="section-note">Illustrative records, not actual performance</span></h2>
       <div class="metrics">
         <article class="metric"><span>Demo inquiries</span><strong id="leadCount">0</strong><small>Received in current view</small></article>
-        <article class="metric"><span>Pending follow-ups</span><strong id="followCount">0</strong><small>Drafts require human review</small></article>
+        <article class="metric"><span>Unreviewed demo leads</span><strong id="followCount">0</strong><small>Not customer contact or sent messages</small></article>
         <article class="metric"><span>Confirmed appointments</span><strong>0</strong><small>Not connected to scheduling</small></article>
         <article class="metric"><span>Verified recovered revenue</span><strong>$0</strong><small>No authenticated payment receipts</small></article>
       </div>
@@ -37,6 +37,22 @@
       </article>
       <article class="panel" id="outcomes" aria-labelledby="outcomes-heading"><div class="eyebrow">ATTRIBUTION / INTEGRITY</div><h2 id="outcomes-heading">Outcome verification</h2><div class="outcome"><span>Appointment adapter</span><strong>Not connected</strong></div><div class="outcome"><span>CRM write adapter</span><strong>Dry run only</strong></div><div class="outcome"><span>Payment reconciliation</span><strong>Not connected</strong></div><div class="outcome"><span>Authenticated revenue</span><strong>$0</strong></div><div class="gate">Commercial release requires tenant isolation, authorization, consent checks, verified integrations, and payment evidence.</div>
       </article>
+    </section>
+    <section class="panel" id="scenario-audit" aria-labelledby="audit-heading">
+      <div class="eyebrow">READ-ONLY / MOCK OUTCOME EVIDENCE</div>
+      <h2 id="audit-heading">Recovery process simulator</h2>
+      <p class="muted">Select a synthetic lead above, then inspect an example lifecycle. These are fixture events, not real sends, appointments, jobs, receipts, or recovered dollars.</p>
+      <label for="scenarioChoice">Illustrative workflow</label>
+      <select id="scenarioChoice"><option value="review">Review draft only</option><option value="appointment_mock">Mock appointment</option><option value="closed_job_mock">Mock job close (unverified)</option></select>
+      <button type="button" id="runScenario">Preview synthetic event trail</button>
+      <p id="scorecardInfo" class="hint" role="status">Scorecard has no live data source.</p>
+      <pre id="auditEvents" class="audit-events" role="status">Select a lead above to inspect the synthetic evidence path.</pre>
+      <h3>Contact consent and suppression simulation</h3>
+      <p class="muted">Mock consent cannot authorize communication. Revocation suppresses even the draft.</p>
+      <label for="policyChoice">Synthetic consent case</label>
+      <select id="policyChoice"><option value="unknown">Unknown consent</option><option value="revoked_mock">Mock opt-out / revocation</option><option value="consent_record_mock">Mock consent record (unverified)</option></select>
+      <button type="button" id="runPolicy">Preview fail-closed policy</button>
+      <pre id="policyEvents" class="audit-events" role="status">No real communication is enabled.</pre>
     </section>
     <footer>REVENUE RECOVERY ENGINE · SYNTHETIC PROTOTYPE · NOT FOR CUSTOMER DATA</footer>
   </main>
