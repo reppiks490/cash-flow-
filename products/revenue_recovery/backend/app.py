@@ -20,7 +20,7 @@ MAX_BODY_BYTES = 16_384
 MAX_LEADS = 2_000
 ALLOWED_SOURCES = frozenset({"demo", "website", "phone", "referral"})
 ALLOWED_NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance", "estimate follow-up", "heating issue"})
-DEMO_REF = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}\Z")
+DEMO_REF = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\Z", re.I)
 
 
 class LeadConflictError(ValueError):
@@ -48,7 +48,7 @@ class DemoStore:
                 raise ValueError(f"{key} must be a nonempty string of at most 240 characters")
         external_ref = incoming["external_ref"].strip()
         if DEMO_REF.fullmatch(external_ref) is None:
-            raise ValueError("external_ref must be a short synthetic token without personal information")
+            raise ValueError("external_ref must start with DEMO- or QA- and contain only a synthetic token")
         if incoming["source"] not in ALLOWED_SOURCES:
             raise ValueError("source must be a supported synthetic category")
         if incoming["need"] not in ALLOWED_NEEDS:
