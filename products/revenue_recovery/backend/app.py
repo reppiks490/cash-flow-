@@ -67,8 +67,13 @@ def demo():
     db=connect()
     lead={"id":"synthetic-hvac-001","tenant_id":"synthetic-tenant","source":"synthetic-web-form","service":"repair","consent":True,"synthetic":True}
     outcome=intake(db,lead)
+    draft_row = db.execute("SELECT body,approval FROM drafts WHERE lead_id=?", (lead["id"],)).fetchone()
     mock_event(db,"synthetic-event-001",lead["id"],"crm_mock")
-    return {"intake":outcome,"report":report(db,lead["tenant_id"]),"outbound_sent":False}
+    mock_event(db,"synthetic-event-002",lead["id"],"appointment_mock")
+    return {"intake":outcome,
+            "draft":{"body":draft_row[0],"approval":draft_row[1],"synthetic":True},
+            "report":report(db,lead["tenant_id"]),
+            "outbound_sent":False,"external_integrations_called":False}
 
 def main():
     parser=argparse.ArgumentParser(description="Offline synthetic HVAC revenue recovery demo")
