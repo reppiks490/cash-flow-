@@ -115,7 +115,33 @@ async function refresh() {
   } finally {clearTimeout(timeout);}
 }
 
+async function seedDemo() {
+  // No contact data, no external API, no payment, and no persistent storage.
+  if (!["127.0.0.1", "localhost"].includes(location.hostname)) {
+    $("connection").textContent = "Synthetic seeding only works on the local loopback demo.";
+    return;
+  }
+  $("seedDemo").disabled = true;
+  try {
+    for (const lead of FIXTURES) {
+      const safe = {synthetic:true,external_ref:lead.external_ref,source:lead.source,need:lead.need};
+      const response = await fetch("/api/demo/leads", {
+        method:"POST", cache:"no-store", credentials:"omit",
+        headers:{"Content-Type":"application/json"}, body:JSON.stringify(safe)
+      });
+      if (!response.ok) throw new Error("Synthetic seed rejected");
+    }
+    await refresh();
+    $("connection").textContent = "Three explicitly synthetic examples loaded into local process memory only. No live integrations.";
+  } catch (_error) {
+    $("connection").textContent = "Local synthetic demo seeding unavailable. No customer data sent and no external actions.";
+  } finally {
+    $("seedDemo").disabled = false;
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  $("seedDemo").addEventListener("click", seedDemo);
   $("refresh").addEventListener("click", refresh);
   $("copyDraft").addEventListener("click", async () => {
     try {
