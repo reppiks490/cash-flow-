@@ -170,3 +170,11 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - **RED:** before implementation, workflow-registered browser async race tests failed **5/20 Node cases** on commit `2fa36f63edc18b86d2bc5d76374564c61abe1238` (RRE run https://github.com/reppiks490/cash-flow-/actions/runs/42304063535). Older A→B→A and rejected promises overwrote newer synthetic evidence or consent status.
 - **GREEN:** code commit `aede876b73db83caff7b03c8bd8ba75f6fc89f05` passed **160 Python / 20 Node** and JS syntax in https://github.com/reppiks490/cash-flow-/actions/runs/42304191417; independent MONEYFALL workflow passed at exact head. Browser uses lead selection generation plus per-route request revision; no network/send/backend contract changed.
 - **Limits:** Node VM tests do not establish real browser screenshots, accessibility, production authentication, consent validity or customer revenue. Demo is localhost-only with synthetic fixtures.
+
+## Keyboard and mobile accessibility contract — 2026-11-06
+
+- **Branch:** `integration/rre-keyboard-region-a11y-20261106`, based on `main` `4bf7f97817edb231699310c046bb5893b9aabbec`; ports unique Experience PR #64 HTML/CSS and static Node checks without Python→Node subprocess dependency. Original author branch/PR is preserved.
+- **RED:** registered four static Node cases; initial exact CI run `42304726678` failed **3/24 Node checks** because the synthetic table and read-only evidence regions were not keyboard focusable and mobile actions did not have specified minimum targets.
+- **GREEN:** after scoped HTML/CSS edits, exact code commit `b29beb17fb161adeaf8fe59ea7e8a1c9dd7e239d` passed **166/166 Python and 24/24 Node** checks, JS syntax, and MONEYFALL foundation CI. RRE: https://github.com/reppiks490/cash-flow-/actions/runs/42304845673 . Subsequent documentation-only commit requires exact-head CI before merging.
+- **UI controls:** focusable/labelled synthetic lead table, timeline and suppression audit panels; focus outlines and minimum 44px header action height at narrow widths. No API changes, customer contact, billing, or external dependencies.
+- **Still required:** manual real Chromium, iOS and Android/mobile screen reader checks for layout/reflow/zoom, true keyboard interaction, and contrast. Node regex/static checks do not certify accessibility or security.
