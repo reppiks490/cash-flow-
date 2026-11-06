@@ -99,3 +99,11 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - **Runbook:** Windows PowerShell and Git Bash local-only commands and explicit no-public-tunnel restrictions are documented in `products/revenue_recovery/RUNBOOK_LOCAL.md`.
 - **Remaining blocked:** signed receipts, actual bookings/CRM writes, real customer communications, accounts/auth/tenant boundaries, private durable storage, legal review and approved outreach, pricing and paying pilots. No customer or net-profit milestone is verified.
 - **Release classification:** working *synthetic integration candidate*, not pilot-ready or commercially deployed. Use `docs/revenue_recovery/RELEASE_ACCEPTANCE_MATRIX_2026-11-06.md` for next unblocked tickets.
+
+## Additional consent/suppression integration — 2026-11-06
+
+- **Read-only endpoint** `GET /api/demo/policy/{ref}/{unknown|revoked_mock|consent_record_mock}` computes strictly local consent fixture outcomes. **No recipient data**, actual communications, API tokens or contacts. This is not lawful consent or operator authentication.
+- **Fail-closed behavior:** revoked mock returns `draft=null`, `suppressed=true`; unknown consent and mock-record scenarios may create internal-only draft text but never enable outreach or send. No mock record can turn `consent_verified`, `operator_authorized` or `may_contact_real_person` true.
+- **Browser:** explicit policy viewer lets a human inspect the outcome of revocation vs unknown/mock consent. UI never posts a real follow-up.
+- **Exact code head verification:** commit `d68574ad89c700165ae5188f9a99c69a515960ef` passed **52/52 Python product tests**, **7/7 Node VM tests**, JavaScript syntax, and separately existing MONEYFALL foundation checks. See GitHub Actions [42257493614](https://github.com/reppiks490/cash-flow-/actions/runs/42257493614). The Node VM validates logic but is **not a visual browser accessibility/security audit**.
+- **Release safety:** all customer consent/real contact states are unverified. A simulated revocation handler does **not** satisfy actual TCPA/CAN-SPAM processing, authenticated revocation audit, tenant isolation, lawful permission, or telecom provider terms. Zero verified revenue and no paying customers have been demonstrated.
