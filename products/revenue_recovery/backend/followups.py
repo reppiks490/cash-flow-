@@ -26,7 +26,7 @@ def prepare_followup(lead: Mapping[str, object], *, opted_out: bool | None = Non
     if objection is not None and (type(objection) is not str or objection not in OBJECTION_TEMPLATES):
         raise ValueError("objection must be an approved synthetic category or None")
     q = qualify_lead(row, opted_out=opted_out)
-    meta = ({"objection_category": objection, "objection_source": "synthetic_operator_enum"}
+    meta = ({"objection_category": objection, "objection_source": "unverified_caller_supplied_synthetic_enum"}
             if objection is not None else {})
     if q["decision"] == "suppressed":
         return {
