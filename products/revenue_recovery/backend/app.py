@@ -17,6 +17,7 @@ from pathlib import Path
 from backend.crm import preview_crm_record
 from backend.ai_providers import get_provider
 from backend.demo_evidence import SCENARIOS, aggregate_synthetic_scorecard, simulate_evidence_path
+from backend.consent_simulation import POLICY_SCENARIOS, simulate_contact_policy
 
 MAX_BODY_BYTES = 16_384
 MAX_LEADS = 2_000
@@ -206,6 +207,18 @@ def make_handler(store: DemoStore):
                 self._json(200, {"synthetic": True, "leads": store.list()})
             elif self.path == "/api/demo/scorecard":
                 self._json(200, aggregate_synthetic_scorecard(store.list()))
+            elif self.path.startswith("/api/demo/policy/"):
+                parts = self.path[len("/api/demo/policy/"):].split("/")
+                if (len(parts) != 2 or DEMO_REF.fullmatch(parts[0]) is None
+                        or parts[1] not in POLICY_SCENARIOS):
+                    self._json(404, {"error": "Unknown synthetic policy fixture"})
+                    return
+                lead = store.get(parts[0])
+                if lead is None:
+                    self._json(404, {"error": "Unknown synthetic reference"})
+                    return
+                self._json(200, {"synthetic": True,
+                                 "policy": simulate_contact_policy(lead, parts[1])})
             elif self.path.startswith("/api/demo/scenarios/"):
                 parts = self.path[len("/api/demo/scenarios/"):].split("/")
                 if (len(parts) != 2 or DEMO_REF.fullmatch(parts[0]) is None
