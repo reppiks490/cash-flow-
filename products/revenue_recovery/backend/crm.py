@@ -41,3 +41,27 @@ def preview_crm_record(lead: Mapping[str, object]) -> CRMPreview:
         need=str(row["need"]),
         proposed_stage="new_inquiry",
     )
+
+
+def preview_crm_envelope(lead: Mapping[str, object]) -> dict[str, object]:
+    """Vendor-neutral, JSON-compatible *preview*, never a provider write command.
+
+    Only enum-validated synthetic fields cross this boundary. The fixed envelope
+    deliberately contains no recipient, contact, credential, tenant or endpoint.
+    A future live adapter must implement a separate authenticated interface.
+    """
+    record = preview_crm_record(lead)
+    return {
+        "schema_version": "rre.crm.preview.v1",
+        "synthetic": True,
+        "dry_run": True,
+        "transmitted": False,
+        "external_ref": record.external_ref,
+        "source": record.source,
+        "need": record.need,
+        "proposed_stage": record.proposed_stage,
+        "provider": None,
+        "provider_record_id": None,
+        "appointment_confirmed": False,
+        "verified_recovered_revenue_cents": 0,
+    }
