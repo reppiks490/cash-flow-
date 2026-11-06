@@ -54,3 +54,23 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - Existing repository contains reusable MONEYFALL discovery, qualification, orders and evidence modules; reusing anything requires interface, permission, safety and regression review.
 - **Not yet verified:** runnable new product, integration tests, production provider connectivity, paying customers or recurring profit.
 - Next action: create independent runnable skeleton and pass a synthetic end-to-end acceptance test. Engineering lanes should coordinate interfaces before integrating.
+
+## Principal implementation checkpoint — 2026-11-06
+
+- Isolated branch `rre/principal-mvp-scaffold-20261106` adds `backend/app.py`, `ARCHITECTURE.md`, `README.md` (all new files). No existing MONEYFALL or ICARUS files modified.
+- Contract **rre.v1** frozen for review: synthetic lead DTO, deterministic consent gate, pending draft, mock events, tenant-filtered aggregates, null verified money. See ARCHITECTURE.md.
+- **Observed:** GitHub file commits succeeded. **Not observed:** Python runtime execution, QA regression, integration with other lanes, external integration, revenue or profit. PR remains subject to review; do not merge without checks.
+- Critical path: QA execute demo and negative tests; AI/Experience integrate against rre.v1; harden tenant auth, audit, consent and receipts before any pilot. No production readiness claim.
+
+## Principal checkpoint 2 — 2026-11-06
+
+- Commit `83bb32d10fcd5546c9311959344ade4ea1f09409` on draft PR #38 extends the offline demo response to include the actual pending review draft and a second mock `appointment_mock` event alongside `crm_mock`. This makes the synthetic review and scheduling path inspectable in one CLI invocation.
+- Evidence: GitHub contents update returned a commit SHA. Python demo execution and tests **not run**; the new flow is not verified as passing. No external provider was contacted by this GitHub-only change.
+- Integration risk: current demo uses global lead identifiers; persistent multi-tenant auth, scoped event APIs, provider adapters, evidence-backed closed revenue, and release QA remain unimplemented. Synthetic output is not a customer outcome.
+- Next critical path: QA execute `python products/revenue_recovery/backend/app.py demo` and negative cases; AI/Experience consume `rre.v1`; principal integrate only after passing checks. Keep PR draft until verified.
+
+## Principal checkpoint — 2026-11-06 (third run)
+
+- Commit `7d2788e89a359def1f409d3144c970db97e9d20b` adds an offline `selfcheck` CLI to `backend/app.py`, checking qualified intake, pending draft, mock event counts, null verified money, zero outbound, suppression, duplicate rejection and tenant-filtered counts. Mock event identifiers now reject empty strings and translate duplicate event IDs to `ValueError`.
+- Invocation: `python products/revenue_recovery/backend/app.py selfcheck`; existing `demo` command remains supported. **GitHub commit confirmed; Python execution NOT observed in this run.** These checks are committed assertions, not a passing test claim. QA must independently execute both commands and its negative tests before merge.
+- PR #38 remains draft. No live services, outreach, customer records, payments, or deployments. Next critical path: obtain independent runtime evidence and review compatible lane PRs against `rre.v1`; do not merge untested changes.
