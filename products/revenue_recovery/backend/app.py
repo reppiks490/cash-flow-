@@ -290,7 +290,22 @@ def make_handler(store: DemoStore):
                 self._json(415, {"error": "JSON content type required"})
                 return
             try:
-                length = int(self.headers.get("Content-Length", "-1"))
+                # Fail before integer parsing, so malformed header values cannot
+                # leak into the generic ValueError response or consume huge CPU.
+                raw_lengths = self.headers.get_all("Content-Length", [])
+                # Reject ambiguous framing before reading: duplicates (even
+                # identical) and Transfer-Encoding are unsupported in this demo.
+                if len(raw_lengths) > 1 or self.headers.get("Transfer-Encoding") is not None:
+                    self._json(400, {"error": "Invalid request framing"})
+                    return
+                raw_length = raw_lengths[0] if raw_lengths else None
+                if raw_length is None:
+                    self._json(413, {"error": "Invalid or oversized request"})
+                    return
+                if re.fullmatch(r"[0-9]{1,5}\Z", raw_length, re.ASCII) is None:
+                    self._json(400, {"error": "Invalid request framing"})
+                    return
+                length = int(raw_length)
                 if not 0 <= length <= MAX_BODY_BYTES:
                     self._json(413, {"error": "Invalid or oversized request"})
                     return
