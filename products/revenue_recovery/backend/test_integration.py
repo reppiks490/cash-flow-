@@ -130,6 +130,27 @@ class IntegratedDemoContractTests(unittest.TestCase):
         self.assertNotIn('fetch("/api/send"', js)
         self.assertNotIn("innerHTML", js)
 
+    def test_browser_seed_fixtures_reuse_only_safe_local_intake(self):
+        code, _, html = self.request("GET", "/demo/")
+        self.assertEqual(code, 200)
+        self.assertIn("Load synthetic examples", html.decode("utf-8"))
+        _, _, js = self.request("GET", "/demo/app.js")
+        text = js.decode("utf-8")
+        self.assertIn("seedDemo", text)
+        self.assertIn('method:"POST"', text)
+        self.assertIn('credentials:"omit"', text)
+        for ref, source, need in (
+            ("DEMO-HVAC-001", "website", "AC not cooling"),
+            ("DEMO-HVAC-002", "phone", "estimate follow-up"),
+            ("DEMO-HVAC-003", "referral", "AC maintenance"),
+        ):
+            payload = {"synthetic": True, "external_ref": ref, "source": source, "need": need}
+            self.assertIn(self.request("POST", "/api/demo/leads", payload)[0], (200, 201))
+            self.assertEqual(self.request("POST", "/api/demo/leads", payload)[0], 200)
+        _, _, raw = self.request("GET", "/api/demo/leads")
+        leads = json.loads(raw)["leads"]
+        self.assertEqual(sum(x["external_ref"].startswith("DEMO-HVAC-") for x in leads), 3)
+
     def test_unknown_reference_never_creates_external_actions(self):
         for path in ("/api/demo/recovery/DEMO-UNKNOWN", "/api/demo/recovery/a@b",
                      "/api/demo/recovery/../../backend/app.py"):
