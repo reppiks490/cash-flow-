@@ -1,6 +1,6 @@
 """Standalone stdlib tests: python -m unittest discover -s commercial -p 'test_*.py'."""
 import unittest
-from scenario_calculator import Scenario, ScenarioError, calculate_scenario
+from commercial.scenario_calculator import Scenario, ScenarioError, calculate_scenario
 
 
 def scenario(**changes):
