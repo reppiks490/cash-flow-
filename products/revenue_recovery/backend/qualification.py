@@ -12,6 +12,10 @@ OPT_OUT = ("unsubscribe", "stop contacting", "do not contact", "opt out", "remov
 def _text(value):
     return value.strip().lower() if isinstance(value, str) else ""
 
+def _contains_phrase(text: str, phrase: str) -> bool:
+    """Match complete tokens/phrases, not substrings inside unrelated words."""
+    return re.search(r"(?<!\\w)" + re.escape(phrase) + r"(?!\\w)", text) is not None
+
 def qualify(lead: dict) -> dict:
     """Return explainable assessment. Caller must persist tenant-scoped dedup/idempotency."""
     if not isinstance(lead, dict):
@@ -27,12 +31,12 @@ def qualify(lead: dict) -> dict:
     evidence = []
     score = 0
     for label, words, points in (("urgent_hvac_need", URGENT, 50), ("service_intent", SERVICE, 35)):
-        matches = [word for word in words if word in normalized]
+        matches = [word for word in words if _contains_phrase(normalized, word)]
         if matches:
             score += points
             evidence.append({"rule": label, "source": "lead.message", "matched_terms": matches, "points": points})
-    objections = [name for name, words in OBJECTIONS.items() if any(w in normalized for w in words)]
-    suppressed = bool(lead.get("opt_out") is True or any(w in normalized for w in OPT_OUT))
+    objections = [name for name, words in OBJECTIONS.items() if any(_contains_phrase(normalized, w) for w in words)]
+    suppressed = bool(lead.get("opt_out") is True or any(_contains_phrase(normalized, w) for w in OPT_OUT))
     if suppressed:
         status = "suppressed"
     elif score >= 35:
