@@ -52,3 +52,50 @@ def prepare_followup(lead: Mapping[str, object], *, opted_out: bool | None = Non
                            (":objection-" + objection if objection is not None else ""),
         **meta,
     }
+
+
+def recheck_followup_for_review(
+    lead: Mapping[str, object],
+    prior: Mapping[str, object],
+    *,
+    opted_out: bool | None,
+) -> dict[str, object]:
+    """Refresh a synthetic cached draft before another human review.
+
+    Never trusts or republishes prior draft text. Validates the entire cached
+    snapshot against current deterministic rules, then recomputes using the
+    caller's current *mock* opt-out fixture. No real consent check, approval,
+    persistence, recipient lookup, model call or communication occurs.
+    """
+    row = validate_lead(lead)
+    if not isinstance(prior, Mapping):
+        raise ValueError("Prior synthetic draft must be a mapping")
+    prior_qualification = prior.get("qualification")
+    if not isinstance(prior_qualification, Mapping):
+        raise ValueError("Prior draft qualification is missing")
+    previous_objection = prior.get("objection_category")
+    previous_flag = prior_qualification.get("opted_out")
+    expected_prior = prepare_followup(
+        row, opted_out=previous_flag, objection=previous_objection
+    )
+    if dict(prior) != expected_prior:
+        raise ValueError("Cached synthetic draft does not match trusted offline rules")
+    refreshed = prepare_followup(
+        row, opted_out=opted_out, objection=previous_objection
+    )
+    return {
+        "schema_version": "rre-review-recheck-v1",
+        "synthetic": True,
+        "external_ref": row["external_ref"],
+        "review_status": (
+            "suppressed" if refreshed["status"] == "suppressed"
+            else "fresh_human_review_required"
+        ),
+        "replay_changed": (
+            expected_prior["idempotency_key"] != refreshed["idempotency_key"]
+        ),
+        "outreach_enabled": False,
+        "sent": False,
+        "requires_human_approval": True,
+        "followup": refreshed,
+    }
