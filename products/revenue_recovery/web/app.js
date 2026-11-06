@@ -138,7 +138,7 @@ async function refreshScorecard() {
     }
     $("scorecardInfo").textContent =
       "Synthetic process-memory inquiries: " + data.counts.received_demo_leads +
-      ". Actual paying customers: 0. No real payment source or confirmed bookings connected.";
+      ". Real customer count: unknown (no billing source connected). No confirmed bookings.";
   } catch (_error) {
     $("scorecardInfo").textContent = "Scorecard disconnected — fixture mode only. No real financial results.";
   }
