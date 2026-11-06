@@ -139,3 +139,10 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - **RED proof:** test-only commit `47fe733a6a8c40b1651e87c007c6ae65635add2f` introduced commercial price/measurement checks. GitHub Actions run [42283982355](https://github.com/reppiks490/cash-flow-/actions/runs/42283982355) failed **10 assertions and 8 errors**, exposing acceptance of noncanonical amounts, unbounded values and a raw `decimal.InvalidOperation` exception on extreme exponents.
 - **GREEN proof:** source hardening commit `cd9df35798a0fb20a42d7be2b4c6e892ba42ee2e` passed **106/106 Python, 11/11 Node and JS syntax**, with separate MONEYFALL CI green in [42284105908](https://github.com/reppiks490/cash-flow-/actions/runs/42284105908). Syntax and maximum amounts are checked before constructing Decimal; unsupported/unsafe price and measurement inputs now raise domain-specific errors.
 - **What this does not prove:** These remain synthetic planning values. There is no authenticated billing/processor receipt, verified paid customer count, or actual net profit; no live payment account or financial data was accessed. Production rollout/PII/messaging remain forbidden pending separate gates.
+
+## Principal release-boundary checkpoint — 2026-11-06 14:00 America/Chicago
+
+- Fresh `main` reviewed at `d8ab6c9bb8fc891cb2bd451e519b2508804d4c76` (financial-input guards merged). Earlier M1 scaffold is already integrated; do not reintroduce it.
+- Added `RELEASE_BOUNDARY_CONTRACT.md` on isolated principal branch: 13 explicit negative/release acceptance checks, tenant/session isolation contract, revision-bound human approval, fail-closed suppression and receipt attribution invariants. This is **design documentation**, not implemented tenant security or passing production tests.
+- Exact branch test execution is not yet evidenced; do not claim green CI. Next principal code priority: RB-01/02 ingress regression and RB-04/05 authenticated tenant boundary only after QA review of storage design; preserve current synthetic-only operation.
+- No real customers, payment receipts, outreach, deployment or verified net profit established.
