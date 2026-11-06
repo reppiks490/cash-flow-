@@ -2,12 +2,13 @@
 
 // Local-only synthetic UI. Never send messages or persist contact information.
 const FIXTURES = Object.freeze([
-  {synthetic:true,external_ref:"DEMO-HVAC-001",source:"Website form",need:"AC stopped cooling during afternoon",status:"received"},
-  {synthetic:true,external_ref:"DEMO-HVAC-002",source:"Callback request",need:"Requesting estimate for replacement heat pump",status:"received"},
-  {synthetic:true,external_ref:"DEMO-HVAC-003",source:"Service inquiry",need:"Annual furnace maintenance inquiry",status:"received"}
+  {synthetic:true,external_ref:"DEMO-HVAC-001",source:"website",need:"AC not cooling",status:"received"},
+  {synthetic:true,external_ref:"DEMO-HVAC-002",source:"phone",need:"estimate follow-up",status:"received"},
+  {synthetic:true,external_ref:"DEMO-HVAC-003",source:"referral",need:"AC maintenance",status:"received"}
 ]);
 const $ = id => document.getElementById(id);
 let leads = [];
+let selectionSequence = 0;
 
 function safeLead(value) {
   if (!value || typeof value !== "object" || value.synthetic !== true) return null;
@@ -24,14 +25,48 @@ function draftFor(lead) {
     "This is an UNSENT synthetic draft. Confirm consent, customer identity and accurate details before any real communication.";
 }
 
-function selectLead(index) {
+async function selectLead(index) {
   const lead = leads[index];
   if (!lead) return;
-  $("draft").value = draftFor(lead);
-  $("copyStatus").textContent = "Prepared for " + lead.external_ref + " (not sent).";
+  const requestNumber = ++selectionSequence;
+  $("draft").value = "Preparing local synthetic preview...";
+  $("copyStatus").textContent = "Checking read-only preview for " + lead.external_ref + " (no messages sent).";
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2500);
+  try {
+    const url = "/api/demo/recovery/" + encodeURIComponent(lead.external_ref);
+    const response = await fetch(url, {cache:"no-store",credentials:"omit",signal:controller.signal});
+    if (!response.ok) throw new Error("Review preview unavailable");
+    const data = await response.json();
+    const p = data && data.preview;
+    if (data.synthetic !== true || !p || p.synthetic !== true ||
+        p.external_ref !== lead.external_ref ||
+        !p.qualification || p.qualification.result !== "manual_review_required" ||
+        p.qualification.qualified !== false || p.qualification.consent_verified !== false ||
+        !p.followup || p.followup.status !== "unsent_unapproved_draft" ||
+        p.followup.approved !== false || p.followup.transmitted !== false ||
+        typeof p.followup.message !== "string" ||
+        !p.crm || p.crm.dry_run !== true || p.crm.transmitted !== false ||
+        !p.appointment || p.appointment.confirmed !== false ||
+        !p.attribution || p.attribution.verified_recovered_revenue_cents !== 0) {
+      throw new Error("Unsafe or incompatible review preview");
+    }
+    if (requestNumber !== selectionSequence) return;
+    $("draft").value = p.followup.message;
+    $("copyStatus").textContent = "Read-only local API preview for " + lead.external_ref +
+       ". UNSENT; not approved; qualification and consent require human review.";
+  } catch (_error) {
+    if (requestNumber !== selectionSequence) return;
+    $("draft").value = "OFFLINE SYNTHETIC FALLBACK — NOT SERVER GENERATED.\n\n" + draftFor(lead);
+    $("copyStatus").textContent = "Offline fixture draft for " + lead.external_ref +
+       ". Not sent, approved, or verified.";
+  } finally {clearTimeout(timeout);}
 }
 
 function render(rows, source) {
+  selectionSequence += 1;
+  $("draft").value = "Select a synthetic lead above.";
+  $("copyStatus").textContent = "";
   leads = rows.map(safeLead).filter(Boolean);
   $("leadCount").textContent = String(leads.length);
   $("followCount").textContent = String(leads.length);
