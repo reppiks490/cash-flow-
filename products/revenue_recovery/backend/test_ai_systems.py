@@ -1,5 +1,6 @@
 """RRE-02 synthetic-only AI-lane contract and adversarial checks."""
 import unittest
+from unittest.mock import patch
 from backend.qualification import qualify_lead, validate_lead, NEEDS
 from backend.followups import prepare_followup
 from backend.ai_providers import get_provider
@@ -66,6 +67,30 @@ class AISystemsTests(unittest.TestCase):
     def test_invalid_opt_out_type_rejected(self):
         with self.assertRaises(ValueError):
             qualify_lead(sample(), opted_out="false")
+
+    def test_offline_provider_does_not_open_network_socket(self):
+        # Verify behavior, not just the provider.external_calls metadata.
+        with patch("socket.socket", side_effect=AssertionError("unexpected socket call")):
+            provider = get_provider("offline")
+            result = provider.qualify(sample())
+            draft = provider.draft(sample())
+        self.assertFalse(result["outreach_allowed"])
+        self.assertFalse(draft["send_enabled"])
+        self.assertFalse(draft["sent"])
+
+    def test_all_hvac_templates_are_unsent_and_inputs_unchanged(self):
+        provider = get_provider("offline")
+        for need in NEEDS:
+            with self.subTest(need=need):
+                lead = sample(need=need)
+                before = dict(lead)
+                draft = provider.draft(lead, opted_out=False)
+                self.assertEqual(lead, before)
+                self.assertEqual(draft["status"], "pending_human_review")
+                self.assertIn("internal synthetic preview only", draft["draft"].lower())
+                self.assertFalse(draft["sent"])
+                self.assertFalse(draft["send_enabled"])
+                self.assertTrue(draft["requires_human_approval"])
 
     def test_reference_namespace_matches_local_intake(self):
         # The principal store only accepts explicit DEMO/QA synthetic tokens.
