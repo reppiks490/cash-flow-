@@ -293,7 +293,7 @@ def make_handler(store: DemoStore):
                 # Fail before integer parsing, so malformed header values cannot
                 # leak into the generic ValueError response or consume huge CPU.
                 raw_length = self.headers.get("Content-Length", "")
-                if re.fullmatch(r"[0-9]{1,5}\\Z", raw_length, re.ASCII) is None:
+                if re.fullmatch(r"[0-9]{1,5}\Z", raw_length, re.ASCII) is None:
                     self._json(413, {"error": "Invalid or oversized request"})
                     return
                 length = int(raw_length)
