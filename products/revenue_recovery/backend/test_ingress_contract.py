@@ -71,6 +71,27 @@ class StrictJSONIngressTests(unittest.TestCase):
         self.assertEqual(body["error"], "Nonstandard JSON numeric constant")
         self.assertEqual(self.store.list(), [])
 
+
+    def test_nested_ambiguous_json_field_rejected_pre_schema(self):
+        status, body = self.post(
+            '{"synthetic":true,"external_ref":"QA-NEST1","source":"website",'
+            '"need":"repair","ignored":{"x":1,"x":2}}'
+        )
+        self.assertEqual(status, 400)
+        self.assertEqual(body["error"], "Duplicate JSON field")
+        self.assertEqual(self.store.list(), [])
+
+    def test_both_nonfinite_infinity_signs_rejected(self):
+        for constant in ("Infinity", "-Infinity"):
+            with self.subTest(constant=constant):
+                status, body = self.post(
+                    '{"synthetic":true,"external_ref":"QA-INF1","source":"website",'
+                    '"need":' + constant + '}'
+                )
+                self.assertEqual(status, 400)
+                self.assertEqual(body["error"], "Nonstandard JSON numeric constant")
+                self.assertEqual(self.store.list(), [])
+
     def test_valid_synthetic_intake_and_idempotent_replay_still_work(self):
         raw = ('{"synthetic":true,"external_ref":"QA-OK1",'
                '"source":"website","need":"repair"}')
