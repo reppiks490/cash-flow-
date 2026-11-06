@@ -8,11 +8,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 MAX_BODY_BYTES = 16_384
 MAX_LEADS = 2_000
+ALLOWED_SOURCES = frozenset({"demo", "website", "phone", "referral"})
+ALLOWED_NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance", "estimate follow-up", "heating issue"})
+DEMO_REF = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}\\Z")
 
 
 class DemoStore:
@@ -35,6 +39,12 @@ class DemoStore:
             if not isinstance(value, str) or not 1 <= len(value.strip()) <= 240:
                 raise ValueError(f"{key} must be a nonempty string of at most 240 characters")
         external_ref = incoming["external_ref"].strip()
+        if DEMO_REF.fullmatch(external_ref) is None:
+            raise ValueError("external_ref must be a short synthetic token without personal information")
+        if incoming["source"] not in ALLOWED_SOURCES:
+            raise ValueError("source must be a supported synthetic category")
+        if incoming["need"] not in ALLOWED_NEEDS:
+            raise ValueError("need must be a supported synthetic category")
         row = {
             "synthetic": True,
             "external_ref": external_ref,
