@@ -8,7 +8,7 @@ from collections.abc import Mapping
 
 SOURCES = frozenset({"demo", "website", "phone", "referral"})
 NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance", "estimate follow-up", "heating issue"})
-REF = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,63}\Z")
+REF = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\Z", re.I)
 RUBRIC_VERSION = "hvac-demo-v1"
 RULES = {
     "AC not cooling": ("urgent_service", 90, "cooling_failure"),
