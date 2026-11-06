@@ -59,7 +59,11 @@ def calculate_scenario(s: Scenario) -> dict:
     contribution = price - variable
     overhead = fixed + acquisition + refunds
     required = None
-    if contribution > 0:
+    # An all-zero target and overhead is already attained with zero customers,
+    # even when additional customers have no or negative contribution.
+    if target + overhead == 0:
+        required = 0
+    elif contribution > 0:
         required = max(0, int(((target + overhead) / contribution).to_integral_value(rounding=ROUND_CEILING)))
     return {
         "classification": "hypothetical_scenario_only",
