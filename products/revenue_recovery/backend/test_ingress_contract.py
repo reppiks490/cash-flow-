@@ -73,7 +73,7 @@ class StrictJSONIngressTests(unittest.TestCase):
 
     def test_unicode_casefold_tokens_rejected_before_storage(self):
         # re.IGNORECASE without ASCII also admits these four Unicode lookalikes.
-        for ref in ("QA-\\u212a", "QA-\\u0130", "QA-\\u0131", "QA-\\u017f"):
+        for ref in ("QA-" + chr(0x212A), "QA-" + chr(0x0130), "QA-" + chr(0x0131), "QA-" + chr(0x017F)):
             with self.subTest(ref=ref):
                 raw = json.dumps({"synthetic": True, "external_ref": ref,
                                   "source": "website", "need": "repair"})
@@ -84,7 +84,7 @@ class StrictJSONIngressTests(unittest.TestCase):
 
     def test_reference_contract_rejects_unicode_and_accepts_ascii(self):
         from backend.contracts import REF
-        for ref in ("QA-\\u212a", "QA-\\u0130", "QA-\\u0131", "QA-\\u017f"):
+        for ref in ("QA-" + chr(0x212A), "QA-" + chr(0x0130), "QA-" + chr(0x0131), "QA-" + chr(0x017F)):
             with self.subTest(ref=ref):
                 self.assertIsNone(REF.fullmatch(ref))
         self.assertIsNotNone(REF.fullmatch("QA-ASCII-001"))
