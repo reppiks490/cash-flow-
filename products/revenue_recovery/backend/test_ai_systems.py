@@ -22,6 +22,19 @@ class AISystemsTests(unittest.TestCase):
         self.assertEqual(prepare_followup(sample()), prepare_followup(sample()))
         self.assertEqual(prepare_followup(sample())["status"], "pending_human_review")
 
+    def test_idempotency_fingerprint_binds_validated_content(self):
+        original = sample(ref="DEMO-KEY-1")
+        baseline = qualify_lead(original)
+        replay = qualify_lead(dict(original))
+        self.assertEqual(baseline["idempotency_key"], replay["idempotency_key"])
+        different_need = qualify_lead({**original, "need": "maintenance"})
+        different_source = qualify_lead({**original, "source": "phone"})
+        self.assertNotEqual(baseline["idempotency_key"], different_need["idempotency_key"])
+        self.assertNotEqual(baseline["idempotency_key"], different_source["idempotency_key"])
+        self.assertNotIn(original["external_ref"], baseline["idempotency_key"])
+        self.assertNotEqual(prepare_followup(original)["idempotency_key"],
+                            prepare_followup({**original, "need": "maintenance"})["idempotency_key"])
+
     def test_opt_out_suppresses(self):
         d = prepare_followup(sample(), opted_out=True)
         self.assertEqual(d["status"], "suppressed")
