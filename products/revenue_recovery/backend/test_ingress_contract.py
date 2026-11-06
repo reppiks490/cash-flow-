@@ -71,6 +71,25 @@ class StrictJSONIngressTests(unittest.TestCase):
         self.assertEqual(body["error"], "Nonstandard JSON numeric constant")
         self.assertEqual(self.store.list(), [])
 
+    def test_unicode_casefold_tokens_rejected_before_storage(self):
+        # re.IGNORECASE without ASCII also admits these four Unicode lookalikes.
+        for ref in ("QA-\\u212a", "QA-\\u0130", "QA-\\u0131", "QA-\\u017f"):
+            with self.subTest(ref=ref):
+                raw = json.dumps({"synthetic": True, "external_ref": ref,
+                                  "source": "website", "need": "repair"})
+                status, body = self.post(raw)
+                self.assertEqual(status, 400)
+                self.assertIn("external_ref", body["error"])
+                self.assertEqual(self.store.list(), [])
+
+    def test_reference_contract_rejects_unicode_and_accepts_ascii(self):
+        from backend.contracts import REF
+        for ref in ("QA-\\u212a", "QA-\\u0130", "QA-\\u0131", "QA-\\u017f"):
+            with self.subTest(ref=ref):
+                self.assertIsNone(REF.fullmatch(ref))
+        self.assertIsNotNone(REF.fullmatch("QA-ASCII-001"))
+        self.assertIsNotNone(REF.fullmatch("demo-hvac_02"))
+
     def test_valid_synthetic_intake_and_idempotent_replay_still_work(self):
         raw = ('{"synthetic":true,"external_ref":"QA-OK1",'
                '"source":"website","need":"repair"}')
