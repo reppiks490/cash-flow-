@@ -7,6 +7,7 @@ All amounts are USD cents; never process or record real customer data here.
 from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation, ROUND_CEILING
+import re
 
 MAX_CUSTOMERS = 100_000
 MAX_DOLLARS = Decimal("10000000.00")
@@ -17,8 +18,10 @@ class ScenarioError(ValueError):
 
 
 def _cents(value: str, name: str, *, positive: bool = False) -> int:
-    if not isinstance(value, str):
-        raise ScenarioError(f"{name} must be a decimal USD string, not a float")
+    if type(value) is not str or not re.fullmatch(
+        r"(?:0|[1-9][0-9]{0,7})(?:\.[0-9]{1,2})?\Z", value, flags=re.ASCII
+    ):
+        raise ScenarioError(f"{name} must be a bounded plain USD decimal string")
     try:
         number = Decimal(value)
     except (InvalidOperation, ValueError):
