@@ -9,7 +9,9 @@ import {runInNewContext} from "node:vm";
 const script = readFileSync(new URL("./app.js", import.meta.url), "utf8");
 const html = readFileSync(new URL("./index.html", import.meta.url), "utf8");
 
-function harness({unsafePreview = false, brokenScenario = false} = {}) {
+function harness({unsafePreview = false, brokenScenario = false,
+                  badEventType = false, badPolicyReason = false,
+                  forgedSuppression = false} = {}) {
   const nodes = new Map();
   const requests = [];
   const lead = {
@@ -82,9 +84,10 @@ function harness({unsafePreview = false, brokenScenario = false} = {}) {
       const suppressed = mode === "revoked_mock";
       return ok({synthetic:true, policy:{
         synthetic:true, external_ref:lead.external_ref, mode,
-        suppressed, consent_verified:false, operator_authorized:false,
+        suppressed:forgedSuppression ? true : suppressed, consent_verified:false, operator_authorized:false,
         may_contact_real_person:false, actual_message_sent:false,
-        reasons:[suppressed ? "synthetic_opt_out_revocation" : "consent_evidence_unverified"],
+        reasons:[badPolicyReason ? "Call Jane at 555-0100" :
+          (suppressed ? "synthetic_opt_out_revocation" : "consent_evidence_unverified")],
         draft:suppressed ? null : "UNSENT INTERNAL MOCK ONLY"
       }});
     }
@@ -93,7 +96,7 @@ function harness({unsafePreview = false, brokenScenario = false} = {}) {
         synthetic:true, external_ref:lead.external_ref,
         scenario:"closed_job_mock",
         events:[{synthetic:true, sequence:1,
-          event_type:"inquiry_observed_synthetic",
+          event_type:badEventType ? "Call Jane at 555-0100" : "inquiry_observed_synthetic",
           source_evidence_verified:false, external_side_effect:brokenScenario}],
         metrics:{
           actual_messages_sent:0, actual_bookings_confirmed:0,
@@ -187,4 +190,34 @@ test("seed action posts only three local synthetic categorical leads", async () 
   assert.equal(posts.length, 3);
   assert.ok(posts.every(x => x.path === "/api/demo/leads" && x.credentials === "omit"));
   assert.match(h.nodes.get("connection").textContent, /explicitly synthetic examples/);
+});
+
+test("untrusted scenario event type is rejected instead of displayed", async () => {
+  const h = harness({badEventType:true});
+  await h.sandbox.refresh();
+  await h.sandbox.selectLead(0);
+  h.sandbox.document.getElementById("scenarioChoice").value = "closed_job_mock";
+  await h.sandbox.loadScenario();
+  assert.match(h.nodes.get("auditEvents").textContent, /timeline unavailable/);
+  assert.doesNotMatch(h.nodes.get("auditEvents").textContent, /Call Jane/);
+});
+
+test("untrusted policy reason is rejected instead of displayed", async () => {
+  const h = harness({badPolicyReason:true});
+  await h.sandbox.refresh();
+  await h.sandbox.selectLead(0);
+  h.sandbox.document.getElementById("policyChoice").value = "unknown";
+  await h.sandbox.loadPolicy();
+  assert.match(h.nodes.get("policyEvents").textContent, /Policy preview unavailable/);
+  assert.doesNotMatch(h.nodes.get("policyEvents").textContent, /Call Jane/);
+});
+
+test("mock unknown consent cannot claim suppressed while retaining a draft", async () => {
+  const h = harness({forgedSuppression:true});
+  await h.sandbox.refresh();
+  await h.sandbox.selectLead(0);
+  h.sandbox.document.getElementById("policyChoice").value = "unknown";
+  await h.sandbox.loadPolicy();
+  assert.match(h.nodes.get("policyEvents").textContent, /Policy preview unavailable/);
+  assert.doesNotMatch(h.nodes.get("policyEvents").textContent, /UNSENT \/ REVIEW ONLY/);
 });
