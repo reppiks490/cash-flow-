@@ -38,7 +38,7 @@ Deduplicate by tenant + immutable source event key, and by provider receipt ID f
 - Operating margin = pretax operating net / collected subscription revenue; undefined when denominator 0.
 - Payback = fully loaded acquisition expense / measured monthly contribution margin per retained customer; undefined without measured inputs.
 
-Every dashboard metric must show measurement window, numerator, denominator, provenance, synthetic/live classification and missing-data status. **Current verified commercial metrics: zero real customers, zero authenticated payments, zero measured net profit.**
+Every dashboard metric must show measurement window, numerator, denominator, provenance, synthetic/live classification and missing-data status. **Current actual paying-customer count, payments and net profit are unverified/unknown because no commercial source-of-truth is connected. Synthetic ledgers contain no authenticated receipts.**
 
 ## Release and billing gates
 Do not enable payment processor, invoicing, recurring charges, email/SMS or customer data collection until owner authorization, signed terms, QA approval and production security controls. Never place secrets or personal data in this public repository.
