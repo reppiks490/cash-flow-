@@ -55,6 +55,24 @@ class SubscriptionScenarioTests(unittest.TestCase):
         self.assertIsNone(report["minimum_customers_for_target"])
         self.assertFalse(report["scenario_meets_target"])
 
+    def test_zero_target_and_zero_overhead_require_zero_customers(self):
+        report = scenario(customers=0, monthly_price_usd="0.01",
+                          fixed_monthly_cost_usd="0.00",
+                          variable_monthly_cost_per_customer_usd="0.02",
+                          target_profit_usd="0")
+        self.assertEqual(report["estimated_pre_tax_profit_cents"], 0)
+        self.assertTrue(report["scenario_meets_target"])
+        self.assertEqual(report["minimum_customers_for_target"], 0)
+
+    def test_required_customer_count_outside_input_range_is_flagged(self):
+        impossible_to_evaluate = scenario(
+            customers=0, monthly_price_usd="0.01",
+            fixed_monthly_cost_usd="0", variable_monthly_cost_per_customer_usd="0",
+            target_profit_usd="2500.00")
+        self.assertEqual(impossible_to_evaluate["minimum_customers_for_target"], 250000)
+        self.assertTrue(impossible_to_evaluate["minimum_customers_outside_supported_range"])
+        self.assertFalse(scenario()["minimum_customers_outside_supported_range"])
+
     def test_all_usd_fields_reject_noncanonical_notation(self):
         for key in ("monthly_price_usd", "fixed_monthly_cost_usd",
                     "variable_monthly_cost_per_customer_usd",
