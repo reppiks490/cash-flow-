@@ -4,7 +4,7 @@
 subscription, a connected integration, an actual appointment, or pilot approval.
 
 Commercial ticket: [RRE-04 #26](https://github.com/reppiks490/cash-flow-/issues/26).
-Stacked after [commercial PR #43](https://github.com/reppiks490/cash-flow-/pull/43).
+The latest integrated offline baseline includes the compatible commercial measurements and demo-readiness contracts; source work remains traceable in original author PRs #43, #48, #49 and #53.
 Coordinate backend API/tenant contracts through [RRE-01 #23](https://github.com/reppiks490/cash-flow-/issues/23).
 
 ## Scope
