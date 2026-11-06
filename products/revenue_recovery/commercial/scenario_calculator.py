@@ -11,6 +11,7 @@ from decimal import Decimal, InvalidOperation, ROUND_CEILING
 
 CENT = Decimal("0.01")
 MAX_AMOUNT = Decimal("1000000.00")
+MAX_SCENARIO_CUSTOMERS = 10_000
 
 
 class ScenarioError(ValueError):
@@ -45,7 +46,7 @@ class Scenario:
 
 def calculate_scenario(s: Scenario) -> dict:
     """Return labeled arithmetic only; no actual financial verification."""
-    if not isinstance(s, Scenario) or type(s.customers) is not int or not 0 <= s.customers <= 10000:
+    if not isinstance(s, Scenario) or type(s.customers) is not int or not 0 <= s.customers <= MAX_SCENARIO_CUSTOMERS:
         raise ScenarioError("customers must be an integer between 0 and 10000")
     price = usd(s.price_usd)
     variable = usd(s.variable_cost_per_customer_usd)
@@ -59,7 +60,9 @@ def calculate_scenario(s: Scenario) -> dict:
     contribution = price - variable
     overhead = fixed + acquisition + refunds
     required = None
-    if contribution > 0:
+    if target + overhead == 0:
+        required = 0
+    elif contribution > 0:
         required = max(0, int(((target + overhead) / contribution).to_integral_value(rounding=ROUND_CEILING)))
     return {
         "classification": "hypothetical_scenario_only",
@@ -72,6 +75,7 @@ def calculate_scenario(s: Scenario) -> dict:
         "pretax_net_scenario_usd": str(net.quantize(CENT)),
         "target_pretax_net_usd": str(target),
         "minimum_customers_for_target_scenario": required,
+        "minimum_customers_outside_supported_range": required is not None and required > MAX_SCENARIO_CUSTOMERS,
         "break_even_unreachable_at_assumed_unit_margin": required is None,
         "after_tax_net": None,
     }
