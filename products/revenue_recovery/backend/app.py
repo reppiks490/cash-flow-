@@ -24,6 +24,22 @@ MAX_BODY_BYTES = 16_384
 MAX_LEADS = 2_000
 
 
+def _reject_duplicate_json_fields(pairs: list[tuple[str, object]]) -> dict:
+    """Reject ambiguous JSON objects rather than silently taking the last key."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("Duplicate JSON field")
+        result[key] = value
+    return result
+
+
+def _reject_nonstandard_json_constant(value: str) -> None:
+    """JSON does not permit NaN or Infinity, even though json.loads accepts them."""
+    raise ValueError("Nonstandard JSON numeric constant")
+
+
+
 class LeadConflictError(ValueError):
     """An existing synthetic reference must not silently change identity."""
 
@@ -277,7 +293,11 @@ def make_handler(store: DemoStore):
                 if not 0 <= length <= MAX_BODY_BYTES:
                     self._json(413, {"error": "Invalid or oversized request"})
                     return
-                incoming = json.loads(self.rfile.read(length))
+                incoming = json.loads(
+                    self.rfile.read(length),
+                    object_pairs_hook=_reject_duplicate_json_fields,
+                    parse_constant=_reject_nonstandard_json_constant,
+                )
                 row, created = store.add(incoming)
             except LeadConflictError as exc:
                 self._json(409, {"error": str(exc)})
