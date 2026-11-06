@@ -1,0 +1,49 @@
+"""Standalone stdlib tests: python -m unittest discover -s commercial -p 'test_*.py'."""
+import unittest
+from scenario_calculator import Scenario, ScenarioError, calculate_scenario
+
+
+def scenario(**changes):
+    data = dict(customers=5, price_usd="700.00", variable_cost_per_customer_usd="75.00",
+                fixed_cost_usd="350.00", acquisition_cost_usd="150.00",
+                refunds_and_fees_usd="125.00")
+    data.update(changes)
+    return Scenario(**data)
+
+
+class ScenarioCalculatorTests(unittest.TestCase):
+    def test_lean_scenario(self):
+        result = calculate_scenario(scenario())
+        self.assertEqual(result["gross_billed_scenario_usd"], "3500.00")
+        self.assertEqual(result["pretax_net_scenario_usd"], "2500.00")
+        self.assertEqual(result["minimum_customers_for_target_scenario"], 5)
+        self.assertIsNone(result["actual_net_profit_usd"])
+        self.assertIsNone(result["verified_receipts"])
+
+    def test_zero_customers_is_not_zero_actual_revenue(self):
+        result = calculate_scenario(scenario(customers=0))
+        self.assertEqual(result["pretax_net_scenario_usd"], "-625.00")
+        self.assertIsNone(result["actual_net_profit_usd"])
+
+    def test_nonpositive_margin_unreachable(self):
+        result = calculate_scenario(scenario(price_usd="50", variable_cost_per_customer_usd="75"))
+        self.assertIsNone(result["minimum_customers_for_target_scenario"])
+        self.assertTrue(result["break_even_unreachable_at_assumed_unit_margin"])
+
+    def test_round_up_customer_count(self):
+        result = calculate_scenario(scenario(fixed_cost_usd="351"))
+        self.assertEqual(result["minimum_customers_for_target_scenario"], 6)
+
+    def test_invalid_inputs_fail_closed(self):
+        for bad in ("NaN", "Infinity", "-1", "1.001", "1e10", "", " 1", 12):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ScenarioError):
+                    calculate_scenario(scenario(price_usd=bad))
+        for bad in (True, 1.2, -1, 10001):
+            with self.subTest(customers=bad):
+                with self.assertRaises(ScenarioError):
+                    calculate_scenario(scenario(customers=bad))
+
+
+if __name__ == "__main__":
+    unittest.main()
