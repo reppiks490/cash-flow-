@@ -43,23 +43,23 @@ test("synthetic and unverified revenue warnings remain prominent", () => {
 test("narrow lead table is a named keyboard-focusable scroll region", () => {
   assert.match(html, /<div class="table-scroll"[^>]*tabindex="0"[^>]*role="region"[^>]*aria-label="[^"]+"/);
   assert.match(html, /focus the table and use horizontal arrow keys/);
-  assert.match(css, /\\.table-scroll:focus-visible/);
-  assert.match(css, /\\.table-scroll\\s*\\{[^}]*overscroll-behavior-x:\\s*contain/);
+  assert.match(css, /\.table-scroll:focus-visible/);
+  assert.match(css, /\.table-scroll\s*\{[^}]*overscroll-behavior-x:\s*contain/);
 });
 
 test("synthetic timeline and policy output are keyboard-focusable", () => {
   for (const id of ["auditEvents", "policyEvents"]) {
-    const tag = [...html.matchAll(/<pre\\s+[^>]*>/g)].map(x => x[0])
+    const tag = [...html.matchAll(/<pre\s+[^>]*>/g)].map(x => x[0])
       .find(x => x.includes('id="' + id + '"'));
     assert.ok(tag, id + " must be present");
     assert.match(tag, /tabindex="0"/);
     assert.match(tag, /aria-label="[^"]+"/);
   }
-  assert.match(css, /\\.audit-events:focus-visible/);
+  assert.match(css, /\.audit-events:focus-visible/);
 });
 
 test("responsive action buttons preserve 44px target and visible focus", () => {
-  assert.match(css, /@media\\s*\\(max-width:\\s*760px\\)/);
-  assert.match(css, /\\.top-actions button\\s*\\{\\s*min-height:\\s*44px/);
-  assert.match(css, /outline:\\s*2px solid/);
+  assert.match(css, /@media\s*\(max-width:\s*760px\)/);
+  assert.match(css, /\.top-actions button\s*\{\s*min-height:\s*44px/);
+  assert.match(css, /outline:\s*2px solid/);
 });
