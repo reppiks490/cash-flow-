@@ -54,3 +54,14 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - Existing repository contains reusable MONEYFALL discovery, qualification, orders and evidence modules; reusing anything requires interface, permission, safety and regression review.
 - **Not yet verified:** runnable new product, integration tests, production provider connectivity, paying customers or recurring profit.
 - Next action: create independent runnable skeleton and pass a synthetic end-to-end acceptance test. Engineering lanes should coordinate interfaces before integrating.
+
+
+## Principal engineering checkpoint — 2026-11-06 10:00 America/Chicago
+
+- **Verified GitHub artifacts:** principal bootstrap draft PR #31, QA stacked PR #30, Experience draft PR #28, Commercial draft PR #29. AI Systems #24 is not yet verified as a PR.
+- **Principal changes on #31:** local loopback-only HTTP intake, in-memory idempotent queue, v0.1a allowed-value restrictions to reduce accidental PII in demo input, and REUSE_AND_INTEGRATION_AUDIT.md with rights and acceptance boundaries.
+- **Security status:** synthetic flag is not proof that data is synthetic. Allowed-value restrictions are a demo safeguard only. No public deployment, live records, customer contact or billing. No authenticated tenancy or private storage.
+- **Test status:** source changes committed, but **new allowed-value validation has not yet been executed in RRE CI**. QA #30 was branched from an earlier principal commit and must be reconciled with current PR #31 before any merge; no RRE green claim until tested against exact integration SHA.
+- **Licensing:** ICARUS LICENSE.md states proprietary/all rights reserved; no ICARUS code or market/trading data reused. MONEYFALL modules inspected at directory level only, no imports or copies.
+- **Critical path:** QA integrate latest principal commit and run isolated RRE tests; AI define pure qualification/draft functions; Experience wire same-origin synthetic API; Commercial keep payments/outreach hard disabled; Principal coordinate integration without merging unverified branches.
+- **Financial status:** no verified paying customers, no verified product revenue, no verified monthly net profit.
