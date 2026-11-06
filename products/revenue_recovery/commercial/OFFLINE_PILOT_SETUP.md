@@ -4,7 +4,7 @@
 subscription, a connected integration, an actual appointment, or pilot approval.
 
 Commercial ticket: [RRE-04 #26](https://github.com/reppiks490/cash-flow-/issues/26).
-Stacked after [commercial PR #43](https://github.com/reppiks490/cash-flow-/pull/43).
+This is the main-based consolidation in [commercial PR #58](https://github.com/reppiks490/cash-flow-/pull/58), preserving original draft branches #43/#48/#49/#53.
 Coordinate backend API/tenant contracts through [RRE-01 #23](https://github.com/reppiks490/cash-flow-/issues/23).
 
 ## Scope
@@ -17,6 +17,8 @@ credentials, network calls, writes, actual sends, bookings or charges.
 
 `mock` means only that future, separate in-memory demo adapters could be
 previewed. It does **not** mean a vendor connection or authorized automation.
+`preview_available=true` describes selection of a **local mock preview** only, not approval or readiness. It may be true while the five-item demo checklist is incomplete; `demo_readiness=blocked` always takes precedence. No live feature flags may be inferred from it.
+
 `disabled` removes even preview availability. Both modes keep
 `connected=false` and `live_read_enabled=false` /
 `live_write_enabled=false`.
@@ -89,6 +91,8 @@ python -m commercial.demo_cli \
   --check no_live_credentials_confirmed \
   --check no_customer_data_confirmed
 ```
+
+CLI `--check` values are **operator self-attestations** for synthetic practice, not authenticated identities, permission records, legally valid consent or a verifiable audit trail. They cannot authorize real workflows.
 
 The command intentionally has no real input forms, file uploads, API
 credentials, billing configuration or outreach flags. Success can show
