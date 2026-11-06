@@ -20,6 +20,8 @@ class DemoStoreTests(unittest.TestCase):
             {"synthetic": False, "external_ref": "x", "source": "s", "need": "n"},
             {"synthetic": True, "external_ref": "x", "source": "s", "need": "n", "email": "sample@example.com"},
             {"synthetic": True, "external_ref": "x", "source": "s", "need": ""},
+            {"synthetic": True, "external_ref": "1234567890", "source": "website", "need": "repair"},
+            {"synthetic": True, "external_ref": "DEMO-user@example", "source": "website", "need": "repair"},
         ):
             with self.subTest(row=row), self.assertRaises(ValueError):
                 store.add(row)
@@ -27,7 +29,7 @@ class DemoStoreTests(unittest.TestCase):
 
     def test_response_is_a_copy(self):
         store = DemoStore()
-        data, _ = store.add({"synthetic": True, "external_ref": "a", "source": "demo", "need": "maintenance"})
+        data, _ = store.add({"synthetic": True, "external_ref": "DEMO-COPY", "source": "demo", "need": "maintenance"})
         data["status"] = "paid"
         self.assertEqual(store.list()[0]["status"], "received")
 
