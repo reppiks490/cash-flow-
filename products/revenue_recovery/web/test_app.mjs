@@ -77,6 +77,17 @@ function harness({unsafePreview = false, brokenScenario = false} = {}) {
         attribution:{verified_recovered_revenue_cents:0}
       }});
     }
+    if (path.startsWith("/api/demo/policy/DEMO-NODE-01/")) {
+      const mode = path.split("/").at(-1);
+      const suppressed = mode === "revoked_mock";
+      return ok({synthetic:true, policy:{
+        synthetic:true, external_ref:lead.external_ref, mode,
+        suppressed, consent_verified:false, operator_authorized:false,
+        may_contact_real_person:false, actual_message_sent:false,
+        reasons:[suppressed ? "synthetic_opt_out_revocation" : "consent_evidence_unverified"],
+        draft:suppressed ? null : "UNSENT INTERNAL MOCK ONLY"
+      }});
+    }
     if (path.startsWith("/api/demo/scenarios/DEMO-NODE-01/")) {
       return ok({synthetic:true, scenario:{
         synthetic:true, external_ref:lead.external_ref,
@@ -153,6 +164,20 @@ test("scenario view labels mock stages and refuses a corrupt evidence event", as
   broken.sandbox.document.getElementById("scenarioChoice").value = "closed_job_mock";
   await broken.sandbox.loadScenario();
   assert.match(broken.nodes.get("auditEvents").textContent, /timeline unavailable/);
+});
+
+test("opt-out simulation suppresses drafts even when mock consent is offered", async () => {
+  const h = harness();
+  await h.sandbox.refresh();
+  await h.sandbox.selectLead(0);
+  h.sandbox.document.getElementById("policyChoice").value = "revoked_mock";
+  await h.sandbox.loadPolicy();
+  assert.match(h.nodes.get("policyEvents").textContent, /Internal draft: SUPPRESSED/);
+  assert.match(h.nodes.get("policyEvents").textContent, /Real outreach: DISABLED/);
+  h.sandbox.document.getElementById("policyChoice").value = "consent_record_mock";
+  await h.sandbox.loadPolicy();
+  assert.match(h.nodes.get("policyEvents").textContent, /UNSENT \/ REVIEW ONLY/);
+  assert.ok(h.requests.every(x => !x.path.includes("/api/send")));
 });
 
 test("seed action posts only three local synthetic categorical leads", async () => {
