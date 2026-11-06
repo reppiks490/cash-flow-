@@ -8,6 +8,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Mapping
+import re
+
+_REFERENCE = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\Z", re.I | re.ASCII)
+# Keep the exact allowlists in sync with backend.app.ALLOWED_SOURCES and
+# backend.app.ALLOWED_NEEDS. New categories require contract review in #23.
+# Arbitrary free text can contain personal data and remains rejected.
+_SOURCES = frozenset({"demo", "website", "phone", "referral"})
+_NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance",
+                    "estimate follow-up", "heating issue"})
 
 
 @dataclass(frozen=True)
@@ -32,6 +41,12 @@ def preview_crm_record(lead: Mapping[str, object]) -> CRMPreview:
         value = lead.get(key)
         if not isinstance(value, str) or not 1 <= len(value.strip()) <= 240:
             raise ValueError(f"{key} must be a nonempty string of at most 240 characters")
+    if not _REFERENCE.fullmatch(str(lead["external_ref"])):
+        raise ValueError("external_ref must be a DEMO- or QA-prefixed ASCII synthetic token")
+    if lead["source"] not in _SOURCES:
+        raise ValueError("Unsupported synthetic source")
+    if lead["need"] not in _NEEDS:
+        raise ValueError("Unsupported synthetic need")
     if lead.get("status") not in (None, "received"):
         raise ValueError("Unsupported lead stage")
     return CRMPreview(
