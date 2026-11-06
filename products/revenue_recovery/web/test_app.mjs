@@ -117,7 +117,7 @@ test("dashboard refresh consumes zero-claim scorecard", async () => {
   const h = harness();
   await h.sandbox.refresh();
   assert.equal(h.nodes.get("leadCount").textContent, "1");
-  assert.match(h.nodes.get("scorecardInfo").textContent, /Actual paying customers: 0/);
+  assert.match(h.nodes.get("scorecardInfo").textContent, /Real customer count: unknown/);
   assert.ok(h.requests.every(x => x.credentials === "omit"));
 });
 
