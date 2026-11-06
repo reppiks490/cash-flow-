@@ -21,7 +21,12 @@ notes describe bootstrap conditions, not the current integration.
   draft; separate recovery stays unsent; fake payment/privileged POSTs return
   404 with unchanged scorecard; mock closed jobs do not have verified receipts;
   PII, forged receipt fields, invalid tenant claims and policy paths fail.
-  **Execution on this branch: PENDING** until its workflow completes.
+  **Verified CI on implementation head f20f273097d12078db3c5d5edd1a29ba8a52acec:**
+  non-Codex RRE workflow https://github.com/reppiks490/cash-flow-/actions/runs/42278343767
+  passed 82 Python unittest cases (including all six new checks), Node syntax,
+  and Node synthetic-browser interaction checks. This was a PR integration
+  workflow, not a deployed production verification; confirm CI again for
+  subsequent code commits.
 - **Consent blocker:** revoked_mock is read-only and not persisted. A separate
   GET /api/demo/recovery/{ref} still generates an UNSENT review draft after
   simulated revocation. Implement durable tenant-specific suppression plus
