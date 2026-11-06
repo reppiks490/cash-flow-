@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Revenue Recovery | Synthetic Demo</title>
+<link rel="stylesheet" href="./styles.css">
+<script defer src="./app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to dashboard</a>
+<div class="shell">
+  <aside class="rail" aria-label="Dashboard navigation">
+    <div class="brand"><span class="mark" aria-hidden="true">◆</span><div>REVENUE<span>RECOVERY</span><small>OPERATOR CONSOLE</small></div></div>
+    <nav aria-label="Sections"><a href="#overview" aria-current="page">Overview</a><a href="#pipeline">Lead pipeline</a><a href="#drafts">Draft review</a><a href="#outcomes">Outcomes</a></nav>
+    <div class="rail-foot"><span class="status-dot" aria-hidden="true"></span> Local prototype <small>No production connections</small></div>
+  </aside>
+  <main id="main">
+    <header class="topbar"><div><div class="eyebrow">OPERATIONS / HVAC</div><h1>Revenue recovery <em>overview</em></h1><p>Track inbound opportunities without inventing revenue.</p></div><div class="top-actions"><span class="badge">SYNTHETIC DATA ONLY</span><button id="refresh" type="button">Refresh leads</button></div></header>
+    <div class="notice" role="status" id="connection">Offline fixture mode. No customer records or payments are connected.</div>
+    <section id="overview" aria-labelledby="overview-heading"><h2 id="overview-heading">Pipeline snapshot <span class="section-note">Illustrative records, not actual performance</span></h2>
+      <div class="metrics">
+        <article class="metric"><span>Demo inquiries</span><strong id="leadCount">0</strong><small>Received in current view</small></article>
+        <article class="metric"><span>Pending follow-ups</span><strong id="followCount">0</strong><small>Drafts require human review</small></article>
+        <article class="metric"><span>Confirmed appointments</span><strong>0</strong><small>Not connected to scheduling</small></article>
+        <article class="metric"><span>Verified recovered revenue</span><strong>$0</strong><small>No authenticated payment receipts</small></article>
+      </div>
+    </section>
+    <section class="workspace" id="pipeline" aria-labelledby="pipeline-heading"><div class="section-head"><div><div class="eyebrow">INBOX / OPPORTUNITIES</div><h2 id="pipeline-heading">Lead pipeline</h2></div><span id="leadSource" class="pill">Fixture</span></div>
+      <div class="table-scroll"><table><caption class="sr-only">Synthetic HVAC lead records</caption><thead><tr><th scope="col">Reference</th><th scope="col">Source</th><th scope="col">Request</th><th scope="col">Stage</th><th scope="col">Action</th></tr></thead><tbody id="leadRows"></tbody></table></div>
+      <p class="hint">All entries are synthetic. The browser never sends a message or books an appointment.</p>
+    </section>
+    <section class="columns">
+      <article class="panel" id="drafts" aria-labelledby="drafts-heading"><div class="eyebrow">HUMAN APPROVAL REQUIRED</div><h2 id="drafts-heading">Follow-up preview</h2><p class="muted">Select a lead to prepare an editable, unsent example. No contact information is stored.</p>
+        <label for="draft">Unsent draft</label><textarea id="draft" rows="7" spellcheck="true" aria-describedby="draftWarning">Select a synthetic lead above.</textarea><p class="hint" id="draftWarning">Draft only. Sending is disabled until authenticated, permissioned integrations exist.</p><button type="button" id="copyDraft">Copy draft locally</button><span id="copyStatus" class="inline-status" role="status"></span>
+      </article>
+      <article class="panel" id="outcomes" aria-labelledby="outcomes-heading"><div class="eyebrow">ATTRIBUTION / INTEGRITY</div><h2 id="outcomes-heading">Outcome verification</h2><div class="outcome"><span>Appointment adapter</span><strong>Not connected</strong></div><div class="outcome"><span>CRM write adapter</span><strong>Dry run only</strong></div><div class="outcome"><span>Payment reconciliation</span><strong>Not connected</strong></div><div class="outcome"><span>Authenticated revenue</span><strong>$0</strong></div><div class="gate">Commercial release requires tenant isolation, authorization, consent checks, verified integrations, and payment evidence.</div>
+      </article>
+    </section>
+    <footer>REVENUE RECOVERY ENGINE · SYNTHETIC PROTOTYPE · NOT FOR CUSTOMER DATA</footer>
+  </main>
+</div>
+</body>
+</html>

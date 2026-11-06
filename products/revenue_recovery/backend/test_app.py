@@ -27,7 +27,7 @@ class DemoStoreTests(unittest.TestCase):
 
     def test_response_is_a_copy(self):
         store = DemoStore()
-        data, _ = store.add({"synthetic": True, "external_ref": "a", "source": "demo", "need": "HVAC"})
+        data, _ = store.add({"synthetic": True, "external_ref": "a", "source": "demo", "need": "maintenance"})
         data["status"] = "paid"
         self.assertEqual(store.list()[0]["status"], "received")
 
