@@ -8,7 +8,7 @@ from collections.abc import Mapping
 
 SOURCES = frozenset({"demo", "website", "phone", "referral"})
 NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance", "estimate follow-up", "heating issue"})
-REF = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,63}\Z")
+REF = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\Z", re.I)
 RUBRIC_VERSION = "hvac-demo-v1"
 RULES = {
     "AC not cooling": ("urgent_service", 90, "cooling_failure"),
@@ -20,7 +20,11 @@ RULES = {
 }
 
 def validate_lead(lead: Mapping[str, object]) -> dict[str, object]:
-    """Strictly accept the principal's v0.1a lead contract, no free text."""
+    """Accept only the principal v0.1a synthetic stored-lead contract.
+
+    DEMO-/QA- prefixes are a demo namespace restriction, not proof that a
+    reference contains no personal information. Never ingest real leads.
+    """
     if not isinstance(lead, Mapping):
         raise ValueError("Lead must be a mapping")
     if set(lead) != {"synthetic", "external_ref", "source", "need", "status"}:
