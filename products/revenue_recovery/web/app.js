@@ -13,6 +13,8 @@ const DEMO_NEEDS = new Set(["AC not cooling", "AC maintenance", "repair",
   "maintenance", "estimate follow-up", "heating issue"]);
 const DEMO_REF = /^(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}$/i;
 const DEMO_KEYS = new Set(["synthetic", "external_ref", "source", "need", "status"]);
+// Backend emits bounded ASCII fixture codes, never free-text customer details.
+const SYNTHETIC_EVIDENCE_CODE = /^[a-z][a-z0-9_]{0,95}$/;
 const $ = id => document.getElementById(id);
 let leads = [];
 let selectionSequence = 0;
@@ -180,15 +182,19 @@ async function loadScenario() {
     const metrics = result && result.metrics;
     if (data.synthetic !== true || !result || result.synthetic !== true ||
         result.external_ref !== ref || result.scenario !== choice ||
-        !Array.isArray(result.events) || !metrics ||
+        !Array.isArray(result.events) || result.events.length > 7 || !metrics ||
         metrics.actual_messages_sent !== 0 ||
         metrics.actual_bookings_confirmed !== 0 ||
         metrics.actual_jobs_closed !== 0 ||
         metrics.verified_recovered_revenue_cents !== 0 ||
         metrics.verified_rre_subscription_revenue_cents !== 0 ||
         metrics.verified_payment_receipts !== 0 ||
-        result.events.some(e => e.synthetic !== true ||
-          e.source_evidence_verified !== false || e.external_side_effect !== false)) {
+        result.events.some(e => !e || typeof e !== "object" ||
+          e.synthetic !== true ||
+          e.source_evidence_verified !== false || e.external_side_effect !== false ||
+          !Number.isSafeInteger(e.sequence) || e.sequence < 1 || e.sequence > 7 ||
+          typeof e.event_type !== "string" ||
+          !SYNTHETIC_EVIDENCE_CODE.test(e.event_type))) {
       throw new Error("invalid unverified evidence payload");
     }
     if (selectedReference !== ref) return;
@@ -226,8 +232,12 @@ async function loadPolicy() {
         policy.external_ref !== ref || policy.mode !== choice ||
         policy.consent_verified !== false || policy.operator_authorized !== false ||
         policy.may_contact_real_person !== false || policy.actual_message_sent !== false ||
-        !Array.isArray(policy.reasons) ||
-        (choice === "revoked_mock" && (policy.draft !== null || policy.suppressed !== true))) {
+        !Array.isArray(policy.reasons) || policy.reasons.length > 16 ||
+        policy.reasons.some(reason => typeof reason !== "string" ||
+          !SYNTHETIC_EVIDENCE_CODE.test(reason)) ||
+        policy.suppressed !== (choice === "revoked_mock") ||
+        (choice === "revoked_mock" && policy.draft !== null) ||
+        (choice !== "revoked_mock" && (typeof policy.draft !== "string" || policy.draft.length > 4000))) {
       throw new Error("Unsafe synthetic policy response");
     }
     if (selectedReference !== ref) return;
