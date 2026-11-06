@@ -64,6 +64,24 @@ class SubscriptionScenarioTests(unittest.TestCase):
                 with self.subTest(field=key, value=value[:20]), self.assertRaises(ScenarioError):
                     scenario(**{key: value})
 
+    def test_zero_target_no_overhead_requires_zero_customers(self):
+        report = scenario(customers=0, monthly_price_usd="0.01",
+                          fixed_monthly_cost_usd="0",
+                          variable_monthly_cost_per_customer_usd="0.02",
+                          target_profit_usd="0")
+        self.assertEqual(report["estimated_pre_tax_profit_cents"], 0)
+        self.assertTrue(report["scenario_meets_target"])
+        self.assertEqual(report["minimum_customers_for_target"], 0)
+
+    def test_theoretical_minimum_outside_economics_range_is_disclosed(self):
+        report = scenario(customers=0, monthly_price_usd="0.01",
+                          fixed_monthly_cost_usd="0",
+                          variable_monthly_cost_per_customer_usd="0",
+                          target_profit_usd="2500")
+        self.assertEqual(report["minimum_customers_for_target"], 250000)
+        self.assertTrue(report["minimum_customers_outside_supported_range"])
+        self.assertFalse(scenario()["minimum_customers_outside_supported_range"])
+
     def test_rejects_unsafe_numbers_and_unexpected_types(self):
         for patch in (
             {"customers": True}, {"customers": -1}, {"customers": 100001},
