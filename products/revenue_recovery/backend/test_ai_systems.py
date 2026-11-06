@@ -129,7 +129,7 @@ class AISystemsTests(unittest.TestCase):
             with self.subTest(objection=objection):
                 d = prepare_followup(base, objection=objection)
                 self.assertIn(phrase, d["draft"].lower())
-                self.assertEqual(d["objection_source"], "synthetic_operator_enum")
+                self.assertEqual(d["objection_source"], "unverified_caller_supplied_synthetic_enum")
                 self.assertEqual(d["objection_category"], objection)
                 self.assertFalse(d["sent"])
                 self.assertFalse(d["send_enabled"])
