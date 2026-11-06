@@ -48,4 +48,15 @@ PYTHONPATH=products/revenue_recovery python -m backend.app --port 8765
 ```
 Open http://127.0.0.1:8765/demo/ and use a separate terminal to POST a synthetic lead; refresh the browser to see the lead in the pipeline and prepare a local unsent preview. Access the read-only recovery preview at `/api/demo/recovery/DEMO-001` after creating that synthetic record. There is no API for sending, billing, booking or signed receipts.
 
-**Integration dependency:** The browser currently composes its own local unsent draft; its Draft action has not yet been wired to the new recovery-preview endpoint. The AI Systems lane owns a future evidence-backed qualification/draft adapter. Experience owns the browser contract hookup. QA owns end-to-end security regression and release gates. Do not promote M1 to fully complete until these interfaces and negative tests converge.
+**Integration dependency:** The browser Draft action now fetches the read-only recovery-preview endpoint on the same local origin and explicitly falls back to an offline synthetic example. The AI Systems lane now provides deterministic evidence-labeled rule decisions and internal-only drafts (not actual LLM inference). Experience owns future customer-facing UX refinements. QA owns end-to-end security regression and release gates. Do not promote M1 to fully complete until these interfaces and negative tests converge.
+
+
+### Five-lane synthetic integration v0.3
+
+- The read-only `GET /api/demo/recovery/{ref}` now composes `backend.qualification.qualify_lead`, `backend.followups.prepare_followup`, `backend.ai_providers.get_provider("offline")`, and `backend.crm.preview_crm_record`.
+- Qualification rubric v1 returns synthetic source/need evidence, rule category, non-calibrated priority score, explicit unknowns including consent/suppression, and `outreach_allowed=false`. The public preview stays `result=manual_review_required`, `qualified=false` because an internal rubric cannot verify real consent or buying intent.
+- Draft contract v1 is internal only: `status=pending_human_review`, `sent=false`, `send_enabled=false`, `requires_human_approval=true`. The HTTP envelope retains `unsent_unapproved_draft` for browser compatibility. No outbound network adapters are configured.
+- UI's **Load synthetic examples** uses only three fixed DEMO-HVAC references and enumerated local category fields; it posts to the same localhost synthetic API. Duplicate replay returns 200, conflicting fields 409.
+- Reference identifiers now require `DEMO-` or `QA-` style prefixes; prefix checks reduce accidental PII insertion but do not establish data privacy or authorize real data ingestion.
+- Browser static assets and active same-origin preview are regression-tested. GitHub Actions tests Python modules and `node --check` for JavaScript syntax; these are **not** headless visual/browser-interaction tests and cannot prove production quality.
+- Latest completed exact-source verification as of this addendum: `fac3d74dbf2011d109266ecc336673580435ce41`, **35/35 RRE tests passed**, run 42252156846. Follow-up commit validation must be checked before any merge. All results are synthetic with no external services.
