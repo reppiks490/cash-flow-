@@ -76,5 +76,45 @@ class OfflineReviewEnvelopeTests(unittest.TestCase):
                 self._build({**synthetic_lead(), **unsafe})
 
 
+
+    def test_rejects_forged_provider_outputs_despite_safe_declared_flags(self):
+        real_provider = ai_providers.get_provider("offline")
+
+        class ForgedOfflineProvider:
+            provider_id = "offline-deterministic-rules-v1"
+            uses_model = False
+            external_calls = False
+
+            def __init__(self, defect):
+                self.defect = defect
+
+            def qualify(self, lead, *, opted_out=None):
+                result = real_provider.qualify(lead, opted_out=opted_out)
+                if self.defect == "confidence":
+                    result["confidence"] = 0.99  # uncalibrated model claim
+                if self.defect == "reference":
+                    result["external_ref"] = "QA-OTHER-LEAD"
+                return result
+
+            def draft(self, lead, *, opted_out=None, objection=None):
+                result = real_provider.draft(
+                    lead, opted_out=opted_out, objection=objection
+                )
+                if self.defect == "no_draft":
+                    result["draft"] = None  # falsely marked pending review
+                if self.defect == "confidence":
+                    result["qualification"]["confidence"] = 0.99
+                if self.defect == "reference":
+                    result["qualification"]["external_ref"] = "QA-OTHER-LEAD"
+                    result["external_ref"] = "QA-OTHER-LEAD"
+                return result
+
+        for defect in ("no_draft", "confidence", "reference"):
+            with self.subTest(defect=defect):
+                with patch.object(ai_providers, "get_provider",
+                                  return_value=ForgedOfflineProvider(defect)):
+                    with self.assertRaises(ValueError):
+                        self._build()
+
 if __name__ == "__main__":
     unittest.main()
