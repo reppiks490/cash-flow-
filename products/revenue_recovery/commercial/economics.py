@@ -7,6 +7,7 @@ All amounts are USD cents; never process or record real customer data here.
 from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation, ROUND_CEILING
+import re
 
 MAX_CUSTOMERS = 100_000
 MAX_DOLLARS = Decimal("10000000.00")
@@ -17,8 +18,10 @@ class ScenarioError(ValueError):
 
 
 def _cents(value: str, name: str, *, positive: bool = False) -> int:
-    if not isinstance(value, str):
-        raise ScenarioError(f"{name} must be a decimal USD string, not a float")
+    if type(value) is not str or not re.fullmatch(
+        r"(?:0|[1-9][0-9]{0,7})(?:\.[0-9]{1,2})?\Z", value, flags=re.ASCII
+    ):
+        raise ScenarioError(f"{name} must be a bounded plain USD decimal string")
     try:
         number = Decimal(value)
     except (InvalidOperation, ValueError):
@@ -72,7 +75,9 @@ def model_subscription_scenario(
     profit = gross - all_costs
 
     needed = None
-    if contribution > 0:
+    if target + fixed == 0:
+        needed = 0
+    elif contribution > 0:
         shortfall = target + fixed
         needed = (shortfall + contribution - 1) // contribution
 
@@ -92,6 +97,7 @@ def model_subscription_scenario(
         "target_profit_cents": target,
         "scenario_meets_target": profit >= target,
         "minimum_customers_for_target": needed,
+        "minimum_customers_outside_supported_range": needed is not None and needed > MAX_CUSTOMERS,
         "assumptions": [
             "One successful subscription charge per assumed paying customer monthly",
             "No refunds, chargebacks, sales tax or income tax modeled",
