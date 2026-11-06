@@ -130,6 +130,31 @@ class IntegratedDemoContractTests(unittest.TestCase):
         self.assertNotIn('fetch("/api/send"', js)
         self.assertNotIn("innerHTML", js)
 
+    def test_offline_qualification_is_explainable_not_authorized_outreach(self):
+        data = self.sample("DEMO-M1-QUALIFY", need="heating issue")
+        code, _, _ = self.request("POST", "/api/demo/leads", data)
+        self.assertEqual(code, 201)
+        code, _, raw = self.request("GET", "/api/demo/recovery/DEMO-M1-QUALIFY")
+        self.assertEqual(code, 200)
+        p = json.loads(raw)["preview"]
+        q = p["qualification"]
+        self.assertFalse(q["qualified"])
+        self.assertFalse(q["consent_verified"])
+        self.assertFalse(q["model_used"])
+        self.assertEqual(q["priority_score"], 90)
+        self.assertEqual(q["category"], "urgent_service")
+        self.assertEqual(q["rubric"]["schema_version"], "rre-qualification-v1")
+        self.assertEqual(q["rubric"]["evidence"][0]["field"], "need")
+        self.assertIn("suppression_status", q["rubric"]["unknowns"])
+        self.assertFalse(q["rubric"]["outreach_allowed"])
+        self.assertEqual(p["followup"]["template_status"], "pending_human_review")
+        self.assertFalse(p["followup"]["approved"])
+        self.assertFalse(p["followup"]["transmitted"])
+        self.assertEqual(p["attribution"]["verified_payment_receipts"], 0)
+        code, _, second = self.request("GET", "/api/demo/recovery/DEMO-M1-QUALIFY")
+        self.assertEqual(code, 200)
+        self.assertEqual(p, json.loads(second)["preview"])
+
     def test_browser_seed_fixtures_reuse_only_safe_local_intake(self):
         code, _, html = self.request("GET", "/demo/")
         self.assertEqual(code, 200)
