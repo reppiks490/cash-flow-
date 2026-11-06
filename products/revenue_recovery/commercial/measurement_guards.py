@@ -1,21 +1,25 @@
 """Offline, synthetic-only commercial KPI accounting. No payments or CRM writes."""
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 
 class MeasurementError(ValueError):
     """Unsafe, inconsistent or unsupported financial evidence."""
 
+# Before Decimal parsing, reject noncanonical or unbounded monetary inputs.
+# Exponents such as 1E+999999 must never escape as decimal.InvalidOperation.
+_USD_RE = re.compile(r"(?:0|[1-9][0-9]{0,7})(?:\.[0-9]{1,2})?\Z", re.ASCII)
+_MAX_SCENARIO_USD = Decimal("10000000.00")
+
 def usd(value: str) -> Decimal:
-    if not isinstance(value, str):
-        raise MeasurementError("Amounts must be decimal strings")
-    try:
-        amount = Decimal(value)
-    except InvalidOperation:
-        raise MeasurementError("Invalid amount") from None
-    if not amount.is_finite() or amount < 0 or amount.as_tuple().exponent < -2:
-        raise MeasurementError("Expected nonnegative USD with at most two decimal places")
+    """Bounded plain USD scenario amount; never an authenticated receipt."""
+    if type(value) is not str or not _USD_RE.fullmatch(value):
+        raise MeasurementError("Amount must be a bounded nonnegative plain USD decimal string")
+    amount = Decimal(value)
+    if amount > _MAX_SCENARIO_USD:
+        raise MeasurementError("Amount exceeds the synthetic planning limit")
     return amount.quantize(Decimal("0.01"))
 
 @dataclass(frozen=True)

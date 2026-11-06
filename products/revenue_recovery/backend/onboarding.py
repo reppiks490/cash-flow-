@@ -4,8 +4,9 @@ No credentials, real customer details, money movement or external integrations.
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 
 
 class OnboardingError(ValueError):
@@ -44,14 +45,19 @@ def prepare_demo_workspace(payload: dict) -> DemoWorkspace:
     return DemoWorkspace(workspace_id, "hvac", True, "manual_review_only")
 
 
+# Constrain input length and syntax BEFORE Decimal parsing. Do not accept
+# floats, exponent notation, NaN/Infinity, signs, whitespace or huge decimals.
+_PRICE_RE = re.compile(r"(?:0|[1-9][0-9]{0,4})(?:\.[0-9]{1,2})?\Z", re.ASCII)
+_MAX_DEMO_PRICE = Decimal("10000.00")
+
+
 def draft_subscription_quote(monthly_price_usd: str = "700.00") -> dict:
-    """Create a nonbinding pricing hypothesis; never create a payment or invoice."""
-    try:
-        price = Decimal(monthly_price_usd)
-    except (InvalidOperation, TypeError):
-        raise OnboardingError("Invalid monthly price") from None
-    if not price.is_finite() or price <= 0 or price.as_tuple().exponent < -2:
-        raise OnboardingError("Price must be positive USD with <=2 decimal places")
+    """Preview a bounded, nonbinding price hypothesis; never create a payment."""
+    if type(monthly_price_usd) is not str or not _PRICE_RE.fullmatch(monthly_price_usd):
+        raise OnboardingError("Monthly price must be a plain USD decimal string with at most two decimals")
+    price = Decimal(monthly_price_usd)
+    if price <= 0 or price > _MAX_DEMO_PRICE:
+        raise OnboardingError("Demo monthly price must be between $0.01 and $10000.00")
     return {
         "synthetic": True,
         "nonbinding": True,
