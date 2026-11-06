@@ -16,7 +16,7 @@ MAX_BODY_BYTES = 16_384
 MAX_LEADS = 2_000
 ALLOWED_SOURCES = frozenset({"demo", "website", "phone", "referral"})
 ALLOWED_NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance", "estimate follow-up", "heating issue"})
-DEMO_REF = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}\\Z")
+DEMO_REF = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}\Z")
 
 
 class DemoStore:
