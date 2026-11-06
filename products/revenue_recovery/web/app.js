@@ -6,16 +6,27 @@ const FIXTURES = Object.freeze([
   {synthetic:true,external_ref:"DEMO-HVAC-002",source:"phone",need:"estimate follow-up",status:"received"},
   {synthetic:true,external_ref:"DEMO-HVAC-003",source:"referral",need:"AC maintenance",status:"received"}
 ]);
+// Mirror backend/contracts.py's synthetic-only categorical intake contract.
+// A browser payload is untrusted even if it is labeled synthetic.
+const DEMO_SOURCES = new Set(["demo", "website", "phone", "referral"]);
+const DEMO_NEEDS = new Set(["AC not cooling", "AC maintenance", "repair",
+  "maintenance", "estimate follow-up", "heating issue"]);
+const DEMO_REF = /^(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}$/i;
+const DEMO_KEYS = new Set(["synthetic", "external_ref", "source", "need", "status"]);
 const $ = id => document.getElementById(id);
 let leads = [];
 let selectionSequence = 0;
 let selectedReference = null;
 
 function safeLead(value) {
-  if (!value || typeof value !== "object" || value.synthetic !== true) return null;
-  for (const field of ["external_ref","source","need","status"]) {
-    if (typeof value[field] !== "string" || value[field].length > 240) return null;
-  }
+  if (!value || typeof value !== "object" || Array.isArray(value) || value.synthetic !== true) return null;
+  const keys = Object.keys(value);
+  if (keys.length !== DEMO_KEYS.size || keys.some(key => !DEMO_KEYS.has(key))) return null;
+  if (typeof value.external_ref !== "string") return null;
+  const match = DEMO_REF.exec(value.external_ref);
+  if (!match || match[0] !== value.external_ref) return null;
+  if (!DEMO_SOURCES.has(value.source) || !DEMO_NEEDS.has(value.need) ||
+      value.status !== "received") return null;
   return {synthetic:true,external_ref:value.external_ref,source:value.source,need:value.need,status:value.status};
 }
 
@@ -112,7 +123,10 @@ async function refresh() {
     const response = await fetch("/api/demo/leads", {cache:"no-store",credentials:"omit",signal:controller.signal});
     if (!response.ok) throw new Error("Synthetic API unavailable");
     const payload = await response.json();
-    if (payload.synthetic !== true || !Array.isArray(payload.leads)) throw new Error("Unexpected response");
+    if (payload.synthetic !== true || !Array.isArray(payload.leads) ||
+        payload.leads.length > 2000 || payload.leads.some(row => safeLead(row) === null)) {
+      throw new Error("Unsafe or incompatible synthetic lead response");
+    }
     render(payload.leads, "Local API");
     await refreshScorecard();
     $("connection").textContent = "Connected to local synthetic API. No real customers or payments.";
