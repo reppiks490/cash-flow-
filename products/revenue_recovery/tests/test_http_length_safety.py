@@ -47,8 +47,8 @@ class ContentLengthSafetyTests(unittest.TestCase):
         for raw in ("SYNTHETIC-NONSECRET-MARKER", "1e3", "+0", "9" * 150):
             with self.subTest(length=raw[:25]):
                 status, result = self.post_with_length(raw)
-                self.assertEqual(status, 413)
-                self.assertEqual(result, {"error": "Invalid or oversized request"})
+                self.assertEqual(status, 400)
+                self.assertEqual(result, {"error": "Invalid request framing"})
                 self.assertNotIn(raw, json.dumps(result))
                 self.assertEqual(self.store.list(), [])
 
