@@ -2,12 +2,18 @@
 import unittest
 
 from products.revenue_recovery.backend.crm import preview_crm_record
+from backend.contracts import SOURCES, NEEDS
 
 
 class CRMPreviewContractTests(unittest.TestCase):
     def setUp(self):
         self.lead = dict(synthetic=True, external_ref="DEMO-HVAC-001",
                          source="website", need="AC not cooling", status="received")
+
+    def test_non_mapping_is_controlled_value_error(self):
+        for payload in (None, [], "synthetic", 123):
+            with self.subTest(payload=payload), self.assertRaises(ValueError):
+                preview_crm_record(payload)
 
     def test_preview_never_transmits(self):
         result = preview_crm_record(self.lead)
@@ -30,13 +36,9 @@ class CRMPreviewContractTests(unittest.TestCase):
                 preview_crm_record({**self.lead, **change})
 
     def test_all_intake_contract_categories_preview_without_transmission(self):
-        # Keep these enumerations aligned with backend.app's synthetic-only
-        # intake contract; mismatches once produced two CI errors on PR #40.
-        sources = ("demo", "website", "phone", "referral")
-        needs = ("AC not cooling", "AC maintenance", "repair",
-                 "maintenance", "estimate follow-up", "heating issue")
-        for source in sources:
-            for need in needs:
+        # Consume the canonical contract; avoid drift-prone local copies.
+        for source in SOURCES:
+            for need in NEEDS:
                 with self.subTest(source=source, need=need):
                     result = preview_crm_record({**self.lead, "source": source, "need": need})
                     self.assertEqual((result.source, result.need), (source, need))
