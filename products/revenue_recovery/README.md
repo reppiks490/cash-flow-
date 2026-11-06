@@ -22,3 +22,21 @@ This branch combines source snapshots from principal PR #31, QA PR #30, experien
 ## Current five-lane contract
 
 All five engineering source lanes are assembled in draft integration PR #33 (other branches and PRs retained). The qualification provider is a **deterministic offline rules engine**, not a paid API or LLM. Workflow previews expose explicit source evidence, non-calibrated priority scores, unknown consent, unsent draft text, dry-run CRM, no confirmed appointment, and no authenticated revenue. Do not connect a public tunnel or enter real customer information.
+
+
+## One-command local integration acceptance
+
+From the repository root (Python 3.11+, standard library, no service accounts):
+
+```bash
+PYTHONPATH=products/revenue_recovery python -m backend.smoke
+```
+
+For Windows PowerShell:
+
+```powershell
+$env:PYTHONPATH = "products/revenue_recovery"
+python -m backend.smoke
+```
+
+The smoke starts an ephemeral **127.0.0.1-only** HTTP server, submits fixed synthetic HVAC categories, and checks the complete preview/scorecard path: health, idempotent intake, ambiguous JSON rejection, absence of rejected records, review-required unsent draft, offline CRM preview, simulated job closure with **zero real collections**, mock opt-out suppression, unknown real-customer count, and unavailable send/billing endpoints. It shuts the server down when finished; exit code 0 means all assertions passed. This is a reproducible *synthetic prototype* check—not authorization for customer data, public tunnels, real messaging, production tenancy, genuine payment receipts or pilot operations. See Principal PR #46 and its exact-head CI results before relying on a particular revision.
