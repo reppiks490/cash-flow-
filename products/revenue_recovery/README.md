@@ -22,3 +22,20 @@ This branch combines source snapshots from principal PR #31, QA PR #30, experien
 ## Current five-lane contract
 
 All five engineering source lanes are assembled in draft integration PR #33 (other branches and PRs retained). The qualification provider is a **deterministic offline rules engine**, not a paid API or LLM. Workflow previews expose explicit source evidence, non-calibrated priority scores, unknown consent, unsent draft text, dry-run CRM, no confirmed appointment, and no authenticated revenue. Do not connect a public tunnel or enter real customer information.
+
+## Local synthetic end-to-end smoke (non-Codex)
+
+From the repository root (Python 3.11+, no service credentials or paid APIs):
+
+```bash
+PYTHONPATH=products/revenue_recovery python -m backend.smoke
+```
+
+For PowerShell:
+
+```powershell
+$env:PYTHONPATH = "products/revenue_recovery"
+py -3 -m backend.smoke
+```
+
+The smoke uses an ephemeral **127.0.0.1-only** HTTP server and validates 12 synthetic-only stages (intake, replay, strict duplicate JSON rejection, no rejected-record persistence, unsent draft, CRM dry-run, mock close, opt-out suppression, no verified financial evidence, no send/billing routes). The endpoint rejects duplicate JSON object members and invalid `NaN`/`Infinity` constants with HTTP 400. Passing is not evidence of production authentication, consent, customer revenue, or pilot readiness.
