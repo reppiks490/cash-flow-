@@ -15,6 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from backend.crm import preview_crm_record
+from backend.ai_providers import get_provider
 
 MAX_BODY_BYTES = 16_384
 MAX_LEADS = 2_000
@@ -82,9 +83,30 @@ class DemoStore:
 
 
 def build_recovery_preview(lead: dict) -> dict:
-    """Deterministic placeholder, not AI or a production decision."""
+    """Contract adapter from AI-lane offline rules to safe synthetic UI preview.
+
+    Uses no LLM or external calls. No recipient identity, verified consent,
+    outbound permission, booked appointment or financial receipt is available.
+    All AI-lane outputs are verified to remain internal and unsent.
+    """
     if lead.get("synthetic") is not True or lead.get("status") != "received":
         raise ValueError("Recovery preview requires a synthetic received lead")
+    provider = get_provider("offline")
+    assessment = provider.qualify(lead, opted_out=None)
+    pending = provider.draft(lead, opted_out=None)
+    if (
+        provider.uses_model is not False or provider.external_calls is not False
+        or assessment.get("schema_version") != "rre-qualification-v1"
+        or assessment.get("decision") != "qualified_for_human_review"
+        or assessment.get("outreach_allowed") is not False
+        or pending.get("schema_version") != "rre-draft-v1"
+        or pending.get("status") != "pending_human_review"
+        or pending.get("sent") is not False
+        or pending.get("send_enabled") is not False
+        or pending.get("requires_human_approval") is not True
+        or not isinstance(pending.get("draft"), str)
+    ):
+        raise ValueError("Offline qualification or draft failed closed")
     mapped = preview_crm_record(lead)
     return {
         "synthetic": True,
@@ -92,20 +114,21 @@ def build_recovery_preview(lead: dict) -> dict:
         "qualification": {
             "result": "manual_review_required",
             "qualified": False,
-            "decision_engine": "deterministic_placeholder_not_ai",
-            "observed_fields": ["source", "need"],
+            "decision_engine": provider.provider_id,
+            "model_used": provider.uses_model,
             "consent_verified": False,
+            "priority_score": assessment["priority_score"],
+            "category": assessment["category"],
+            "rubric": assessment,
         },
         "followup": {
             "status": "unsent_unapproved_draft",
             "approved": False,
             "transmitted": False,
-            "message": (
-                "SYNTHETIC UNSENT DRAFT: Thank you for your HVAC inquiry "
-                f"about {lead['need']}. A team member can review the request "
-                "and discuss appropriate next steps. This is not authorization "
-                "to communicate with a real person."
-            ),
+            "message": "SYNTHETIC UNSENT DRAFT — deterministic rules, not an LLM:\n\n" +
+                       pending["draft"],
+            "template_status": pending["status"],
+            "idempotency_key": pending["idempotency_key"],
         },
         "crm": asdict(mapped),
         "appointment": {
