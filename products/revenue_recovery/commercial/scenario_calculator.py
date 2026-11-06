@@ -6,6 +6,7 @@ All outputs are scenarios, never verified revenue or profit.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from decimal import Decimal, InvalidOperation, ROUND_CEILING
 
 CENT = Decimal("0.01")
@@ -18,7 +19,7 @@ class ScenarioError(ValueError):
 
 def usd(value: str) -> Decimal:
     """Parse a finite nonnegative USD amount, strictly from a decimal string."""
-    if not isinstance(value, str) or not value or value.strip() != value:
+    if type(value) is not str or not re.fullmatch(r"(?:0|[1-9][0-9]{0,6})(?:\\.[0-9]{1,2})?\\Z", value, flags=re.ASCII):
         raise ScenarioError("Amounts must be decimal strings")
     try:
         amount = Decimal(value)
