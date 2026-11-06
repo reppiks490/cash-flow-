@@ -14,7 +14,7 @@ def _text(value):
 
 def _contains_phrase(text: str, phrase: str) -> bool:
     """Match complete tokens/phrases, not substrings inside unrelated words."""
-    return re.search(r"(?<!\\w)" + re.escape(phrase) + r"(?!\\w)", text) is not None
+    return re.search(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", text) is not None
 
 def qualify(lead: dict) -> dict:
     """Return explainable assessment. Caller must persist tenant-scoped dedup/idempotency."""
