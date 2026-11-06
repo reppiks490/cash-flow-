@@ -115,6 +115,48 @@ class AISystemsTests(unittest.TestCase):
         self.assertFalse(result["send_enabled"])
         self.assertTrue(result["requires_human_approval"])
 
+    def test_structured_hvac_objections_generate_distinct_unsent_drafts(self):
+        # Approved mock categories, not real message inference.
+        expected = {
+            "price": "pricing questions",
+            "timing": "timing concerns",
+            "competitor": "comparing providers",
+        }
+        base = sample("estimate follow-up")
+        default = prepare_followup(base)
+        keys = {default["idempotency_key"]}
+        for objection, phrase in expected.items():
+            with self.subTest(objection=objection):
+                d = prepare_followup(base, objection=objection)
+                self.assertIn(phrase, d["draft"].lower())
+                self.assertEqual(d["objection_source"], "synthetic_operator_enum")
+                self.assertEqual(d["objection_category"], objection)
+                self.assertFalse(d["sent"])
+                self.assertFalse(d["send_enabled"])
+                self.assertTrue(d["requires_human_approval"])
+                self.assertNotIn(d["idempotency_key"], keys)
+                keys.add(d["idempotency_key"])
+        self.assertEqual(len(keys), 4)
+
+    def test_objection_validation_and_opt_out_remain_fail_closed(self):
+        for invalid in ("", "other", "please call 555-0000", 1, False, [], {}):
+            with self.subTest(invalid=repr(invalid)), self.assertRaises(ValueError):
+                prepare_followup(sample(), objection=invalid)
+        for objection in ("price", "timing", "competitor"):
+            with self.subTest(objection=objection):
+                d = prepare_followup(sample(), opted_out=True, objection=objection)
+                self.assertIsNone(d["draft"])
+                self.assertFalse(d["sent"])
+                self.assertFalse(d["send_enabled"])
+
+    def test_offline_provider_accepts_bounded_objection_without_external_calls(self):
+        provider = get_provider("offline")
+        d = provider.draft(sample("repair"), objection="price")
+        self.assertIn("pricing questions", d["draft"].lower())
+        self.assertFalse(provider.uses_model)
+        self.assertFalse(provider.external_calls)
+        self.assertFalse(d["send_enabled"])
+
     def test_draft_is_not_false_appointment_or_price(self):
         d = prepare_followup(sample("estimate follow-up"))
         self.assertIn("No pricing or prior quote has been verified", d["draft"])
