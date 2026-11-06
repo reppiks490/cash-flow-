@@ -292,7 +292,13 @@ def make_handler(store: DemoStore):
             try:
                 # Fail before integer parsing, so malformed header values cannot
                 # leak into the generic ValueError response or consume huge CPU.
-                raw_length = self.headers.get("Content-Length")
+                raw_lengths = self.headers.get_all("Content-Length", [])
+                # Reject ambiguous framing before reading: duplicates (even
+                # identical) and Transfer-Encoding are unsupported in this demo.
+                if len(raw_lengths) > 1 or self.headers.get("Transfer-Encoding") is not None:
+                    self._json(400, {"error": "Invalid request framing"})
+                    return
+                raw_length = raw_lengths[0] if raw_lengths else None
                 if raw_length is None:
                     self._json(413, {"error": "Invalid or oversized request"})
                     return
