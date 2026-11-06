@@ -70,6 +70,33 @@ assert plan["billing_enabled"] is False
 assert plan["pilot_ready"] is False
 ```
 
+## Local self-serve preflight (no data collection)
+
+From the repository root, after setting `PYTHONPATH=products/revenue_recovery`,
+run the following to print a **blocked by default** JSON plan:
+
+```bash
+python -m commercial.demo_cli
+```
+
+To acknowledge the five synthetic demo checks *after actually reviewing them*:
+
+```bash
+python -m commercial.demo_cli \
+  --check synthetic_fixture_reviewed \
+  --check operator_demo_walkthrough_reviewed \
+  --check human_approval_policy_reviewed \
+  --check no_live_credentials_confirmed \
+  --check no_customer_data_confirmed
+```
+
+The command intentionally has no real input forms, file uploads, API
+credentials, billing configuration or outreach flags. Success can show
+`offline_demo_ready`, **never** pilot approval, customer activation or
+permission to contact anyone. Rejects unsafe pricing, IDs, unknown checks
+and non-mock ports without echoing the supplied values. Run regression
+checks with `python -m unittest commercial.test_demo_cli -v`.
+
 ## Boundaries to production
 
 This standalone commercial preflight is intentionally **not wired into
