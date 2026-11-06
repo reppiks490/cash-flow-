@@ -54,6 +54,29 @@ class AISystemsTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             qualify_lead(sample(), opted_out="false")
 
+    def test_reference_namespace_matches_local_intake(self):
+        # The principal store only accepts explicit DEMO/QA synthetic tokens.
+        for ref in ("DEMO-123", "QA-abc", "demo_token", "qa-XYZ_9"):
+            with self.subTest(ref=ref):
+                self.assertEqual(validate_lead(sample(ref=ref))["external_ref"], ref)
+        for ref in ("JohnDoe", "Jane_Doe", "ref123", "DEMO-", "QA-", "DEMO-a@b", "QA-a/b", "DEMO-a b"):
+            with self.subTest(ref=ref), self.assertRaises(ValueError):
+                validate_lead(sample(ref=ref))
+
+    def test_invalid_suppression_types_fail_closed_for_drafts(self):
+        for flag in (0, 1, "", "false", [], {}):
+            with self.subTest(flag=repr(flag)), self.assertRaises(ValueError):
+                prepare_followup(sample(), opted_out=flag)
+
+    def test_suppressed_qualified_input_has_no_draft_or_contact_permission(self):
+        result = prepare_followup(sample("heating issue"), opted_out=True)
+        self.assertIsNone(result["draft"])
+        self.assertEqual(result["qualification"]["decision"], "suppressed")
+        self.assertFalse(result["qualification"]["outreach_allowed"])
+        self.assertFalse(result["sent"])
+        self.assertFalse(result["send_enabled"])
+        self.assertTrue(result["requires_human_approval"])
+
     def test_draft_is_not_false_appointment_or_price(self):
         d = prepare_followup(sample("estimate follow-up"))
         self.assertIn("No pricing or prior quote has been verified", d["draft"])
