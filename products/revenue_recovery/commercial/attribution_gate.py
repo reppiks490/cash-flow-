@@ -4,7 +4,7 @@ from __future__ import annotations
 from decimal import Decimal
 import re
 
-_MONEY = re.compile(r"(?:0|[1-9][0-9]{0,8})(?:\\.[0-9]{1,2})?\\Z")
+_MONEY = re.compile(r"(?:0|[1-9][0-9]{0,8})(?:\.[0-9]{1,2})?\Z")
 
 
 def classify_attribution(event: dict) -> dict:
