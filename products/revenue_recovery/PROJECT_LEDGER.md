@@ -54,3 +54,65 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - Existing repository contains reusable MONEYFALL discovery, qualification, orders and evidence modules; reusing anything requires interface, permission, safety and regression review.
 - **Not yet verified:** runnable new product, integration tests, production provider connectivity, paying customers or recurring profit.
 - Next action: create independent runnable skeleton and pass a synthetic end-to-end acceptance test. Engineering lanes should coordinate interfaces before integrating.
+
+
+## Principal engineering checkpoint — 2026-11-06 10:00 America/Chicago
+
+- **Verified GitHub artifacts:** principal bootstrap draft PR #31, QA stacked PR #30, Experience draft PR #28, Commercial draft PR #29. AI Systems #24 is not yet verified as a PR.
+- **Principal changes on #31:** local loopback-only HTTP intake, in-memory idempotent queue, v0.1a allowed-value restrictions to reduce accidental PII in demo input, and REUSE_AND_INTEGRATION_AUDIT.md with rights and acceptance boundaries.
+- **Security status:** synthetic flag is not proof that data is synthetic. Allowed-value restrictions are a demo safeguard only. No public deployment, live records, customer contact or billing. No authenticated tenancy or private storage.
+- **Test status:** source changes committed, but **new allowed-value validation has not yet been executed in RRE CI**. QA #30 was branched from an earlier principal commit and must be reconciled with current PR #31 before any merge; no RRE green claim until tested against exact integration SHA.
+- **Licensing:** ICARUS LICENSE.md states proprietary/all rights reserved; no ICARUS code or market/trading data reused. MONEYFALL modules inspected at directory level only, no imports or copies.
+- **Critical path:** QA integrate latest principal commit and run isolated RRE tests; AI define pure qualification/draft functions; Experience wire same-origin synthetic API; Commercial keep payments/outreach hard disabled; Principal coordinate integration without merging unverified branches.
+- **Financial status:** no verified paying customers, no verified product revenue, no verified monthly net profit.
+
+
+## Integration checkpoint — 2026-11-06 10:13 America/Chicago (supersedes earlier test-status note)
+
+- **Integration branch:** `integration/rre-synthetic-m1-20261106`, based on QA's stacked bootstrap; pulls source snapshots from principal PR #31, QA PR #30, Experience PR #28 and Commercial PR #29 without mutating any original source branch. Own product files only plus existing product-specific non-Codex CI; no changes to MONEYFALL or ICARUS modules.
+- **Combined test evidence:** commit `483dd202023bca2d04498eac99e1b04fb118a6b9` passed 19/19 RRE tests in GitHub Actions run 42249477317. Subsequent commit `a7d692f13c3d69e25e033c6d1473f2faa8e1fb2b` passed **24/24 RRE tests** in run 42250319834, and MONEYFALL foundation verification also passed on exact head. Includes same-origin HTTP browser route, a deterministic review-required read-only recovery preview, CRM dry-run, no real appointments/payment, conflicting-idempotency and host/origin safety tests.
+- **Actual feature state:** synthetic lead intake, enumerated data categories, idempotent replay, dashboard serving, browser local draft, CRM preview, explicit missing appointment verification, $0 verified revenue display and hypothetical commercial models. Browser draft still local and not connected to backend recovery-preview route; AI qualification not yet integrated, no actual customer-facing SaaS.
+- **Remaining M1 work:** approved AI qualification/draft interface; frontend fetch of backend preview and UI status; dynamic CRM/appointment placeholder only, no false confirmed outcomes; end-to-end CI on final integration head; upstream PR attribution/review/merge coordination.
+- **Remaining M2/M3/M4 gates:** authentication, tenant isolation, private durable state, consent/suppression audit, real integrations, legal review, validated pilot demand, signed contracts, explicit authorizations and real signed financial receipts. Not pilot-ready or commercially deployable.
+- **Business evidence:** no verified paying customers, real product payments, recurring revenue or net profit.
+- **Next priority for Principal:** hold all branch merges until QA reviews exact integration SHA; request cross-lane API wiring and coordinate incremental integration PR with no Codex involvement.
+
+
+## Five-lane integration checkpoint — 2026-11-06 (supersedes older PR/run counts)
+
+- **Draft PR:** https://github.com/reppiks490/cash-flow-/pull/33 on `integration/rre-synthetic-m1-20261106` (not merged to main). Source snapshots now include *all five* engineers, including offline rule-based AI PR #32. Independent PR branches #28–#32 remain preserved for attribution and review.
+- **Verified CI:** Python 3.11, `35/35` product unittest checks passed on exact commit `fac3d74dbf2011d109266ecc336673580435ce41`, https://github.com/reppiks490/cash-flow-/actions/runs/42252156846 . Node's `--check` also passed for the dashboard JS; MONEYFALL foundation workflow passed separately. Subsequent documentation commits need their own exact-head checks.
+- **Synthetic M1 features:** same-origin local dashboard, three click-to-load synthetic HVAC leads, idempotent intake, rejection of raw customer fields/unknown IDs, read-only recovery preview composed from deterministic qualification, rule source/evidence/unknowns, unsent follow-up, CRM dry-run, fake appointment explicitly unbooked, no authenticated revenue. Browser falls back to labeled offline fixtures.
+- **What is not established:** Actual LLM/AI inference, authenticated multi-tenancy, encrypted private persistence, CRM/calendar/telephony/SMS/email connections, genuine human approval identity, safe consent capture, signed receipts, payments, accurate recovered-revenue attribution, customer contracts, verified income, production hosting or security assurance. End-to-end browser automation/visual QA has not been executed.
+- **Next critical gate:** QA reviews exact integration PR head, browser visual/functional verification, and owner/QA approval before any merge. Then implement authenticated tenant data boundaries and consent audit; only after those may authorized real pilot records be considered.
+
+
+## Follow-up integration batch — 2026-11-06 (Principal + Parallel; follow-up branch)
+
+- **Branch:** `feature/rre-pipeline-evidence-hardening-20261106`, stacked on draft integration PR #33. This batch does not alter other agents' branches and is confined to `products/revenue_recovery/`, `docs/revenue_recovery/` and the product-specific non-Codex test workflow.
+- **Implemented:** `backend/demo_evidence.py` with deterministic mock lifecycle events for review, appointment, and synthetic job closure. Every event is marked `synthetic=true`, has no authenticated actor or provider receipt, and cannot send a message or transfer money. Scorecard shows zero *verified* receipts and unknown real customer count when disconnected.
+- **HTTP:** read-only `GET /api/demo/scorecard` and `GET /api/demo/scenarios/{DEMO_OR_QA_REF}/{review|appointment_mock|closed_job_mock}`; invalid scenarios and mutation attempts fail closed. Nothing writes a CRM or books appointments.
+- **UX:** same-origin scenario viewer and evidence timeline, and synthetic scorecard; no value shown as real revenue. Added Node VM interaction tests (not headless Chromium visual tests) and CI job to run `node --test` with Python suite.
+- **Privacy:** local `http.server` default raw request-line logging disabled so accidental identifiers in invalid paths do not echo to console. This is a demo mitigation, **not** authenticated production audit logging.
+- **Commercial/compliance research:** Parallel-search primary-source comparison confirms incumbent features in Jobber, Hatch and Housecall Pro and points to legal review of consent/opt-outs under FCC and FTC rules. Research is documented in `docs/revenue_recovery/PARALLEL_MARKET_COMPLIANCE_RESEARCH_2026-11-06.md`. This is neither a completed compliance assessment nor validated customer demand.
+- **Verified code checks:** `46/46` product Python tests and `6/6` JavaScript VM interaction tests passed at code head `977b64f3c0eb5143393fe7c985488f02e764bd96` in GitHub Actions run [42256492252](https://github.com/reppiks490/cash-flow-/actions/runs/42256492252); MONEYFALL foundation tests passed separately on the same code commit. One earlier new JS harness run failed on a mock DOM selector setup and was repaired; no production implementation was implicated.
+- **Runbook:** Windows PowerShell and Git Bash local-only commands and explicit no-public-tunnel restrictions are documented in `products/revenue_recovery/RUNBOOK_LOCAL.md`.
+- **Remaining blocked:** signed receipts, actual bookings/CRM writes, real customer communications, accounts/auth/tenant boundaries, private durable storage, legal review and approved outreach, pricing and paying pilots. No customer or net-profit milestone is verified.
+- **Release classification:** working *synthetic integration candidate*, not pilot-ready or commercially deployed. Use `docs/revenue_recovery/RELEASE_ACCEPTANCE_MATRIX_2026-11-06.md` for next unblocked tickets.
+
+## Additional consent/suppression integration — 2026-11-06
+
+- **Read-only endpoint** `GET /api/demo/policy/{ref}/{unknown|revoked_mock|consent_record_mock}` computes strictly local consent fixture outcomes. **No recipient data**, actual communications, API tokens or contacts. This is not lawful consent or operator authentication.
+- **Fail-closed behavior:** revoked mock returns `draft=null`, `suppressed=true`; unknown consent and mock-record scenarios may create internal-only draft text but never enable outreach or send. No mock record can turn `consent_verified`, `operator_authorized` or `may_contact_real_person` true.
+- **Browser:** explicit policy viewer lets a human inspect the outcome of revocation vs unknown/mock consent. UI never posts a real follow-up.
+- **Exact code head verification:** commit `d68574ad89c700165ae5188f9a99c69a515960ef` passed **52/52 Python product tests**, **7/7 Node VM tests**, JavaScript syntax, and separately existing MONEYFALL foundation checks. See GitHub Actions [42257493614](https://github.com/reppiks490/cash-flow-/actions/runs/42257493614). The Node VM validates logic but is **not a visual browser accessibility/security audit**.
+- **Release safety:** all customer consent/real contact states are unverified. A simulated revocation handler does **not** satisfy actual TCPA/CAN-SPAM processing, authenticated revocation audit, tenant isolation, lawful permission, or telecom provider terms. Zero verified revenue and no paying customers have been demonstrated.
+
+## Consolidated M1 synthetic baseline — 2026-11-06 (latest checkpoint)
+
+- **Integration PR #33 head:** `8a32d84286192462f79b02df9e0af3e9f6a67148`; PR #45 merged into branch #37 as `c004cb4a9e2f6fc5a96bd91ebab2f9d993d94640`, then #37 merged into this integration branch. Both merges preserve contributor branch history; the original upstream draft PRs remain intact.
+- **Verified exact-head GitHub Actions:** `76/76` RRE Python tests and `11/11` Node behavior/DOM tests passed; browser syntax and separate MONEYFALL verification passed. RRE run https://github.com/reppiks490/cash-flow-/actions/runs/42278062611. This is a **synthetic demo release gate only**; not a production certification.
+- **Consolidated contracts:** `backend/contracts.py` is the source for enum-only synthetic source/need categories and DEMO-/QA-prefixed references, used by local intake, offline qualification and CRM dry-run. This corrected an actual risk of UX/CRM accepting fewer categories than the intake API.
+- **Synthetic features:** local-only demo dashboard, lead intake/dedup, deterministic review-only qualification, no-send follow-up drafts, dry-run CRM, simulated consent revocation, evidence-labeled mock appointment/job timeline, explicit unverified revenue and planning-only profit. External SMS/email, billing, calendars, CRM writes and live credentials remain **disabled/unimplemented**.
+- **Open launch blockers:** authenticated multi-tenant access, private durable encrypted storage, real consent/suppression records, approvals and transmission audit, vendor/contract legal review, real CRM/calendar and financial receipts, browser visual/accessibility QA, monitoring/backups and authorized pilot customers. No real revenue or profit verified.
+- **Release decision:** source can be merged into `main` only as an **inert prototype baseline**, never construed as approval for public deployment or customer data processing; keep implementation branches and audit history intact. Product CI and QA checks must be green on final merger commit.
