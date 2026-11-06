@@ -34,6 +34,13 @@ class ScenarioCalculatorTests(unittest.TestCase):
         result = calculate_scenario(scenario(fixed_cost_usd="351"))
         self.assertEqual(result["minimum_customers_for_target_scenario"], 6)
 
+    def test_reject_noncanonical_usd_strings(self):
+        # Canonical dollars only; do not silently accept Decimal exponent,
+        # underscore separators, explicit plus signs or leading zeros.
+        for bad in ("1e0", "1E+4", "+1", "0001", "1_000", "0e0"):
+            with self.subTest(amount=bad), self.assertRaises(ScenarioError):
+                calculate_scenario(scenario(price_usd=bad))
+
     def test_invalid_inputs_fail_closed(self):
         for bad in ("NaN", "Infinity", "-1", "1.001", "1e10", "", " 1", 12):
             with self.subTest(bad=bad):
