@@ -28,8 +28,8 @@
       </div>
     </section>
     <section class="workspace" id="pipeline" aria-labelledby="pipeline-heading"><div class="section-head"><div><div class="eyebrow">INBOX / OPPORTUNITIES</div><h2 id="pipeline-heading">Lead pipeline</h2></div><span id="leadSource" class="pill">Fixture</span></div>
-      <div class="table-scroll"><table><caption class="sr-only">Synthetic HVAC lead records</caption><thead><tr><th scope="col">Reference</th><th scope="col">Source</th><th scope="col">Request</th><th scope="col">Stage</th><th scope="col">Action</th></tr></thead><tbody id="leadRows"></tbody></table></div>
-      <p class="hint">All entries are synthetic. The browser never sends a message or books an appointment.</p>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Synthetic HVAC lead table; scroll horizontally to see all columns"><table><caption class="sr-only">Synthetic HVAC lead records</caption><thead><tr><th scope="col">Reference</th><th scope="col">Source</th><th scope="col">Request</th><th scope="col">Stage</th><th scope="col">Action</th></tr></thead><tbody id="leadRows"></tbody></table></div>
+      <p class="hint">All entries are synthetic. On a narrow screen, focus the table and use horizontal arrow keys to inspect additional columns. The browser never sends a message or books an appointment.</p>
     </section>
     <section class="columns">
       <article class="panel" id="drafts" aria-labelledby="drafts-heading"><div class="eyebrow">HUMAN APPROVAL REQUIRED</div><h2 id="drafts-heading">Follow-up preview</h2><p class="muted">Select a lead to prepare an editable, unsent example. No contact information is stored.</p>
@@ -46,13 +46,13 @@
       <select id="scenarioChoice"><option value="review">Review draft only</option><option value="appointment_mock">Mock appointment</option><option value="closed_job_mock">Mock job close (unverified)</option></select>
       <button type="button" id="runScenario">Preview synthetic event trail</button>
       <p id="scorecardInfo" class="hint" role="status">Scorecard has no live data source.</p>
-      <pre id="auditEvents" class="audit-events" role="status">Select a lead above to inspect the synthetic evidence path.</pre>
+      <pre id="auditEvents" class="audit-events" role="status" tabindex="0" aria-label="Synthetic recovery event timeline">Select a lead above to inspect the synthetic evidence path.</pre>
       <h3>Contact consent and suppression simulation</h3>
       <p class="muted">Mock consent cannot authorize communication. Revocation suppresses even the draft.</p>
       <label for="policyChoice">Synthetic consent case</label>
       <select id="policyChoice"><option value="unknown">Unknown consent</option><option value="revoked_mock">Mock opt-out / revocation</option><option value="consent_record_mock">Mock consent record (unverified)</option></select>
       <button type="button" id="runPolicy">Preview fail-closed policy</button>
-      <pre id="policyEvents" class="audit-events" role="status">No real communication is enabled.</pre>
+      <pre id="policyEvents" class="audit-events" role="status" tabindex="0" aria-label="Synthetic consent and suppression details">No real communication is enabled.</pre>
     </section>
     <footer>REVENUE RECOVERY ENGINE · SYNTHETIC PROTOTYPE · NOT FOR CUSTOMER DATA</footer>
   </main>
