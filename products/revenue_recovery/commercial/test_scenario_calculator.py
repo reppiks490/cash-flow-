@@ -43,6 +43,18 @@ class ScenarioCalculatorTests(unittest.TestCase):
         self.assertIsNone(result["minimum_customers_for_target_scenario"])
         self.assertTrue(result["break_even_unreachable_at_assumed_unit_margin"])
 
+    def test_minimum_customer_estimate_flags_out_of_range(self):
+        result = calculate_scenario(scenario(
+            customers=0, price_usd="0.01", variable_cost_per_customer_usd="0",
+            fixed_cost_usd="0", acquisition_cost_usd="0",
+            refunds_and_fees_usd="0", target_pretax_net_usd="2500.00",
+        ))
+        self.assertEqual(result["minimum_customers_for_target_scenario"], 250000)
+        self.assertIn("minimum_customers_outside_supported_range", result)
+        self.assertTrue(result["minimum_customers_outside_supported_range"])
+        normal = calculate_scenario(scenario())
+        self.assertFalse(normal["minimum_customers_outside_supported_range"])
+
     def test_round_up_customer_count(self):
         result = calculate_scenario(scenario(fixed_cost_usd="351"))
         self.assertEqual(result["minimum_customers_for_target_scenario"], 6)
