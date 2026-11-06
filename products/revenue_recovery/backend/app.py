@@ -159,6 +159,17 @@ def make_handler(store: DemoStore):
     class Handler(BaseHTTPRequestHandler):
         server_version = "RRE-Demo/0.2"
 
+        def log_message(self, format: str, *args: object) -> None:
+            """No raw request-line logging in a synthetic-only local prototype.
+
+            http.server's default logger reflects the entire user-supplied
+            URL (including accidental identifiers or query strings).
+            Disable it until authenticated structured redacted audit logging
+            exists. Never treat this no-log mode as production security.
+            """
+            return
+
+
         def _valid_host(self) -> bool:
             host = self.headers.get("Host", "")
             return re.fullmatch(r"(?:localhost|127\.0\.0\.1)(?::[0-9]{1,5})?", host, re.I) is not None
