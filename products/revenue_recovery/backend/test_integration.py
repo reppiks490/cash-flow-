@@ -117,6 +117,19 @@ class IntegratedDemoContractTests(unittest.TestCase):
         )
         self.assertEqual(code, 400)
 
+    def test_dashboard_queries_read_only_preview_and_preserves_unsent_fallback(self):
+        code, _, raw = self.request("GET", "/demo/app.js")
+        self.assertEqual(code, 200)
+        js = raw.decode("utf-8")
+        self.assertIn('"/api/demo/recovery/"', js)
+        self.assertIn('credentials:"omit"', js)
+        self.assertIn("OFFLINE SYNTHETIC FALLBACK", js)
+        self.assertIn("manual_review_required", js)
+        self.assertIn("unsent_unapproved_draft", js)
+        self.assertIn("verified_recovered_revenue_cents", js)
+        self.assertNotIn('fetch("/api/send"', js)
+        self.assertNotIn("innerHTML", js)
+
     def test_unknown_reference_never_creates_external_actions(self):
         for path in ("/api/demo/recovery/DEMO-UNKNOWN", "/api/demo/recovery/a@b",
                      "/api/demo/recovery/../../backend/app.py"):
