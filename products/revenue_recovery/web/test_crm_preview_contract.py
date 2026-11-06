@@ -2,7 +2,7 @@
 import unittest
 
 from products.revenue_recovery.backend.crm import preview_crm_record
-from backend.contracts import SOURCES, NEEDS
+from backend.app import ALLOWED_SOURCES as SOURCES, ALLOWED_NEEDS as NEEDS
 
 
 class CRMPreviewContractTests(unittest.TestCase):
