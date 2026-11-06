@@ -27,3 +27,6 @@ jobs:
 
       - name: Verify browser JavaScript syntax (non-Codex, no dependencies)
         run: node --check products/revenue_recovery/web/app.js
+
+      - name: Exercise synthetic browser interactions (Node built-ins only)
+        run: node --test products/revenue_recovery/web/test_app.mjs
