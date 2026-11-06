@@ -70,6 +70,7 @@ function render(rows, source) {
   selectionSequence += 1;
   selectedReference = null;
   $("auditEvents").textContent = "Select a lead above to inspect the synthetic evidence path.";
+  $("policyEvents").textContent = "No real communication is enabled.";
   $("draft").value = "Select a synthetic lead above.";
   $("copyStatus").textContent = "";
   leads = rows.map(safeLead).filter(Boolean);
@@ -189,6 +190,45 @@ async function loadScenario() {
   }
 }
 
+async function loadPolicy() {
+  if (!selectedReference) {
+    $("policyEvents").textContent = "Select a synthetic lead first.";
+    return;
+  }
+  const choice = $("policyChoice").value;
+  if (!["unknown", "revoked_mock", "consent_record_mock"].includes(choice)) {
+    $("policyEvents").textContent = "Unsupported policy scenario.";
+    return;
+  }
+  const ref = selectedReference;
+  $("policyEvents").textContent = "Checking read-only synthetic suppression...";
+  try {
+    const path = "/api/demo/policy/" + encodeURIComponent(ref) + "/" + choice;
+    const response = await fetch(path, {cache:"no-store",credentials:"omit"});
+    if (!response.ok) throw new Error("Policy unavailable");
+    const result = await response.json();
+    const policy = result && result.policy;
+    if (result.synthetic !== true || !policy || policy.synthetic !== true ||
+        policy.external_ref !== ref || policy.mode !== choice ||
+        policy.consent_verified !== false || policy.operator_authorized !== false ||
+        policy.may_contact_real_person !== false || policy.actual_message_sent !== false ||
+        !Array.isArray(policy.reasons) ||
+        (choice === "revoked_mock" && (policy.draft !== null || policy.suppressed !== true))) {
+      throw new Error("Unsafe synthetic policy response");
+    }
+    if (selectedReference !== ref) return;
+    $("policyEvents").textContent = "SYNTHETIC POLICY: " + choice + "\n" +
+      "Real outreach: DISABLED\nActual sends: 0\nHuman identity: UNVERIFIED\n" +
+      "Internal draft: " + (policy.draft === null ? "SUPPRESSED" : "UNSENT / REVIEW ONLY") +
+      "\nReasons:\n" + policy.reasons.join("\n") +
+      "\nNo customer consent or legal authorization is established.";
+  } catch (_error) {
+    if (selectedReference === ref) {
+      $("policyEvents").textContent = "Policy preview unavailable. No action was taken.";
+    }
+  }
+}
+
 async function seedDemo() {
   // No contact data, no external API, no payment, and no persistent storage.
   if (!["127.0.0.1", "localhost"].includes(location.hostname)) {
@@ -217,6 +257,7 @@ async function seedDemo() {
 document.addEventListener("DOMContentLoaded", () => {
   $("seedDemo").addEventListener("click", seedDemo);
   $("runScenario").addEventListener("click", loadScenario);
+  $("runPolicy").addEventListener("click", loadPolicy);
   $("refresh").addEventListener("click", refresh);
   $("copyDraft").addEventListener("click", async () => {
     try {
