@@ -29,13 +29,27 @@ class CRMPreviewContractTests(unittest.TestCase):
             with self.subTest(change=change), self.assertRaises(ValueError):
                 preview_crm_record({**self.lead, **change})
 
-    def test_all_demo_fixture_variants(self):
-        for source, need in (("website", "AC not cooling"),
-                             ("phone", "estimate follow-up"),
-                             ("referral", "AC maintenance")):
-            with self.subTest(source=source):
-                result = preview_crm_record({**self.lead, "source": source, "need": need})
-                self.assertFalse(result.transmitted)
+    def test_all_intake_contract_categories_preview_without_transmission(self):
+        # Keep these enumerations aligned with backend.app's synthetic-only
+        # intake contract; mismatches once produced two CI errors on PR #40.
+        sources = ("demo", "website", "phone", "referral")
+        needs = ("AC not cooling", "AC maintenance", "repair",
+                 "maintenance", "estimate follow-up", "heating issue")
+        for source in sources:
+            for need in needs:
+                with self.subTest(source=source, need=need):
+                    result = preview_crm_record({**self.lead, "source": source, "need": need})
+                    self.assertEqual((result.source, result.need), (source, need))
+                    self.assertTrue(result.dry_run)
+                    self.assertFalse(result.transmitted)
+
+    def test_reference_must_match_local_demo_prefix(self):
+        for ref in ("CONTACT-123", "client", "DEMO-", "QA-a@b", "DEMO-" + "A" * 57):
+            with self.subTest(ref=ref), self.assertRaises(ValueError):
+                preview_crm_record({**self.lead, "external_ref": ref})
+        for ref in ("DEMO-A", "QA-123", "demo-a", "QA_1"):
+            with self.subTest(ref=ref):
+                self.assertEqual(preview_crm_record({**self.lead, "external_ref": ref}).external_ref, ref)
 
 
 if __name__ == "__main__":
