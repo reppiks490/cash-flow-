@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Revenue Recovery | Operator Console</title>
+<style>
+:root{font:16px system-ui,sans-serif;color-scheme:dark;background:#0b1220;color:#eef2ff}*{box-sizing:border-box}body{margin:0}header{padding:1.2rem max(1rem,calc((100vw - 1100px)/2));background:#172238;border-bottom:1px solid #38445c}h1{margin:.1rem 0;font-size:1.5rem}small,.muted{color:#bdc8dc}.badge{display:inline-block;padding:.3rem .6rem;border:1px solid #89a5df;border-radius:1rem;color:#dce8ff}main{max-width:1100px;margin:auto;padding:1rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem}.card{background:#172238;border:1px solid #35435b;border-radius:.8rem;padding:1rem;margin-bottom:1rem}.metric{font-size:1.8rem;font-weight:700;margin:.5rem 0}table{width:100%;border-collapse:collapse}th,td{padding:.7rem;text-align:left;border-bottom:1px solid #35435b}button,input{font:inherit;border-radius:.4rem;padding:.55rem}button{background:#3263c5;color:white;border:0;cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #f5ce73}button:disabled{opacity:.5;cursor:not-allowed}.scroll{overflow-x:auto}label{display:block;margin:.5rem 0}input{background:#0b1220;color:white;border:1px solid #71809d;width:min(100%,400px)}.warn{color:#ffd38a}#detail{white-space:pre-wrap;overflow-wrap:anywhere}footer{padding:1rem;color:#bdc8dc}
+</style></head><body>
+<header><h1>Revenue Recovery · HVAC</h1><span class="badge" id="mode">SYNTHETIC DEMO — NO LIVE ACTIONS</span><p class="muted">Operator review console · draft approval never sends a message</p></header>
+<main><section aria-label="Pipeline summary" class="grid" id="metrics"></section>
+<section class="card"><h2>Lead pipeline</h2><p class="muted" id="status" role="status" aria-live="polite">Loading local synthetic fixture…</p><div class="scroll"><table><thead><tr><th scope="col">Lead</th><th scope="col">Source</th><th scope="col">Stage</th><th scope="col">Action</th></tr></thead><tbody id="leads"></tbody></table></div></section>
+<section class="card"><h2>Review workspace</h2><p id="detail" class="muted">Select a lead to inspect its draft and evidence.</p><div id="actions"></div></section>
+<section class="card"><h2>Attribution and outcomes</h2><p class="warn">Appointments are requests until confirmed. Closed revenue requires verified receipts; demo values are never real income.</p><div id="outcomes"></div></section>
+<section class="card"><h2>Backend connection (read-only)</h2><p class="muted">Use same-origin, authenticated HTTPS API in an approved tenant-aware environment. No credentials are stored here.</p><label for="endpoint">Dashboard endpoint path (same origin only)</label><input id="endpoint" value="/api/v1/dashboard" autocomplete="off"><button id="load">Load authorized dashboard</button><p id="apiStatus" role="status"></p></section></main>
+<footer>Prototype only · no external messages, CRM writes, scheduling, billing or customer collection.</footer>
+<script>
+"use strict";
+const fixture={synthetic:true,leads:[
+{id:"SYN-001",name:"Synthetic HVAC inquiry A",source:"Website form",stage:"qualified",evidence:"Synthetic: requested AC repair estimate",draft:"Hello, would you like to review available estimate times?",consent:"unknown",appointment:"not_requested",closed_revenue_verified_cents:0},
+{id:"SYN-002",name:"Synthetic HVAC inquiry B",source:"Phone callback",stage:"review",evidence:"Synthetic: requested furnace service",draft:"Hello, can we help arrange a furnace service estimate?",consent:"unknown",appointment:"requested",closed_revenue_verified_cents:0},
+{id:"SYN-003",name:"Synthetic HVAC inquiry C",source:"Referral",stage:"suppressed",evidence:"Synthetic: opted out",draft:"",consent:"opted_out",appointment:"not_requested",closed_revenue_verified_cents:0}
+]};
+let data=fixture;let selected=null;
+const el=id=>document.getElementById(id);
+const node=(tag,value)=>{const n=document.createElement(tag);n.textContent=String(value);return n};
+function render(){
+el("mode").textContent=data.synthetic?"SYNTHETIC DEMO — NO LIVE ACTIONS":"AUTHORIZED API DATA — READ ONLY";
+el("metrics").replaceChildren();
+const leads=data.leads||[];const verified=leads.reduce((s,l)=>s+(Number.isSafeInteger(l.closed_revenue_verified_cents)&&l.closed_revenue_verified_cents>0?l.closed_revenue_verified_cents:0),0);
+for(const [label,value] of [["Leads",leads.length],["Qualified",leads.filter(l=>l.stage==="qualified").length],["Appointment requests",leads.filter(l=>l.appointment==="requested").length],["Verified closed revenue",data.synthetic?"$0 (synthetic)":new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(verified/100)]]){
+const c=node("article","");c.className="card";c.append(node("div",label));const v=node("div",value);v.className="metric";c.append(v);el("metrics").append(c)}
+el("leads").replaceChildren();
+for(const l of leads){const tr=document.createElement("tr");for(const value of [l.name,l.source,l.stage])tr.append(node("td",value||"—"));const td=document.createElement("td"),btn=node("button","Inspect");btn.type="button";btn.addEventListener("click",()=>inspect(l.id));td.append(btn);tr.append(td);el("leads").append(tr)}
+el("status").textContent=data.synthetic?"All records are fabricated test fixtures. No customer data or network calls.":"Data returned by authenticated same-origin API; verify tenant authorization server-side.";
+el("outcomes").replaceChildren(node("p",data.synthetic?"Synthetic fixture: 1 appointment request; 0 confirmed bookings; $0 verified revenue.":"Read-only view. Verify provenance and receipt evidence in backend before reporting revenue."));
+if(selected)inspect(selected);
+}
+function inspect(id){selected=id;const l=(data.leads||[]).find(x=>x.id===id);if(!l)return;el("detail").textContent=["Lead: "+l.name,"Source: "+l.source,"Stage: "+l.stage,"Evidence: "+(l.evidence||"None"),"Consent: "+(l.consent||"unknown"),"Draft (NOT SENT): "+(l.draft||"No draft"),"Appointment: "+(l.appointment||"unknown")].join("\n");el("actions").replaceChildren();const btn=node("button","Mark reviewed locally");btn.disabled=!data.synthetic||l.consent==="opted_out"||!l.draft;btn.addEventListener("click",()=>{btn.disabled=true;el("detail").textContent+="\nLocally reviewed only; no approval transmitted, no message sent.";});el("actions").append(btn)}
+el("load").addEventListener("click",async()=>{const path=el("endpoint").value.trim();if(!/^\/[a-zA-Z0-9/_-]+$/.test(path)){el("apiStatus").textContent="Use a same-origin absolute path without query parameters.";return}el("apiStatus").textContent="Loading…";try{if(location.protocol!=="https:"&&location.hostname!=="localhost"&&location.hostname!=="127.0.0.1")throw Error("HTTPS required");const r=await fetch(path,{credentials:"same-origin",headers:{Accept:"application/json"},cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);const body=await r.json();if(!body||!Array.isArray(body.leads)||typeof body.synthetic!=="boolean")throw Error("Unexpected API contract");data=body;selected=null;render();el("apiStatus").textContent="Loaded read-only dashboard."}catch(e){el("apiStatus").textContent="Not connected: "+e.message+"; synthetic demo retained if not previously replaced."}});
+render();
+</script></body></html>
