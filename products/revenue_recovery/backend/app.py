@@ -54,7 +54,12 @@ def mock_event(db, event_id, lead_id, kind):
     row=db.execute("SELECT status FROM leads WHERE id=?",(lead_id,)).fetchone()
     if not row or row[0] != "qualified":
         raise ValueError("only qualified synthetic leads may receive mock events")
-    db.execute("INSERT INTO events VALUES (?,?,?,1)",(event_id,lead_id,kind))
+    if not isinstance(event_id, str) or not event_id.strip():
+        raise ValueError("nonempty event id required")
+    try:
+        db.execute("INSERT INTO events VALUES (?,?,?,1)",(event_id,lead_id,kind))
+    except sqlite3.IntegrityError as exc:
+        raise ValueError("duplicate event id") from exc
     db.commit()
 
 def report(db, tenant_id):
@@ -62,6 +67,29 @@ def report(db, tenant_id):
     drafts=db.execute("SELECT COUNT(*) FROM drafts d JOIN leads l ON l.id=d.lead_id WHERE l.tenant_id=?",(tenant_id,)).fetchone()[0]
     events=dict(db.execute("SELECT e.kind,COUNT(*) FROM events e JOIN leads l ON l.id=e.lead_id WHERE l.tenant_id=? GROUP BY e.kind",(tenant_id,)).fetchall())
     return {"schema":SCHEMA_VERSION,"tenant_id":tenant_id,"lead_counts":counts,"pending_or_approved_drafts":drafts,"mock_events":events,"verified_closed_revenue_cents":None,"verified_net_profit_cents":None,"synthetic":True}
+
+def selfcheck():
+    """Offline contract smoke check; does not replace independent QA."""
+    result = demo()
+    assert result["intake"]["status"] == "qualified"
+    assert result["draft"]["approval"] == "pending"
+    assert result["report"]["mock_events"] == {"appointment_mock": 1, "crm_mock": 1}
+    assert result["report"]["verified_closed_revenue_cents"] is None
+    assert result["report"]["verified_net_profit_cents"] is None
+    assert result["outbound_sent"] is False
+    assert result["external_integrations_called"] is False
+    db = connect()
+    sample = {"id":"synthetic-check","tenant_id":"tenant-a","source":"synthetic","service":"repair","consent":False,"synthetic":True}
+    assert intake(db, sample)["status"] == "suppressed"
+    assert report(db, "tenant-b")["lead_counts"] == {}
+    assert report(db, "tenant-a")["pending_or_approved_drafts"] == 0
+    try:
+        intake(db, sample)
+    except ValueError as exc:
+        assert str(exc) == "duplicate lead id"
+    else:
+        raise AssertionError("duplicate accepted")
+    return {"selfcheck":"passed","synthetic":True,"external_integrations_called":False}
 
 def demo():
     db=connect()
@@ -77,9 +105,11 @@ def demo():
 
 def main():
     parser=argparse.ArgumentParser(description="Offline synthetic HVAC revenue recovery demo")
-    parser.add_argument("command",choices=["demo"])
+    parser.add_argument("command",choices=["demo","selfcheck"])
     args=parser.parse_args()
     if args.command=="demo":
         print(json.dumps(demo(),indent=2,sort_keys=True))
+    elif args.command=="selfcheck":
+        print(json.dumps(selfcheck(),indent=2,sort_keys=True))
 if __name__=="__main__":
     main()
