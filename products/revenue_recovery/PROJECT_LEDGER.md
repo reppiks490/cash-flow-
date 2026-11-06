@@ -163,3 +163,10 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - **GREEN proof:** after exact-contract validation, commit `c59ae6de9c6b56c1e3059dd0e5b7635afa4ce56e` passed **144/144 Python and 15/15 Node tests**, JS syntax, plus independent MONEYFALL checks in [42285686595](https://github.com/reppiks490/cash-flow-/actions/runs/42285686595).
 - **Contract:** UI accepts only five stored lead fields, exact validated DEMO/QA references, shared source and need enums, `status=received`, `synthetic=true` and maximum 2,000 rows. Any invalid row rejects the entire response and shows clearly labeled offline synthetic fixtures, never a mixture with user content.
 - **Not proven:** real PII detection, authentication, tenant ownership, legal consent, production confidentiality or real customer import. This is a local prototype boundary only.
+
+## Browser request-race regression — 2026-11-06
+
+- **Scope:** UI-only isolated branch `integration/rre-ui-response-race-hardening-20261106` based on main `ff76773caaacae0717f5e53bbbf295f5a6974d1e` after security PR #84. Unique tests/logic are forward-ported from Experience draft PR #68; original branch preserved. Deliberately avoid Python subprocess Node dependency by executing the new Node suite directly in product CI.
+- **RED:** before implementation, workflow-registered browser async race tests failed **5/20 Node cases** on commit `2fa36f63edc18b86d2bc5d76374564c61abe1238` (RRE run https://github.com/reppiks490/cash-flow-/actions/runs/42304063535). Older A→B→A and rejected promises overwrote newer synthetic evidence or consent status.
+- **GREEN:** code commit `aede876b73db83caff7b03c8bd8ba75f6fc89f05` passed **160 Python / 20 Node** and JS syntax in https://github.com/reppiks490/cash-flow-/actions/runs/42304191417; independent MONEYFALL workflow passed at exact head. Browser uses lead selection generation plus per-route request revision; no network/send/backend contract changed.
+- **Limits:** Node VM tests do not establish real browser screenshots, accessibility, production authentication, consent validity or customer revenue. Demo is localhost-only with synthetic fixtures.
