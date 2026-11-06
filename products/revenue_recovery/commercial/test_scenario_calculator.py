@@ -25,6 +25,19 @@ class ScenarioCalculatorTests(unittest.TestCase):
         self.assertEqual(result["pretax_net_scenario_usd"], "-625.00")
         self.assertIsNone(result["actual_net_profit_usd"])
 
+    def test_zero_target_with_no_overhead_is_already_met(self):
+        for variable_cost in ("0", "0.01"):
+            with self.subTest(variable_cost=variable_cost):
+                report = calculate_scenario(scenario(
+                    customers=0, price_usd="0",
+                    variable_cost_per_customer_usd=variable_cost,
+                    fixed_cost_usd="0", acquisition_cost_usd="0",
+                    refunds_and_fees_usd="0", target_pretax_net_usd="0",
+                ))
+                self.assertEqual(report["pretax_net_scenario_usd"], "0.00")
+                self.assertEqual(report["minimum_customers_for_target_scenario"], 0)
+                self.assertFalse(report["break_even_unreachable_at_assumed_unit_margin"])
+
     def test_nonpositive_margin_unreachable(self):
         result = calculate_scenario(scenario(price_usd="50", variable_cost_per_customer_usd="75"))
         self.assertIsNone(result["minimum_customers_for_target_scenario"])
