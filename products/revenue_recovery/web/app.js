@@ -10,6 +10,8 @@ const $ = id => document.getElementById(id);
 let leads = [];
 let selectionSequence = 0;
 let selectedReference = null;
+let scenarioRequestSequence = 0;
+let policyRequestSequence = 0;
 
 function safeLead(value) {
   if (!value || typeof value !== "object" || value.synthetic !== true) return null;
@@ -31,6 +33,7 @@ async function selectLead(index) {
   if (!lead) return;
   selectedReference = lead.external_ref;
   $("auditEvents").textContent = "Lead " + selectedReference + " selected. Choose a mock scenario to inspect.";
+  $("policyEvents").textContent = "Lead " + selectedReference + " selected. Choose a synthetic consent case to inspect.";
   const requestNumber = ++selectionSequence;
   $("draft").value = "Preparing local synthetic preview...";
   $("copyStatus").textContent = "Checking read-only preview for " + lead.external_ref + " (no messages sent).";
@@ -156,6 +159,8 @@ async function loadScenario() {
     return;
   }
   const ref = selectedReference;
+  const selectionAtStart = selectionSequence;
+  const requestAtStart = ++scenarioRequestSequence;
   $("auditEvents").textContent = "Loading read-only synthetic timeline...";
   try {
     const path = "/api/demo/scenarios/" + encodeURIComponent(ref) + "/" + choice;
@@ -177,14 +182,16 @@ async function loadScenario() {
           e.source_evidence_verified !== false || e.external_side_effect !== false)) {
       throw new Error("invalid unverified evidence payload");
     }
-    if (selectedReference !== ref) return;
+    if (selectedReference !== ref || selectionSequence !== selectionAtStart ||
+        requestAtStart !== scenarioRequestSequence) return;
     const entries = result.events.map(e => e.sequence + ". " + e.event_type.replaceAll("_", " ")).join("\n");
     $("auditEvents").textContent = "SYNTHETIC / " + choice.toUpperCase() + "\n" +
       entries + "\n\nActual confirmed appointments: 0. Actual jobs: 0. " +
       "Verified recovered revenue: $0. No payment receipts. No messages sent.\n" +
       "This is a process demonstration, NOT proof of income or customer activity.";
   } catch (_error) {
-    if (selectedReference === ref) {
+    if (selectedReference === ref && selectionSequence === selectionAtStart &&
+        requestAtStart === scenarioRequestSequence) {
       $("auditEvents").textContent = "Synthetic timeline unavailable. No action was taken.";
     }
   }
@@ -201,6 +208,8 @@ async function loadPolicy() {
     return;
   }
   const ref = selectedReference;
+  const selectionAtStart = selectionSequence;
+  const requestAtStart = ++policyRequestSequence;
   $("policyEvents").textContent = "Checking read-only synthetic suppression...";
   try {
     const path = "/api/demo/policy/" + encodeURIComponent(ref) + "/" + choice;
@@ -216,14 +225,16 @@ async function loadPolicy() {
         (choice === "revoked_mock" && (policy.draft !== null || policy.suppressed !== true))) {
       throw new Error("Unsafe synthetic policy response");
     }
-    if (selectedReference !== ref) return;
+    if (selectedReference !== ref || selectionSequence !== selectionAtStart ||
+        requestAtStart !== policyRequestSequence) return;
     $("policyEvents").textContent = "SYNTHETIC POLICY: " + choice + "\n" +
       "Real outreach: DISABLED\nActual sends: 0\nHuman identity: UNVERIFIED\n" +
       "Internal draft: " + (policy.draft === null ? "SUPPRESSED" : "UNSENT / REVIEW ONLY") +
       "\nReasons:\n" + policy.reasons.join("\n") +
       "\nNo customer consent or legal authorization is established.";
   } catch (_error) {
-    if (selectedReference === ref) {
+    if (selectedReference === ref && selectionSequence === selectionAtStart &&
+        requestAtStart === policyRequestSequence) {
       $("policyEvents").textContent = "Policy preview unavailable. No action was taken.";
     }
   }
