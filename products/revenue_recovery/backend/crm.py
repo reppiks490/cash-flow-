@@ -8,6 +8,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Mapping
+import re
+
+_REFERENCE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}\Z", re.ASCII)
+# These enums mirror the synthetic demo intake contract; arbitrary free text can
+# contain personal data and must not enter a public-repository demonstration.
+_SOURCES = frozenset({"website", "phone", "referral"})
+_NEEDS = frozenset({"AC not cooling", "estimate follow-up", "AC maintenance"})
 
 
 @dataclass(frozen=True)
@@ -32,6 +39,12 @@ def preview_crm_record(lead: Mapping[str, object]) -> CRMPreview:
         value = lead.get(key)
         if not isinstance(value, str) or not 1 <= len(value.strip()) <= 240:
             raise ValueError(f"{key} must be a nonempty string of at most 240 characters")
+    if not _REFERENCE.fullmatch(str(lead["external_ref"])):
+        raise ValueError("external_ref must be an ASCII synthetic token")
+    if lead["source"] not in _SOURCES:
+        raise ValueError("Unsupported synthetic source")
+    if lead["need"] not in _NEEDS:
+        raise ValueError("Unsupported synthetic need")
     if lead.get("status") not in (None, "received"):
         raise ValueError("Unsupported lead stage")
     return CRMPreview(
