@@ -122,3 +122,30 @@ test("stale rejected scenario cannot replace newer valid scenario", async () => 
   assert.match(h.get("auditEvents").textContent,/current evidence/);
   assert.doesNotMatch(h.get("auditEvents").textContent,/unavailable/);
 });
+
+test("stale rejected policy cannot replace newer valid policy", async () => {
+  const h=harness();
+  await h.sandbox.selectLead(0);
+  const old=h.sandbox.loadPolicy();
+  const newest=h.sandbox.loadPolicy();
+  assert.equal(h.pending.policy.length,2);
+  policyReply(h.pending.policy[1],"latest_valid_policy");
+  await newest;
+  h.pending.policy[0].resolve({ok:false});
+  await old;
+  assert.match(h.get("policyEvents").textContent,/latest_valid_policy/);
+  assert.doesNotMatch(h.get("policyEvents").textContent,/Policy preview unavailable/);
+});
+
+test("A to B to A stale rejected policy does not replace current lead status", async () => {
+  const h=harness();
+  await h.sandbox.selectLead(0);
+  const old=h.sandbox.loadPolicy();
+  await h.sandbox.selectLead(1);
+  await h.sandbox.selectLead(0);
+  assert.match(h.get("policyEvents").textContent,/DEMO-RACE-A selected/);
+  h.pending.policy[0].resolve({ok:false});
+  await old;
+  assert.match(h.get("policyEvents").textContent,/DEMO-RACE-A selected/);
+  assert.doesNotMatch(h.get("policyEvents").textContent,/Policy preview unavailable/);
+});
