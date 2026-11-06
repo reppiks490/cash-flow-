@@ -9,7 +9,7 @@ import {runInNewContext} from "node:vm";
 const script = readFileSync(new URL("./app.js", import.meta.url), "utf8");
 const html = readFileSync(new URL("./index.html", import.meta.url), "utf8");
 
-function harness({unsafePreview = false, brokenScenario = false} = {}) {
+function harness({unsafePreview = false, brokenScenario = false, previewMessage = "SYNTHETIC UNSENT DRAFT: review first"} = {}) {
   const nodes = new Map();
   const requests = [];
   const lead = {
@@ -71,7 +71,7 @@ function harness({unsafePreview = false, brokenScenario = false} = {}) {
         synthetic:true, external_ref:lead.external_ref,
         qualification:{result:"manual_review_required", qualified:false, consent_verified:false},
         followup:{status:"unsent_unapproved_draft", approved:unsafePreview,
-          transmitted:false, message:"SYNTHETIC UNSENT DRAFT: review first"},
+          transmitted:false, message:previewMessage},
         crm:{dry_run:true, transmitted:false},
         appointment:{confirmed:false},
         attribution:{verified_recovered_revenue_cents:0}
@@ -188,3 +188,13 @@ test("seed action posts only three local synthetic categorical leads", async () 
   assert.ok(posts.every(x => x.path === "/api/demo/leads" && x.credentials === "omit"));
   assert.match(h.nodes.get("connection").textContent, /explicitly synthetic examples/);
 });
+
+for (const message of ["Contact customer@example.com", "See https://example.com", "Call 555-123-4567", "A".repeat(1501), "Unsafe\u0000control"]) {
+  test("reject unsafe or unbounded preview draft: " + JSON.stringify(message).slice(0,60), async () => {
+    const h = harness({previewMessage:message});
+    await h.sandbox.refresh();
+    await h.sandbox.selectLead(0);
+    assert.match(h.nodes.get("draft").value, /OFFLINE SYNTHETIC FALLBACK/);
+    assert.doesNotMatch(h.nodes.get("draft").value, /customer@example.com|https:\/\/example.com|555-123-4567|Unsafe/);
+  });
+}
