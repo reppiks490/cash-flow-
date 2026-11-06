@@ -18,12 +18,10 @@ from backend.crm import preview_crm_record
 from backend.ai_providers import get_provider
 from backend.demo_evidence import SCENARIOS, aggregate_synthetic_scorecard, simulate_evidence_path
 from backend.consent_simulation import POLICY_SCENARIOS, simulate_contact_policy
+from backend.contracts import SOURCES as ALLOWED_SOURCES, NEEDS as ALLOWED_NEEDS, REF as DEMO_REF
 
 MAX_BODY_BYTES = 16_384
 MAX_LEADS = 2_000
-ALLOWED_SOURCES = frozenset({"demo", "website", "phone", "referral"})
-ALLOWED_NEEDS = frozenset({"AC not cooling", "AC maintenance", "repair", "maintenance", "estimate follow-up", "heating issue"})
-DEMO_REF = re.compile(r"(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}\Z", re.I)
 
 
 class LeadConflictError(ValueError):
