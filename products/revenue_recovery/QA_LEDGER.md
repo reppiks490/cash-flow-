@@ -49,3 +49,14 @@
 8. Rollback, audit, deletion, incident response and support procedures exist.
 
 **Next QA action:** run isolated tests, establish a product-only non-Codex workflow after review, and coordinate interface freeze with Principal Architect. Do not merge unverified work.
+
+
+## QA checkpoint — 2026-11-06, negative-path acceptance refresh
+
+- **Scope:** QA-owned `tests/test_security_negative_acceptance.py` on isolated branch `qa/rre-negative-security-gates-20261106`, based on exact integration head `d13100cee849519d2c056df7bb9861b572389d58`. No changes to MONEYFALL or other products.
+- **New checks:** reject unexpected contact fields and free-form categories, idempotent replay and 409 conflict, invalid JSON, untrusted Host/Origin, content type, absent send/booking/payment/tenant routes, no false appointment/payment claims, security response headers and traversal attempts.
+- **Evidence:** New tests committed, CI outcome must be verified at the exact final head before asserting a pass. These tests do not exercise a real tenant authorization system because none exists. Passing 404 tests is **not** proof of tenant isolation.
+- **Current product integration evidence:** CI run 42254916493 on separate feature commit `befbb5b4057c128dd2810257b128ce8fa893d07e` passed 46 tests and Node syntax check, but does not validate this QA branch.
+- **Release status:** **NOT PILOT READY**. Authenticated tenant isolation, consent provenance, verified opt-out enforcement across integrations, real CRM/calendar receipts, external human approval audit, provider payment verification, secure private persistence, browser automation and deployment operations remain unimplemented or unverified.
+- **Security limitation:** Allowlisted demo categories mitigate accidental input but are not a complete PII classifier or a production data protection mechanism.
+- **Next QA gate:** confirm CI at this QA head; review draft integration PR #33 and new commercial PR #35; keep all PRs unmerged until complete review and production-gate evidence.
