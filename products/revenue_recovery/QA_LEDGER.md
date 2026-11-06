@@ -2,6 +2,18 @@
 
 **Release classification: NOT PILOT READY.** This ledger documents the available source and evidence, not a claim that the entire system has been integrated.
 
+## Verified QA release checkpoint — 2026-11-06 (current for the cited commits)
+
+**Release disposition: GREEN for local-only synthetic QA; BLOCKED / NOT PILOT READY for any live use.**
+Historical notes below are retained for provenance and are NOT the current integration status.
+
+- Latest main inspected: `ff76773caaacae0717f5e53bbbf295f5a6974d1e` (includes reviewed synthetic attribution evidence and the ASCII reference corrective merge #84). Exact main push workflow [RRE 42303708345](https://github.com/reppiks490/cash-flow-/actions/runs/42303708345) ran **160/160 Python and 15/15 Node tests** with JavaScript syntax green; separate MONEYFALL workflow [42303716269](https://github.com/reppiks490/cash-flow-/actions/runs/42303716269) completed SUCCESS. This records only that source snapshot; do not infer later heads are green.
+- New QA-owned cross-view draft [PR #85](https://github.com/reppiks490/cash-flow-/pull/85), initial head `cb32806e888646813a5411d48bafe05047833c6e`, adds **four** loopback HTTP acceptance cases in `tests/test_cross_view_evidence.py`. Synthetic mock closure cannot change verified scorecard, mock revocation cannot send/authorize actions, duplicate/conflicting replays cannot inflate collections, forged payment/recipient/tenant and Authorization fields cannot enable missing real endpoints.
+- On the PR's initial GitHub-generated integration ref `a2a2b3dcfe8be02c4f74f371cc3bc9551ced676c` (merged test head into then-main `5f28043357343bfc912f9545eb2ef5a9306312db`), [RRE 42303480605](https://github.com/reppiks490/cash-flow-/actions/runs/42303480605) ran **161/161 Python, 15/15 Node and JavaScript syntax PASS**. Independent MONEYFALL [42303480417](https://github.com/reppiks490/cash-flow-/actions/runs/42303480417) completed SUCCESS. A later main merge requires a fresh PR integration run; neither these checks nor main's checks prove production readiness.
+- Independent QA source/CI reviews: [PR #78](https://github.com/reppiks490/cash-flow-/pull/78) review `5807743400` (149 Python/15 Node on its historical exact head); [PR #73](https://github.com/reppiks490/cash-flow-/pull/73) review `5807743674` (132 Python/11 Node on historical head; requires forward-port because stale versus new main). Review comments are not production approvals.
+- **Hard pilot blockers:** No authenticated customer/tenant identity or production row-level data isolation; demo `tenant_scope` remains forged fixture-only. Revocation policy is a stateless, read-only mock, not durable suppression or send-time recheck. No signed provider receipts, validated consent, human identity/approval, live CRM or calendar transaction, private operational storage, real customer collections or verified recurring net profit. Read-only mock evidence and green tests are not authorization to contact, charge, deploy or onboard customers.
+- **Execution guardrail:** preserve draft PRs where necessary to avoid existing repository automatic prohibited review trigger; never invoke Codex. No real PII, external messages, trading, paid services, charges, live data or unrelated repository edits.
+
 ## Source snapshot
 
 - Base: feature/rre-synthetic-bootstrap-20261106; QA branch: feature/rre-qa-http-contract-20261106.
