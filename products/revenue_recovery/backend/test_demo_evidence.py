@@ -63,7 +63,7 @@ class EvidenceSimulationTests(unittest.TestCase):
             score = aggregate_synthetic_scorecard(leads)
             self.assertTrue(score["synthetic"])
             self.assertEqual(score["counts"]["received_demo_leads"], len(leads))
-            self.assertEqual(score["counts"]["real_customers"], 0)
+            self.assertIsNone(score["counts"]["real_customers"])
             self.assertEqual(score["verified"]["payment_receipts"], 0)
             self.assertEqual(score["verified"]["rre_subscription_revenue_cents"], 0)
             self.assertEqual(score["verified"]["rre_monthly_profit_cents"], 0)
