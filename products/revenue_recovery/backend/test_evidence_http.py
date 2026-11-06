@@ -1,6 +1,8 @@
 """Read-only scenario HTTP integration: fixtures never become verified business facts."""
 import http.client
 import json
+import io
+from contextlib import redirect_stderr
 import threading
 import unittest
 from http.server import ThreadingHTTPServer
@@ -74,6 +76,13 @@ class ScenarioHttpTests(unittest.TestCase):
             self.assertEqual(self.call("GET", path)[0], 404)
         for path in ("/api/demo/scorecard", "/api/demo/scenarios/DEMO-HTTP-42/closed_job_mock"):
             self.assertEqual(self.call("POST", path, {"synthetic": True})[0], 404)
+
+    def test_invalid_url_cannot_leak_to_server_access_logs(self):
+        capture = io.StringIO()
+        with redirect_stderr(capture):
+            status, _ = self.call("GET", "/private?email=do-not-log@example.invalid")
+        self.assertEqual(status, 404)
+        self.assertNotIn("do-not-log@example.invalid", capture.getvalue())
 
     def test_mock_browser_section_exists_and_never_submits_money(self):
         code, html = self.call("GET", "/demo/")
