@@ -30,3 +30,22 @@ No customer contact or personal data, real sends, money movements, live CRM inte
 ## Production gates
 
 No production deployment until authentication and tenant isolation, private durable storage with encryption/backup policy, consent/opt-out procedures, outbound transport reviews, approved integration credentials, auditing, rate limits, security tests, compliance review, and operator approval. The in-memory demo service is intentionally not appropriate for public access.
+
+
+## Integration contract v0.2 — 2026-11-06 (supersedes v0.1 limitations above)
+
+**Implementation proof:** isolated integration commit a7d692f13c3d69e25e033c6d1473f2faa8e1fb2b passed 24/24 RRE tests on GitHub Actions run 42250319834 (Python 3.11). Existing MONEYFALL tests passed separately. These are synthetic-only tests, **not a production/pilot qualification**.
+
+- `GET /` or `GET /demo` -> redirects to `/demo/`.
+- `GET /demo/`, `GET /demo/app.js`, `GET /demo/styles.css` -> exact-allowlist static UI served from `web/` on the same loopback origin. No directory listing, arbitrary file access, public CDN, external dependency or CORS.
+- `GET /api/demo/recovery/{external_ref}` -> read-only preview for an already-ingested synthetic lead. Returns explicit `manual_review_required` qualification, `qualified=false`, `consent_verified=false`, an **UNSENT** draft (`approved=false`, `transmitted=false`), mock CRM preview (`dry_run=true`, `transmitted=false`), unbooked appointment (`confirmed=false`) and zero authenticated revenue receipts. It is a **deterministic placeholder**, not AI qualification.
+- `POST /api/demo/leads` still accepts only the exact v0.1a schema. A duplicate with identical fields returns HTTP 200 unchanged, but reusing a reference with conflicting `source` or `need` now returns HTTP 409. No record is overwritten.
+- Reject nonloopback `Host`, cross-origin `Origin` for mutations, and non-JSON content types. Serve `no-store`, CSP, no-sniff, denied framing. This is defense-in-depth **for a loopback synthetic demo**, not production authentication or tenant isolation.
+
+**Browser demonstration (on operator's own computer only):**
+```bash
+PYTHONPATH=products/revenue_recovery python -m backend.app --port 8765
+```
+Open http://127.0.0.1:8765/demo/ and use a separate terminal to POST a synthetic lead; refresh the browser to see the lead in the pipeline and prepare a local unsent preview. Access the read-only recovery preview at `/api/demo/recovery/DEMO-001` after creating that synthetic record. There is no API for sending, billing, booking or signed receipts.
+
+**Integration dependency:** The browser currently composes its own local unsent draft; its Draft action has not yet been wired to the new recovery-preview endpoint. The AI Systems lane owns a future evidence-backed qualification/draft adapter. Experience owns the browser contract hookup. QA owns end-to-end security regression and release gates. Do not promote M1 to fully complete until these interfaces and negative tests converge.
