@@ -16,6 +16,7 @@ from pathlib import Path
 
 from backend.crm import preview_crm_record
 from backend.ai_providers import get_provider
+from backend.demo_evidence import SCENARIOS, aggregate_synthetic_scorecard, simulate_evidence_path
 
 MAX_BODY_BYTES = 16_384
 MAX_LEADS = 2_000
@@ -192,6 +193,20 @@ def make_handler(store: DemoStore):
                                  "synthetic_only": True})
             elif self.path == "/api/demo/leads":
                 self._json(200, {"synthetic": True, "leads": store.list()})
+            elif self.path == "/api/demo/scorecard":
+                self._json(200, aggregate_synthetic_scorecard(store.list()))
+            elif self.path.startswith("/api/demo/scenarios/"):
+                parts = self.path[len("/api/demo/scenarios/"):].split("/")
+                if (len(parts) != 2 or DEMO_REF.fullmatch(parts[0]) is None
+                        or parts[1] not in SCENARIOS):
+                    self._json(404, {"error": "Unknown synthetic scenario"})
+                    return
+                lead = store.get(parts[0])
+                if lead is None:
+                    self._json(404, {"error": "Unknown synthetic reference"})
+                    return
+                self._json(200, {"synthetic": True,
+                                 "scenario": simulate_evidence_path(lead, parts[1])})
             elif self.path.startswith("/api/demo/recovery/"):
                 ref = self.path[len("/api/demo/recovery/"):]
                 if DEMO_REF.fullmatch(ref) is None:
