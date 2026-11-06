@@ -40,6 +40,13 @@ Ask 10–15 qualified HVAC operators, with permission, about (1) weekly inbound 
 
 **Validation threshold (internal experiment, not an observed result):** interview at least 10 operators; require at least 3 to request a scoped pilot and at least 1 to accept written commercial terms before treating price or demand as validated. Record declines, objections and selection bias as well.
 
+
+## Competitive reality and qualification gate (reviewed 2026-11-06)
+
+Evidence from official Jobber, Housecall Pro, ServiceTitan and Hatch pages shows that automated quote follow-ups, lead tracking, CRM-integrated communications, and AI reception are already sold by established trade-service platforms. See [COMPETITOR_EVIDENCE.md](COMPETITOR_EVIDENCE.md) for links and the exact limits of those claims. **Do not pitch ordinary quote reminders as a unique $700/month feature.**
+
+Before proposing paid RRE integration, ask which incumbent CRM, tier and automation settings the operator already has. If they can achieve the desired outcome simply by enabling or configuring existing features, recommend that first. Position a *managed leakage audit, exception review, cross-system reconciliation and evidence-based attribution* only when an uncovered workflow and credible incremental value are demonstrated. The $700 hypothesis is a managed-service price to falsify in interviews, not a validated standalone software tariff.
+
 ## Demo narrative (synthetic only)
 
 - Show a labeled synthetic HVAC inquiry waiting for review.
