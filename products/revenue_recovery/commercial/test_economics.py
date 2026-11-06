@@ -55,6 +55,15 @@ class SubscriptionScenarioTests(unittest.TestCase):
         self.assertIsNone(report["minimum_customers_for_target"])
         self.assertFalse(report["scenario_meets_target"])
 
+    def test_all_usd_fields_reject_noncanonical_notation(self):
+        for key in ("monthly_price_usd", "fixed_monthly_cost_usd",
+                    "variable_monthly_cost_per_customer_usd",
+                    "target_profit_usd", "processor_flat_fee_usd"):
+            for invalid in ("1e0", "+1", "0001", "1_000", ".50", "1.", "0e0", "9" * 1024):
+                with self.subTest(field=key, value=invalid[:20]):
+                    with self.assertRaises(ScenarioError):
+                        scenario(**{key: invalid})
+
     def test_rejects_unsafe_numbers_and_unexpected_types(self):
         for patch in (
             {"customers": True}, {"customers": -1}, {"customers": 100001},
