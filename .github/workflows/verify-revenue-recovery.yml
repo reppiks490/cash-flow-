@@ -1,0 +1,26 @@
+name: Verify Revenue Recovery synthetic prototype
+on:
+  push:
+    paths:
+      - 'products/revenue_recovery/**'
+      - '.github/workflows/verify-revenue-recovery.yml'
+  pull_request:
+    paths:
+      - 'products/revenue_recovery/**'
+      - '.github/workflows/verify-revenue-recovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run isolated synthetic RRE unit and HTTP tests
+        env:
+          PYTHONPATH: products/revenue_recovery
+        run: python -m unittest discover -s products/revenue_recovery -p 'test_*.py' -v
