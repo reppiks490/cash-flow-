@@ -2,7 +2,17 @@
 
 **Release classification: NOT PILOT READY.** This ledger documents the available source and evidence, not a claim that the entire system has been integrated.
 
-## Verified QA release checkpoint — 2026-11-06 (current for the cited commits)
+## Current QA reconciliation — 2026-11-06 16:27 America/Chicago
+
+**Current disposition: GREEN only for synthetic nonproduction integration; NOT PILOT READY.** The source, CI and original ownership records below remain available.
+
+- Main inspected at `4bf7f97817edb231699310c046bb5893b9aabbec`, including RRE #95 capacity+strict JSON regression merge and #96 browser async request-race fix. These were **merged by other contributors**; this QA branch has not merged anything.
+- Because #95 merged `tests/test_store_capacity.py` into main with exactly the original source blob `3a318a529029859fd1bb79f8871d56b4a8996bc3`, the redundant identical file was removed from draft PR #85 with commit `0b869ae14c663f3b367f63f642790db19921eade`. Original PR #73, its branch, and all earlier commits remain preserved; **no current PR #85 diff changes capacity tests**.
+- Active draft PR #85 now changes only `tests/test_cross_view_evidence.py` (four synthetic HTTP contract tests) and this QA ledger. GitHub-generated integration ref `a3d4d7b` merged source head `0b869ae14c663f3b367f63f642790db19921eade` into checked main `4bf7f97817edb231699310c046bb5893b9aabbec`. [RRE Actions run 42304740618](https://github.com/reppiks490/cash-flow-/actions/runs/42304740618), job `128191101790`: **170/170 Python, 20/20 Node, JavaScript syntax PASS**, [MONEYFALL foundation run 42304740529](https://github.com/reppiks490/cash-flow-/actions/runs/42304740529) SUCCESS. Logs examined, including all four new tests. This does not constitute a local test run, browser visual/security audit, or authorization for production.
+- **Unresolved P0 pilot gates:** verified authenticated tenant identity, private durable storage and audited consent/opt-out/suppression rechecks, confirmed human approval before real communications, authenticated vendor receipts for bookings and collected revenue, rollback/incident controls and owner-granted legal/deployment permissions. An in-memory DemoStore, HTTP 404 on non-existent auth routes, and static revocation fixtures are not evidence of operational controls. The \$2,500/month net objective remains unverified.
+- Keep PR #85 in **DRAFT** until independently reviewed; existing repo-level automatic forbidden review trigger makes transitioning to ready unsafe. Never invoke Codex or any external send/payment/deploy service.
+
+## Historical verified QA release checkpoint — 2026-11-06 (for the cited commits)
 
 **Release disposition: GREEN for local-only synthetic QA; BLOCKED / NOT PILOT READY for any live use.**
 Historical notes below are retained for provenance and are NOT the current integration status.
