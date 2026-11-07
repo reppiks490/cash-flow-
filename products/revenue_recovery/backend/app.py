@@ -293,7 +293,12 @@ def make_handler(store: DemoStore):
             if self.path != "/api/demo/leads":
                 self._json(404, {"error": "Not found"})
                 return
-            origin = self.headers.get("Origin")
+            # Multiple Origin fields are ambiguous; never trust only the first.
+            origins = self.headers.get_all("Origin", [])
+            if len(origins) > 1:
+                self._json(403, {"error": "Cross-origin demo writes blocked"})
+                return
+            origin = origins[0] if origins else None
             if origin is not None and origin.lower() != "http://" + self.headers["Host"].lower():
                 self._json(403, {"error": "Cross-origin demo writes blocked"})
                 return
