@@ -226,7 +226,7 @@ async function loadScenario() {
       throw new Error("invalid unverified evidence payload");
     }
     if (selectedReference !== ref || selectionSequence !== selectionAtStart ||
-        requestAtStart !== scenarioRequestSequence) return;
+        requestAtStart !== scenarioRequestSequence || $("scenarioChoice").value !== choice) return;
     const entries = result.events.map(e => e.sequence + ". " + e.event_type.replaceAll("_", " ")).join("\n");
     $("auditEvents").textContent = "SYNTHETIC / " + choice.toUpperCase() + "\n" +
       entries + "\n\nActual confirmed appointments: 0. Actual jobs: 0. " +
@@ -234,7 +234,7 @@ async function loadScenario() {
       "This is a process demonstration, NOT proof of income or customer activity.";
   } catch (_error) {
     if (selectedReference === ref && selectionSequence === selectionAtStart &&
-        requestAtStart === scenarioRequestSequence) {
+        requestAtStart === scenarioRequestSequence && $("scenarioChoice").value === choice) {
       $("auditEvents").textContent = "Synthetic timeline unavailable. No action was taken.";
     }
   }
@@ -273,7 +273,7 @@ async function loadPolicy() {
       throw new Error("Unsafe synthetic policy response");
     }
     if (selectedReference !== ref || selectionSequence !== selectionAtStart ||
-        requestAtStart !== policyRequestSequence) return;
+        requestAtStart !== policyRequestSequence || $("policyChoice").value !== choice) return;
     $("policyEvents").textContent = "SYNTHETIC POLICY: " + choice + "\n" +
       "Real outreach: DISABLED\nActual sends: 0\nHuman identity: UNVERIFIED\n" +
       "Internal draft: " + (policy.draft === null ? "SUPPRESSED" : "UNSENT / REVIEW ONLY") +
@@ -281,7 +281,7 @@ async function loadPolicy() {
       "\nNo customer consent or legal authorization is established.";
   } catch (_error) {
     if (selectedReference === ref && selectionSequence === selectionAtStart &&
-        requestAtStart === policyRequestSequence) {
+        requestAtStart === policyRequestSequence && $("policyChoice").value === choice) {
       $("policyEvents").textContent = "Policy preview unavailable. No action was taken.";
     }
   }
