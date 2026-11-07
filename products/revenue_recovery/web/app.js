@@ -147,14 +147,16 @@ async function refresh() {
     if (requestAtStart !== refreshSequence) return;
     render(payload.leads, "Local API");
     await refreshScorecard(requestAtStart);
-    if (requestAtStart !== refreshSequence) return;
+    if (requestAtStart !== refreshSequence) return false;
     $("connection").textContent = "Connected to local synthetic API. No real customers or payments.";
+    return true;
   } catch (_error) {
-    if (requestAtStart !== refreshSequence) return;
+    if (requestAtStart !== refreshSequence) return false;
     ++scorecardSequence;
     render(FIXTURES, "Offline fixtures");
     $("scorecardInfo").textContent = "Offline examples only. No payment sources connected.";
     $("connection").textContent = "Offline fixture mode. This is a demonstration only; no customer records or payments are connected.";
+    return false;
   } finally {clearTimeout(timeout);}
 }
 
@@ -166,7 +168,9 @@ async function refreshScorecard(parentRefresh = refreshSequence) {
     const data = await response.json();
     const v = data && data.verified;
     if (data.synthetic !== true || !data.counts || !v ||
-        !Number.isInteger(data.counts.received_demo_leads) ||
+        (!Number.isSafeInteger(data.counts.received_demo_leads) ||
+         data.counts.received_demo_leads < 0 ||
+         data.counts.received_demo_leads > 2000) ||
         v.payment_receipts !== 0 ||
         v.contractor_recovered_revenue_cents !== 0 ||
         v.rre_subscription_revenue_cents !== 0 ||
@@ -289,6 +293,8 @@ async function seedDemo() {
     $("connection").textContent = "Synthetic seeding only works on the local loopback demo.";
     return;
   }
+  // Do not overwrite a newer user-triggered refresh with a stale seed failure.
+  const refreshAtSeedStart = refreshSequence;
   $("seedDemo").disabled = true;
   try {
     for (const lead of FIXTURES) {
@@ -299,10 +305,15 @@ async function seedDemo() {
       });
       if (!response.ok) throw new Error("Synthetic seed rejected");
     }
-    await refresh();
-    $("connection").textContent = "Three explicitly synthetic examples loaded into local process memory only. No live integrations.";
+    const refreshed = await refresh();
+    // POST success does not prove that the subsequent GET succeeded.
+    if (refreshed === true) {
+      $("connection").textContent = "Three explicitly synthetic examples loaded into local process memory only. No live integrations.";
+    }
   } catch (_error) {
-    $("connection").textContent = "Local synthetic demo seeding unavailable. No customer data sent and no external actions.";
+    if (refreshAtSeedStart === refreshSequence) {
+      $("connection").textContent = "Local synthetic demo seeding unavailable. No customer data sent and no external actions.";
+    }
   } finally {
     $("seedDemo").disabled = false;
   }
