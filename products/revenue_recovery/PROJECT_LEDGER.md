@@ -193,3 +193,11 @@ Leading measures: leads received; permissioned/qualified leads; drafts approved;
 - **Test-evidence boundary:** historical green exact-head workflows for predecessor PRs do not prove the newly merged combined main has passed fresh integration tests. Run product Python tests, dashboard Node regressions, and MONEYFALL foundation verification against the current combined SHA; capture run IDs and failure details before asserting a combined-tree green state.
 - **Next critical path:** QA review combined main, test synthetic end-to-end intake -> qualification -> unsent draft -> CRM/scheduling mock -> scorecard and evidence classifier; then address remaining M2 tenant-safe persistence, consent/audit, operator onboarding, and deployment approval gates. No live external actions authorized.
 - **Business evidence:** zero authenticated receipts demonstrated; no verified paying customers or $2,500/month net profit. Demo/synthetic PASS must not be presented as commercial validation.
+
+
+## Combined-main CI verification — 2026-11-07 13:58 America/Chicago
+
+- **Exact combined `main` SHA:** `660149782e55e2b4286ce45f65b9f33da87d3ab1`.
+- **Newly verified push workflow results (not predecessor PR runs):** `Verify Revenue Recovery synthetic prototype` GitHub Actions run [42399450848](https://github.com/reppiks490/cash-flow-/actions/runs/42399450848) = `completed/success`; `Verify MONEYFALL foundation` run [42399450969](https://github.com/reppiks490/cash-flow-/actions/runs/42399450969) = `completed/success`. Both runs report the exact combined-main SHA. This resolves the earlier *missing combined-main CI evidence* blocker; it does not imply penetration testing, browser visual QA, or production readiness.
+- **Integration queue:** draft #142 is this ledger-only update; #143 (AI provider instance overrides), #144 (stale scenario/consent UI responses), #145 (commercial KPI protocol), and #146 (QA ledger) remain separate review/CI candidates. Do not merge overlapping old draft #127 or superseded security/Experience branches.
+- **Next critical path:** obtain independent non-Codex review and exact-head CI on #143/#144, verify the combined synthetic end-to-end operator path, and keep RB-04 through RB-11 production gates on HOLD pending explicit authorization. No verified customers, receipts or $2,500/month net profit.
