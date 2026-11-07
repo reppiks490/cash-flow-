@@ -14,18 +14,19 @@ const leads = [
 
 function harness() {
   const elements = new Map();
+  const listeners = new Map();
   const pending = {scenario: [], policy: []};
   const element = () => ({
     textContent:"", value:"", children:[],
     append(...x) { this.children.push(...x); },
     replaceChildren() { this.children=[]; },
-    addEventListener() {}, setAttribute() {}
+    addEventListener(type, fn) { this.listeners ??= {}; this.listeners[type] = fn; }, setAttribute() {}
   });
   const get = id => {
     if (!elements.has(id)) elements.set(id, element());
     return elements.get(id);
   };
-  const document = {getElementById:get,createElement:element,addEventListener(){}};
+  const document = {getElementById:get,createElement:element,addEventListener(type, fn){ listeners.set(type, fn); }};
   const ok = value => ({ok:true, async json() {return value;}});
   const fetch = url => {
     if (url.startsWith("/api/demo/recovery/")) {
@@ -51,7 +52,7 @@ function harness() {
   sandbox.render(leads,"Local synthetic API");
   get("scenarioChoice").value="review";
   get("policyChoice").value="unknown";
-  return {sandbox,get,pending};
+  return {sandbox,get,pending,init: () => listeners.get("DOMContentLoaded")()};
 }
 
 function scenarioReply(request, marker) {
@@ -188,5 +189,35 @@ test("policy rejection cannot overwrite changed consent case", async () => {
   h.get("policyChoice").value="consent_record_mock";
   h.pending.policy[0].resolve({ok:false});
   await old;
+  assert.doesNotMatch(h.get("policyEvents").textContent,/Policy preview unavailable/);
+});
+
+test("scenario A -> B -> A change invalidates old in-flight result without a new request", async () => {
+  const h=harness();
+  h.init();
+  await h.sandbox.selectLead(0);
+  const old=h.sandbox.loadScenario();
+  h.get("scenarioChoice").value="appointment_mock";
+  h.get("scenarioChoice").listeners.change();
+  h.get("scenarioChoice").value="review";
+  h.get("scenarioChoice").listeners.change();
+  scenarioReply(h.pending.scenario[0],"obsolete_returned_choice");
+  await old;
+  assert.match(h.get("auditEvents").textContent,/Scenario changed/);
+  assert.doesNotMatch(h.get("auditEvents").textContent,/obsolete returned choice/);
+});
+
+test("policy A -> B -> A change invalidates old in-flight failure without a new request", async () => {
+  const h=harness();
+  h.init();
+  await h.sandbox.selectLead(0);
+  const old=h.sandbox.loadPolicy();
+  h.get("policyChoice").value="revoked_mock";
+  h.get("policyChoice").listeners.change();
+  h.get("policyChoice").value="unknown";
+  h.get("policyChoice").listeners.change();
+  h.pending.policy[0].resolve({ok:false});
+  await old;
+  assert.match(h.get("policyEvents").textContent,/Consent case changed/);
   assert.doesNotMatch(h.get("policyEvents").textContent,/Policy preview unavailable/);
 });
