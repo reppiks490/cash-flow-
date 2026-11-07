@@ -1,7 +1,7 @@
 """Offline, fail-closed acceptance evidence for synthetic HVAC demo rehearsals.
 
 No network, customer records, real credentials, payments, or outbound operations.
-This is an internal evidence classifier, NOT production authorization.
+This classifies self-reported synthetic rehearsal data; a matching commit SHA\nDOES NOT authenticate any test execution. Never emit a verified PASS.\nNOT production authorization.
 """
 from __future__ import annotations
 
@@ -54,7 +54,8 @@ def evaluate_demo_evidence(record: Mapping[str, object]) -> dict[str, object]:
     return {
         "synthetic": True,
         "commit": commit,
-        "internal_rehearsal": "PASS" if all(s == "PASS" for s in outcomes) else "NO_GO",
+        "internal_rehearsal": "PENDING_INDEPENDENT_VERIFICATION" if all(s == "PASS" for s in outcomes) else "NO_GO",
+        "evidence_verified": False,
         "production_pilot_authorized": False,
         "verified_customers": None,
         "verified_net_profit_cents": None,
