@@ -192,7 +192,7 @@ def make_handler(store: DemoStore):
             if len(hosts) != 1:
                 return False
             match = re.fullmatch(
-                r"(localhost|127\\.0\\.0\\.1)(?::([0-9]{1,5}))?",
+                r"(localhost|127\.0\.0\.1)(?::([0-9]{1,5}))?",
                 hosts[0],
                 re.IGNORECASE | re.ASCII,
             )
