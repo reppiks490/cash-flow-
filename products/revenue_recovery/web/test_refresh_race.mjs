@@ -80,3 +80,16 @@ test("older scorecard cannot overwrite newer refresh scorecard",async()=>{
   assert.match(h.node("scorecardInfo").textContent,/inquiries: 9/);
   assert.match(h.node("connection").textContent,/Connected/);
 });
+
+// A compromised or incompatible demo endpoint must not present impossible counts.
+test("negative and excessive synthetic scorecard counts fail closed",async()=>{
+  for (const invalid of [-1,2001,Number.MAX_SAFE_INTEGER]) {
+    const h=harness();
+    const pending=h.sandbox.refreshScorecard();
+    assert.equal(h.pending.length,1);
+    h.pending[0].resolve(response(score(invalid)));
+    await pending;
+    assert.match(h.node("scorecardInfo").textContent,/disconnected/);
+    assert.doesNotMatch(h.node("scorecardInfo").textContent,/inquiries:/);
+  }
+});
