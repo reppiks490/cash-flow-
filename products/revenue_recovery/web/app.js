@@ -323,6 +323,15 @@ document.addEventListener("DOMContentLoaded", () => {
   $("seedDemo").addEventListener("click", seedDemo);
   $("runScenario").addEventListener("click", loadScenario);
   $("runPolicy").addEventListener("click", loadPolicy);
+  // Invalidate pending reads at the moment of a choice change, including A -> B -> A.
+  $("scenarioChoice").addEventListener("change", () => {
+    ++scenarioRequestSequence;
+    $("auditEvents").textContent = "Scenario changed. Run the selected synthetic scenario to inspect it.";
+  });
+  $("policyChoice").addEventListener("change", () => {
+    ++policyRequestSequence;
+    $("policyEvents").textContent = "Consent case changed. Run the selected synthetic case to inspect it.";
+  });
   $("refresh").addEventListener("click", refresh);
   $("copyDraft").addEventListener("click", async () => {
     try {
