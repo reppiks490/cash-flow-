@@ -166,7 +166,9 @@ async function refreshScorecard(parentRefresh = refreshSequence) {
     const data = await response.json();
     const v = data && data.verified;
     if (data.synthetic !== true || !data.counts || !v ||
-        !Number.isInteger(data.counts.received_demo_leads) ||
+        (!Number.isSafeInteger(data.counts.received_demo_leads) ||
+         data.counts.received_demo_leads < 0 ||
+         data.counts.received_demo_leads > 2000) ||
         v.payment_receipts !== 0 ||
         v.contractor_recovered_revenue_cents !== 0 ||
         v.rre_subscription_revenue_cents !== 0 ||
