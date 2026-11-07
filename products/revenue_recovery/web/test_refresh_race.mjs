@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {test} from "node:test";
 import {runInNewContext} from "node:vm";
+// Register additional source-preserved race tests under the existing CI Node entrypoint.
+import "./test_refresh_failure_race.mjs";
+import "./test_seed_refresh_status.mjs";
+import "./test_seed_status_ownership.mjs";
 
 const script = readFileSync(new URL("./app.js", import.meta.url), "utf8");
 const deferred = () => {
