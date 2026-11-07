@@ -17,9 +17,9 @@ def record(status="PASS"):
 
 
 class DemoEvidenceGateTests(unittest.TestCase):
-    def test_complete_synthetic_pass_is_not_pilot_approval(self):
+    def test_self_attested_synthetic_pass_never_becomes_verified_approval(self):
         result = evaluate_demo_evidence(record())
-        self.assertEqual(result["internal_rehearsal"], "PASS")
+        self.assertEqual(result["internal_rehearsal"], "PENDING_INDEPENDENT_VERIFICATION")\n        self.assertIs(result["evidence_verified"], False)
         self.assertIs(result["production_pilot_authorized"], False)
         self.assertIsNone(result["verified_net_profit_cents"])
 
