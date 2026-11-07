@@ -150,3 +150,43 @@ test("A to B to A stale rejected policy does not replace current lead status", a
   assert.match(h.get("policyEvents").textContent,/DEMO-RACE-A selected/);
   assert.doesNotMatch(h.get("policyEvents").textContent,/Policy preview unavailable/);
 });
+
+test("scenario response is discarded after workflow choice changes", async () => {
+  const h=harness();
+  await h.sandbox.selectLead(0);
+  const old=h.sandbox.loadScenario();
+  h.get("scenarioChoice").value="appointment_mock";
+  scenarioReply(h.pending.scenario[0],"obsolete_workflow");
+  await old;
+  assert.doesNotMatch(h.get("auditEvents").textContent,/obsolete workflow/);
+});
+
+test("scenario rejection cannot overwrite changed workflow choice", async () => {
+  const h=harness();
+  await h.sandbox.selectLead(0);
+  const old=h.sandbox.loadScenario();
+  h.get("scenarioChoice").value="closed_job_mock";
+  h.pending.scenario[0].resolve({ok:false});
+  await old;
+  assert.doesNotMatch(h.get("auditEvents").textContent,/timeline unavailable/);
+});
+
+test("policy response is discarded after consent case changes", async () => {
+  const h=harness();
+  await h.sandbox.selectLead(0);
+  const old=h.sandbox.loadPolicy();
+  h.get("policyChoice").value="revoked_mock";
+  policyReply(h.pending.policy[0],"obsolete_policy");
+  await old;
+  assert.doesNotMatch(h.get("policyEvents").textContent,/obsolete_policy/);
+});
+
+test("policy rejection cannot overwrite changed consent case", async () => {
+  const h=harness();
+  await h.sandbox.selectLead(0);
+  const old=h.sandbox.loadPolicy();
+  h.get("policyChoice").value="consent_record_mock";
+  h.pending.policy[0].resolve({ok:false});
+  await old;
+  assert.doesNotMatch(h.get("policyEvents").textContent,/Policy preview unavailable/);
+});
