@@ -9,6 +9,11 @@ class CRMPreviewContractTests(unittest.TestCase):
         self.lead = dict(synthetic=True, external_ref="DEMO-HVAC-001",
                          source="website", need="AC not cooling", status="received")
 
+    def test_non_mapping_is_controlled_value_error(self):
+        for payload in (None, [], "synthetic", 123):
+            with self.subTest(payload=payload), self.assertRaises(ValueError):
+                preview_crm_record(payload)
+
     def test_preview_never_transmits(self):
         result = preview_crm_record(self.lead)
         self.assertTrue(result.synthetic)
