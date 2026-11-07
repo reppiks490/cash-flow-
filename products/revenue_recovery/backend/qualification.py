@@ -52,7 +52,7 @@ def qualify_lead(lead: Mapping[str, object], *, opted_out: bool | None = None) -
     # Key replay identity to all validated lead fields; the HTTP store separately
     # rejects conflicting references. This guard also protects pure callers.
     fingerprint = hashlib.sha256(json.dumps(
-        [RUBRIC_VERSION, row["external_ref"], row["source"], row["need"]],
+        [RUBRIC_VERSION, row["external_ref"], row["source"], row["need"], opted_out],
         separators=(",", ":"), ensure_ascii=True,
     ).encode("ascii")).hexdigest()
     return {
