@@ -75,7 +75,9 @@ def model_subscription_scenario(
     profit = gross - all_costs
 
     needed = None
-    if contribution > 0:
+    if target + fixed == 0:
+        needed = 0
+    elif contribution > 0:
         shortfall = target + fixed
         needed = (shortfall + contribution - 1) // contribution
 
@@ -95,6 +97,7 @@ def model_subscription_scenario(
         "target_profit_cents": target,
         "scenario_meets_target": profit >= target,
         "minimum_customers_for_target": needed,
+        "minimum_customers_outside_supported_range": needed is not None and needed > MAX_CUSTOMERS,
         "assumptions": [
             "One successful subscription charge per assumed paying customer monthly",
             "No refunds, chargebacks, sales tax or income tax modeled",
