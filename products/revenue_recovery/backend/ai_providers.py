@@ -102,6 +102,9 @@ def preview_offline_bundle(lead: Mapping[str, object], *, opted_out: bool | None
     review turns this output into permission to contact a real person.
     """
     provider = get_provider("offline")
+    # Fail closed before calling a substituted provider or trusting its metadata.
+    if type(provider) is not OfflineRulesProvider or provider.provider_id != OfflineRulesProvider.provider_id:
+        raise ValueError("Untrusted offline provider identity")
     if provider.uses_model is not False or provider.external_calls is not False:
         raise ValueError("Offline preview cannot execute model or network providers")
     qualification = provider.qualify(lead, opted_out=opted_out)
