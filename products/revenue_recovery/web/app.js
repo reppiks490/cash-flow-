@@ -289,6 +289,8 @@ async function seedDemo() {
     $("connection").textContent = "Synthetic seeding only works on the local loopback demo.";
     return;
   }
+  // A newer dashboard refresh owns its connection status, even if this seed fails later.
+  const refreshAtSeedStart = refreshSequence;
   $("seedDemo").disabled = true;
   try {
     for (const lead of FIXTURES) {
@@ -302,7 +304,9 @@ async function seedDemo() {
     await refresh();
     $("connection").textContent = "Three explicitly synthetic examples loaded into local process memory only. No live integrations.";
   } catch (_error) {
-    $("connection").textContent = "Local synthetic demo seeding unavailable. No customer data sent and no external actions.";
+    if (refreshAtSeedStart === refreshSequence) {
+      $("connection").textContent = "Local synthetic demo seeding unavailable. No customer data sent and no external actions.";
+    }
   } finally {
     $("seedDemo").disabled = false;
   }
