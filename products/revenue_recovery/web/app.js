@@ -147,14 +147,16 @@ async function refresh() {
     if (requestAtStart !== refreshSequence) return;
     render(payload.leads, "Local API");
     await refreshScorecard(requestAtStart);
-    if (requestAtStart !== refreshSequence) return;
+    if (requestAtStart !== refreshSequence) return false;
     $("connection").textContent = "Connected to local synthetic API. No real customers or payments.";
+    return true;
   } catch (_error) {
-    if (requestAtStart !== refreshSequence) return;
+    if (requestAtStart !== refreshSequence) return false;
     ++scorecardSequence;
     render(FIXTURES, "Offline fixtures");
     $("scorecardInfo").textContent = "Offline examples only. No payment sources connected.";
     $("connection").textContent = "Offline fixture mode. This is a demonstration only; no customer records or payments are connected.";
+    return false;
   } finally {clearTimeout(timeout);}
 }
 
@@ -299,8 +301,12 @@ async function seedDemo() {
       });
       if (!response.ok) throw new Error("Synthetic seed rejected");
     }
-    await refresh();
-    $("connection").textContent = "Three explicitly synthetic examples loaded into local process memory only. No live integrations.";
+    const refreshed = await refresh();
+    // A successful POST is not proof that the subsequent dashboard read succeeded.
+    // Never replace an offline warning (or a newer refresh result) with seed success.
+    if (refreshed === true) {
+      $("connection").textContent = "Three explicitly synthetic examples loaded into local process memory only. No live integrations.";
+    }
   } catch (_error) {
     $("connection").textContent = "Local synthetic demo seeding unavailable. No customer data sent and no external actions.";
   } finally {
