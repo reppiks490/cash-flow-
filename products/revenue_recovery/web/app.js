@@ -13,12 +13,16 @@ const DEMO_NEEDS = new Set(["AC not cooling", "AC maintenance", "repair",
   "maintenance", "estimate follow-up", "heating issue"]);
 const DEMO_REF = /^(?:DEMO|QA)[-_][A-Za-z0-9_-]{1,56}$/i;
 const DEMO_KEYS = new Set(["synthetic", "external_ref", "source", "need", "status"]);
+// Backend only emits bounded synthetic fixture event codes, not free-text identifiers.
+const SYNTHETIC_EVIDENCE_CODE = /^[a-z][a-z0-9_]{0,95}$/;
 const $ = id => document.getElementById(id);
 let leads = [];
 let selectionSequence = 0;
 let selectedReference = null;
 let scenarioRequestSequence = 0;
 let policyRequestSequence = 0;
+let refreshSequence = 0;
+let scorecardSequence = 0;
 
 function safeLead(value) {
   if (!value || typeof value !== "object" || Array.isArray(value) || value.synthetic !== true) return null;
@@ -30,6 +34,13 @@ function safeLead(value) {
   if (!DEMO_SOURCES.has(value.source) || !DEMO_NEEDS.has(value.need) ||
       value.status !== "received") return null;
   return {synthetic:true,external_ref:value.external_ref,source:value.source,need:value.need,status:value.status};
+}
+
+function safeDraftMessage(value) {
+  // Reject contact-like and unbounded server preview text before display.
+  return typeof value === "string" && value.length > 0 && value.length <= 1500 &&
+    /^[\x20-\x7e\n]*$/.test(value) &&
+    !/https?:\/\/|www\.|@|\b\d{3}[-. ]?\d{3}[-. ]?\d{4}\b/i.test(value);
 }
 
 function draftFor(lead) {
@@ -62,7 +73,7 @@ async function selectLead(index) {
         p.qualification.qualified !== false || p.qualification.consent_verified !== false ||
         !p.followup || p.followup.status !== "unsent_unapproved_draft" ||
         p.followup.approved !== false || p.followup.transmitted !== false ||
-        typeof p.followup.message !== "string" ||
+        !safeDraftMessage(p.followup.message) ||
         !p.crm || p.crm.dry_run !== true || p.crm.transmitted !== false ||
         !p.appointment || p.appointment.confirmed !== false ||
         !p.attribution || p.attribution.verified_recovered_revenue_cents !== 0) {
@@ -118,6 +129,9 @@ function render(rows, source) {
 }
 
 async function refresh() {
+  const requestAtStart = ++refreshSequence;
+  // Invalidate any older scorecard response before the leads request resolves.
+  ++scorecardSequence;
   $("connection").textContent = "Checking local synthetic API...";
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 2500);
@@ -130,17 +144,22 @@ async function refresh() {
         payload.leads.length > 2000 || payload.leads.some(row => safeLead(row) === null)) {
       throw new Error("Unsafe or incompatible synthetic lead response");
     }
+    if (requestAtStart !== refreshSequence) return;
     render(payload.leads, "Local API");
-    await refreshScorecard();
+    await refreshScorecard(requestAtStart);
+    if (requestAtStart !== refreshSequence) return;
     $("connection").textContent = "Connected to local synthetic API. No real customers or payments.";
   } catch (_error) {
+    if (requestAtStart !== refreshSequence) return;
+    ++scorecardSequence;
     render(FIXTURES, "Offline fixtures");
     $("scorecardInfo").textContent = "Offline examples only. No payment sources connected.";
     $("connection").textContent = "Offline fixture mode. This is a demonstration only; no customer records or payments are connected.";
   } finally {clearTimeout(timeout);}
 }
 
-async function refreshScorecard() {
+async function refreshScorecard(parentRefresh = refreshSequence) {
+  const requestAtStart = ++scorecardSequence;
   try {
     const response = await fetch("/api/demo/scorecard", {cache:"no-store",credentials:"omit"});
     if (!response.ok) throw new Error("scorecard unavailable");
@@ -154,10 +173,12 @@ async function refreshScorecard() {
         v.rre_monthly_profit_cents !== 0) {
       throw new Error("unexpected or unverified scorecard");
     }
+    if (requestAtStart !== scorecardSequence || parentRefresh !== refreshSequence) return;
     $("scorecardInfo").textContent =
       "Synthetic process-memory inquiries: " + data.counts.received_demo_leads +
       ". Real customer count: unknown (no billing source connected). No confirmed bookings.";
   } catch (_error) {
+    if (requestAtStart !== scorecardSequence || parentRefresh !== refreshSequence) return;
     $("scorecardInfo").textContent = "Scorecard disconnected — fixture mode only. No real financial results.";
   }
 }
@@ -185,15 +206,19 @@ async function loadScenario() {
     const metrics = result && result.metrics;
     if (data.synthetic !== true || !result || result.synthetic !== true ||
         result.external_ref !== ref || result.scenario !== choice ||
-        !Array.isArray(result.events) || !metrics ||
+        !Array.isArray(result.events) || result.events.length > 7 || !metrics ||
         metrics.actual_messages_sent !== 0 ||
         metrics.actual_bookings_confirmed !== 0 ||
         metrics.actual_jobs_closed !== 0 ||
         metrics.verified_recovered_revenue_cents !== 0 ||
         metrics.verified_rre_subscription_revenue_cents !== 0 ||
         metrics.verified_payment_receipts !== 0 ||
-        result.events.some(e => e.synthetic !== true ||
-          e.source_evidence_verified !== false || e.external_side_effect !== false)) {
+        result.events.some(e => !e || typeof e !== "object" ||
+          e.synthetic !== true ||
+          e.source_evidence_verified !== false || e.external_side_effect !== false ||
+          !Number.isSafeInteger(e.sequence) || e.sequence < 1 || e.sequence > 7 ||
+          typeof e.event_type !== "string" ||
+          !SYNTHETIC_EVIDENCE_CODE.test(e.event_type))) {
       throw new Error("invalid unverified evidence payload");
     }
     if (selectedReference !== ref || selectionSequence !== selectionAtStart ||
@@ -235,8 +260,12 @@ async function loadPolicy() {
         policy.external_ref !== ref || policy.mode !== choice ||
         policy.consent_verified !== false || policy.operator_authorized !== false ||
         policy.may_contact_real_person !== false || policy.actual_message_sent !== false ||
-        !Array.isArray(policy.reasons) ||
-        (choice === "revoked_mock" && (policy.draft !== null || policy.suppressed !== true))) {
+        !Array.isArray(policy.reasons) || policy.reasons.length > 16 ||
+        policy.reasons.some(reason => typeof reason !== "string" ||
+          !SYNTHETIC_EVIDENCE_CODE.test(reason)) ||
+        policy.suppressed !== (choice === "revoked_mock") ||
+        (choice === "revoked_mock" && policy.draft !== null) ||
+        (choice !== "revoked_mock" && (typeof policy.draft !== "string" || policy.draft.length > 4000))) {
       throw new Error("Unsafe synthetic policy response");
     }
     if (selectedReference !== ref || selectionSequence !== selectionAtStart ||

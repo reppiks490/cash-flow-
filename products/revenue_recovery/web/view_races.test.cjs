@@ -71,6 +71,7 @@ function policyReply(request, marker) {
   const ref = request.url.split("/").at(-2), mode=request.url.split("/").at(-1);
   request.resolve({ok:true,async json(){return {synthetic:true,policy:{
     synthetic:true,external_ref:ref,mode,
+    suppressed: mode === "revoked_mock",
     consent_verified:false,operator_authorized:false,
     may_contact_real_person:false,actual_message_sent:false,
     reasons:[marker],draft:"UNSENT SYNTHETIC"
