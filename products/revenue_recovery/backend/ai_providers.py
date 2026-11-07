@@ -45,6 +45,11 @@ def build_offline_review_envelope(
     Unknown providers are rejected *before* invoking any provider methods.
     """
     provider = get_provider(provider_name)
+    # The only enabled adapter is the built-in deterministic implementation.
+    # A replacement object can reproduce safe outputs while forging provenance.
+    # Reject subclasses/proxies as well: their behavior and identity are untrusted.
+    if type(provider) is not OfflineRulesProvider or provider.provider_id != OfflineRulesProvider.provider_id:
+        raise ValueError("Untrusted offline provider identity")
     if provider.uses_model is not False or provider.external_calls is not False:
         raise ValueError("Only a proven offline deterministic provider is permitted")
     # Freeze the expected deterministic result before any provider method runs.
@@ -97,6 +102,9 @@ def preview_offline_bundle(lead: Mapping[str, object], *, opted_out: bool | None
     review turns this output into permission to contact a real person.
     """
     provider = get_provider("offline")
+    # Fail closed before calling a substituted provider or trusting its metadata.
+    if type(provider) is not OfflineRulesProvider or provider.provider_id != OfflineRulesProvider.provider_id:
+        raise ValueError("Untrusted offline provider identity")
     if provider.uses_model is not False or provider.external_calls is not False:
         raise ValueError("Offline preview cannot execute model or network providers")
     qualification = provider.qualify(lead, opted_out=opted_out)
