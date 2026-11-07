@@ -25,6 +25,26 @@ class ScenarioCalculatorTests(unittest.TestCase):
         self.assertEqual(result["pretax_net_scenario_usd"], "-625.00")
         self.assertIsNone(result["actual_net_profit_usd"])
 
+    def test_zero_target_with_zero_overhead_is_met_at_zero_customers(self):
+        for unit_cost in ("0", "0.01"):
+            with self.subTest(unit_cost=unit_cost):
+                result = calculate_scenario(scenario(
+                    customers=0, price_usd="0",
+                    variable_cost_per_customer_usd=unit_cost,
+                    fixed_cost_usd="0", acquisition_cost_usd="0",
+                    refunds_and_fees_usd="0", target_pretax_net_usd="0"))
+                self.assertEqual(result["minimum_customers_for_target_scenario"], 0)
+                self.assertFalse(result["break_even_unreachable_at_assumed_unit_margin"])
+
+    def test_scenario_minimum_beyond_supported_range_is_explicit(self):
+        result = calculate_scenario(scenario(
+            customers=0, price_usd="0.01", variable_cost_per_customer_usd="0",
+            fixed_cost_usd="0", acquisition_cost_usd="0",
+            refunds_and_fees_usd="0", target_pretax_net_usd="2500"))
+        self.assertEqual(result["minimum_customers_for_target_scenario"], 250000)
+        self.assertTrue(result["minimum_customers_outside_supported_range"])
+        self.assertFalse(calculate_scenario(scenario())["minimum_customers_outside_supported_range"])
+
     def test_nonpositive_margin_unreachable(self):
         result = calculate_scenario(scenario(price_usd="50", variable_cost_per_customer_usd="75"))
         self.assertIsNone(result["minimum_customers_for_target_scenario"])
