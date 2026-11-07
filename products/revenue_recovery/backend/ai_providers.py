@@ -50,6 +50,10 @@ def build_offline_review_envelope(
     # Reject subclasses/proxies as well: their behavior and identity are untrusted.
     if type(provider) is not OfflineRulesProvider or provider.provider_id != OfflineRulesProvider.provider_id:
         raise ValueError("Untrusted offline provider identity")
+    # Exact class identity alone does not reject instance-level method overrides.
+    # An overridden qualify/draft could perform I/O before output checks run.
+    if vars(provider):
+        raise ValueError("Untrusted offline provider instance overrides")
     if provider.uses_model is not False or provider.external_calls is not False:
         raise ValueError("Only a proven offline deterministic provider is permitted")
     # Freeze the expected deterministic result before any provider method runs.
