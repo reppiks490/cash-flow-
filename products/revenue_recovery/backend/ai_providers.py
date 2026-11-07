@@ -96,30 +96,21 @@ def preview_offline_bundle(lead: Mapping[str, object], *, opted_out: bool | None
     No remote provider can be selected here. Neither mock consent nor human
     review turns this output into permission to contact a real person.
     """
-    provider = get_provider("offline")
-    if provider.uses_model is not False or provider.external_calls is not False:
-        raise ValueError("Offline preview cannot execute model or network providers")
-    qualification = provider.qualify(lead, opted_out=opted_out)
-    followup = provider.draft(lead, opted_out=opted_out, objection=objection)
-    if (qualification != followup.get("qualification")
-            or qualification.get("outreach_allowed") is not False
-            or followup.get("sent") is not False
-            or followup.get("send_enabled") is not False
-            or followup.get("requires_human_approval") is not True
-            or followup.get("external_ref") != qualification.get("external_ref")
-            or (opted_out is True and
-                (followup.get("draft") is not None or followup.get("status") != "suppressed"))):
-        raise ValueError("Unsafe or inconsistent offline preview")
+    # Reuse the strict review-envelope integrity gate rather than maintaining
+    # a weaker second validator for the same provider output.
+    envelope = build_offline_review_envelope(
+        lead, opted_out=opted_out, objection=objection, provider_name="offline"
+    )
     return {
         "schema_version": "rre-offline-bundle-v1",
         "synthetic": True,
-        "provider_id": provider.provider_id,
+        "provider_id": envelope["provider_id"],
         "uses_model": False,
         "external_calls": False,
         "outreach_allowed": False,
         "sent": False,
         "send_enabled": False,
         "requires_human_approval": True,
-        "qualification": qualification,
-        "followup": followup,
+        "qualification": envelope["qualification"],
+        "followup": envelope["followup"],
     }
