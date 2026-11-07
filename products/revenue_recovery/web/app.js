@@ -19,6 +19,8 @@ let selectionSequence = 0;
 let selectedReference = null;
 let scenarioRequestSequence = 0;
 let policyRequestSequence = 0;
+let refreshSequence = 0;
+let scorecardSequence = 0;
 
 function safeLead(value) {
   if (!value || typeof value !== "object" || Array.isArray(value) || value.synthetic !== true) return null;
@@ -118,6 +120,9 @@ function render(rows, source) {
 }
 
 async function refresh() {
+  const requestAtStart = ++refreshSequence;
+  // Invalidate any older scorecard response before the leads request resolves.
+  ++scorecardSequence;
   $("connection").textContent = "Checking local synthetic API...";
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 2500);
@@ -130,17 +135,22 @@ async function refresh() {
         payload.leads.length > 2000 || payload.leads.some(row => safeLead(row) === null)) {
       throw new Error("Unsafe or incompatible synthetic lead response");
     }
+    if (requestAtStart !== refreshSequence) return;
     render(payload.leads, "Local API");
-    await refreshScorecard();
+    await refreshScorecard(requestAtStart);
+    if (requestAtStart !== refreshSequence) return;
     $("connection").textContent = "Connected to local synthetic API. No real customers or payments.";
   } catch (_error) {
+    if (requestAtStart !== refreshSequence) return;
+    ++scorecardSequence;
     render(FIXTURES, "Offline fixtures");
     $("scorecardInfo").textContent = "Offline examples only. No payment sources connected.";
     $("connection").textContent = "Offline fixture mode. This is a demonstration only; no customer records or payments are connected.";
   } finally {clearTimeout(timeout);}
 }
 
-async function refreshScorecard() {
+async function refreshScorecard(parentRefresh = refreshSequence) {
+  const requestAtStart = ++scorecardSequence;
   try {
     const response = await fetch("/api/demo/scorecard", {cache:"no-store",credentials:"omit"});
     if (!response.ok) throw new Error("scorecard unavailable");
@@ -154,10 +164,12 @@ async function refreshScorecard() {
         v.rre_monthly_profit_cents !== 0) {
       throw new Error("unexpected or unverified scorecard");
     }
+    if (requestAtStart !== scorecardSequence || parentRefresh !== refreshSequence) return;
     $("scorecardInfo").textContent =
       "Synthetic process-memory inquiries: " + data.counts.received_demo_leads +
       ". Real customer count: unknown (no billing source connected). No confirmed bookings.";
   } catch (_error) {
+    if (requestAtStart !== scorecardSequence || parentRefresh !== refreshSequence) return;
     $("scorecardInfo").textContent = "Scorecard disconnected — fixture mode only. No real financial results.";
   }
 }
