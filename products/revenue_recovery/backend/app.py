@@ -187,8 +187,19 @@ def make_handler(store: DemoStore):
 
 
         def _valid_host(self) -> bool:
-            host = self.headers.get("Host", "")
-            return re.fullmatch(r"(?:localhost|127\.0\.0\.1)(?::[0-9]{1,5})?", host, re.I) is not None
+            """Require one canonical loopback authority and a valid TCP port."""
+            hosts = self.headers.get_all("Host", [])
+            if len(hosts) != 1:
+                return False
+            match = re.fullmatch(
+                r"(localhost|127\.0\.0\.1)(?::([0-9]{1,5}))?",
+                hosts[0],
+                re.IGNORECASE | re.ASCII,
+            )
+            if match is None:
+                return False
+            port = match.group(2)
+            return port is None or 1 <= int(port) <= 65535
 
         def _write(self, code: int, raw: bytes, mime: str) -> None:
             self.send_response(code)
@@ -290,7 +301,19 @@ def make_handler(store: DemoStore):
                 self._json(415, {"error": "JSON content type required"})
                 return
             try:
-                length = int(self.headers.get("Content-Length", "-1"))
+                # Reject ambiguous framing and malformed header values before parsing.
+                raw_lengths = self.headers.get_all("Content-Length", [])
+                if len(raw_lengths) > 1 or self.headers.get("Transfer-Encoding") is not None:
+                    self._json(400, {"error": "Invalid request framing"})
+                    return
+                raw_length = raw_lengths[0] if raw_lengths else None
+                if raw_length is None:
+                    self._json(413, {"error": "Invalid or oversized request"})
+                    return
+                if re.fullmatch(r"[0-9]{1,5}\Z", raw_length, re.ASCII) is None:
+                    self._json(400, {"error": "Invalid request framing"})
+                    return
+                length = int(raw_length)
                 if not 0 <= length <= MAX_BODY_BYTES:
                     self._json(413, {"error": "Invalid or oversized request"})
                     return
