@@ -187,8 +187,19 @@ def make_handler(store: DemoStore):
 
 
         def _valid_host(self) -> bool:
-            host = self.headers.get("Host", "")
-            return re.fullmatch(r"(?:localhost|127\.0\.0\.1)(?::[0-9]{1,5})?", host, re.I) is not None
+            """Require one canonical loopback authority and a valid TCP port."""
+            hosts = self.headers.get_all("Host", [])
+            if len(hosts) != 1:
+                return False
+            match = re.fullmatch(
+                r"(localhost|127\\.0\\.0\\.1)(?::([0-9]{1,5}))?",
+                hosts[0],
+                re.IGNORECASE | re.ASCII,
+            )
+            if match is None:
+                return False
+            port = match.group(2)
+            return port is None or 1 <= int(port) <= 65535
 
         def _write(self, code: int, raw: bytes, mime: str) -> None:
             self.send_response(code)
