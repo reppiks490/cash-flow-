@@ -1,6 +1,6 @@
 # HVAC buyer objection decision card — synthetic demo only
 
-**Classification:** operator preparation, not customer research, legal advice, approved sales claims, or a live offer. Related: RRE-04 #26 and child ticket #88. Read `PILOT_OFFER_AND_DISCOVERY.md`, `COMPETITOR_EVIDENCE.md`, and `HVAC_PILOT_DEMO_ACCEPTANCE_SCRIPT.md` (the latter is proposed in draft PR #126, not assumed merged).
+**Classification:** operator preparation, not customer research, legal advice, approved sales claims, or a live offer. Related: RRE-04 #26 and child ticket #88. Read `PILOT_OFFER_AND_DISCOVERY.md`, `COMPETITOR_EVIDENCE.md`, and `HVAC_PILOT_DEMO_ACCEPTANCE_SCRIPT.md` (merged to `main` via PR #126).
 
 ## Twelve-minute internal rehearsal (no prospects present)
 
