@@ -32,6 +32,13 @@ function safeLead(value) {
   return {synthetic:true,external_ref:value.external_ref,source:value.source,need:value.need,status:value.status};
 }
 
+function safeDraftMessage(value) {
+  // Finite synthetic template previews must not expose contact details or unbounded text.
+  return typeof value === "string" && value.length > 0 && value.length <= 1500 &&
+    /^[\x20-\x7e\n]*$/.test(value) &&
+    !/https?:\/\/|www\.|@|\b\d{3}[-. ]?\d{3}[-. ]?\d{4}\b/i.test(value);
+}
+
 function draftFor(lead) {
   return "Hello,\n\nThanks for reaching out about your HVAC request (" +
     lead.external_ref + "). We can review your service needs and discuss available appointment options. " +
@@ -62,7 +69,7 @@ async function selectLead(index) {
         p.qualification.qualified !== false || p.qualification.consent_verified !== false ||
         !p.followup || p.followup.status !== "unsent_unapproved_draft" ||
         p.followup.approved !== false || p.followup.transmitted !== false ||
-        typeof p.followup.message !== "string" ||
+        !safeDraftMessage(p.followup.message) ||
         !p.crm || p.crm.dry_run !== true || p.crm.transmitted !== false ||
         !p.appointment || p.appointment.confirmed !== false ||
         !p.attribution || p.attribution.verified_recovered_revenue_cents !== 0) {
