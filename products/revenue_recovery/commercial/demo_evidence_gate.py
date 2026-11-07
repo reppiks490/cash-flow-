@@ -1,7 +1,9 @@
 """Offline, fail-closed acceptance evidence for synthetic HVAC demo rehearsals.
 
 No network, customer records, real credentials, payments, or outbound operations.
-This classifies self-reported synthetic rehearsal data; a matching commit SHA\nDOES NOT authenticate any test execution. Never emit a verified PASS.\nNOT production authorization.
+This classifies self-reported synthetic rehearsal data; a matching commit SHA
+DOES NOT authenticate any test execution. Never emit a verified PASS.
+NOT production authorization.
 """
 from __future__ import annotations
 
