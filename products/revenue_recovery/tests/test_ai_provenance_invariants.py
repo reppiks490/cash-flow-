@@ -5,7 +5,7 @@ from backend.ai_providers import get_provider
 from backend.qualification import RULES, qualify_lead
 
 
-def lead(ref="DEMO-001", source="web", need="repair"):
+def lead(ref="DEMO-001", source="website", need="repair"):
     return {"synthetic": True, "external_ref": ref, "source": source,
             "need": need, "status": "received"}
 
