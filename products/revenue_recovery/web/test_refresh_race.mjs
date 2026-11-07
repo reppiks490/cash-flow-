@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {test} from "node:test";
 import {runInNewContext} from "node:vm";
+// Register additional source-preserved race tests under the existing CI Node entrypoint.
+import "./test_refresh_failure_race.mjs";
+import "./test_seed_refresh_status.mjs";
+import "./test_seed_status_ownership.mjs";
 
 const script = readFileSync(new URL("./app.js", import.meta.url), "utf8");
 const deferred = () => {
@@ -79,4 +83,17 @@ test("older scorecard cannot overwrite newer refresh scorecard",async()=>{
   h.pending[1].resolve(response(score(1)));await older;
   assert.match(h.node("scorecardInfo").textContent,/inquiries: 9/);
   assert.match(h.node("connection").textContent,/Connected/);
+});
+
+// A compromised or incompatible demo endpoint must not present impossible counts.
+test("negative and excessive synthetic scorecard counts fail closed",async()=>{
+  for (const invalid of [-1,2001,Number.MAX_SAFE_INTEGER]) {
+    const h=harness();
+    const pending=h.sandbox.refreshScorecard();
+    assert.equal(h.pending.length,1);
+    h.pending[0].resolve(response(score(invalid)));
+    await pending;
+    assert.match(h.node("scorecardInfo").textContent,/disconnected/);
+    assert.doesNotMatch(h.node("scorecardInfo").textContent,/inquiries:/);
+  }
 });
