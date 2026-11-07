@@ -28,7 +28,7 @@ class BuyerThresholdBoundaryTests(unittest.TestCase):
         self.assertIsNone(result["verified_rre_net_profit_usd"])
 
     def test_over_limit_and_noncanonical_values_rejected_for_every_field(self):
-        bad = ("10000.01", "1000000.01", "0001", "1e2", "NaN", "1.000",
+        bad = ("1000000.01", "0001", "1e2", "NaN", "1.000",
                "1\\n", "１", "", None, True, 1.0)
         for field in ("monthly_price_usd", "incremental_job_contribution_usd",
                       "loaded_labor_hour_cost_usd"):
@@ -40,6 +40,16 @@ class BuyerThresholdBoundaryTests(unittest.TestCase):
                     kwargs[field] = value
                     with self.assertRaises(BuyerValueError):
                         calculate_buyer_break_even(BuyerValueInputs(**kwargs))
+
+    def test_field_specific_caps_are_enforced(self):
+        for field, amount in (("monthly_price_usd", "10000.01"),
+                              ("incremental_job_contribution_usd", "1000000.01"),
+                              ("loaded_labor_hour_cost_usd", "10000.01")):
+            with self.subTest(field=field), self.assertRaises(BuyerValueError):
+                kwargs = dict(monthly_price_usd="700", incremental_job_contribution_usd="250",
+                              loaded_labor_hour_cost_usd="50")
+                kwargs[field] = amount
+                calculate_buyer_break_even(BuyerValueInputs(**kwargs))
 
     def test_unknown_denominators_do_not_become_zero_value_claims(self):
         result = calculate_buyer_break_even(self.case("700", "0", "0"))
