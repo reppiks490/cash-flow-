@@ -24,10 +24,16 @@ def main() -> int:
         return 2
     env = os.environ.copy()
     env["PYTHONPATH"] = str(ROOT)
+    web = ROOT / "web"
+    js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])
+    js_tests = sorted({*web.glob("*.test.cjs"), *web.glob("test_*.cjs"), *web.glob("*.test.mjs"), *web.glob("test_*.mjs")})
+    if not js_sources or not js_tests:
+        print("FAIL: expected browser source and JS regression tests missing", flush=True)
+        return 2
     commands = [
         ("Python product regressions", [sys.executable, "-m", "unittest", "discover", "-s", str(ROOT), "-p", "test_*.py", "-v"]),
-        ("JavaScript syntax", ["node", "--check", str(ROOT / "web" / "app.js")]),
-        ("JavaScript interaction regressions", ["node", "--test", str(ROOT / "web" / "test_app.mjs")]),
+        *[(f"JavaScript syntax: {path.name}", ["node", "--check", str(path)]) for path in js_sources],
+        ("JavaScript interaction regressions", ["node", "--test", *map(str, js_tests)]),
     ]
     acceptance = ROOT / "backend" / "operator_acceptance.py"
     if acceptance.exists():
