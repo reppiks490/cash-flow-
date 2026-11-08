@@ -27,7 +27,11 @@ let scorecardSequence = 0;
 function safeLead(value) {
   if (!value || typeof value !== "object" || Array.isArray(value) || value.synthetic !== true) return null;
   const keys = Object.keys(value);
-  if (keys.length !== DEMO_KEYS.size || keys.some(key => !DEMO_KEYS.has(key))) return null;
+  // Require all five fields to be own properties: inherited prototype values
+  // must never satisfy the synthetic intake contract.
+  if (keys.length !== DEMO_KEYS.size ||
+      keys.some(key => !DEMO_KEYS.has(key)) ||
+      [...DEMO_KEYS].some(key => !Object.hasOwn(value, key))) return null;
   if (typeof value.external_ref !== "string") return null;
   const match = DEMO_REF.exec(value.external_ref);
   if (!match || match[0] !== value.external_ref) return null;
