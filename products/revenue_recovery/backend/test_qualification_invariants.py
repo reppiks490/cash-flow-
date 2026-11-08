@@ -92,5 +92,28 @@ class QualificationInvariantTests(unittest.TestCase):
                     prepare_followup(LEAD, objection=invalid)
 
 
+    def test_source_and_need_changes_invalidate_replay_identity(self):
+        baseline = qualify_lead(LEAD)
+        changed_source = qualify_lead(dict(LEAD, source="phone"))
+        changed_need = qualify_lead(dict(LEAD, need="maintenance"))
+        self.assertEqual(len({baseline["idempotency_key"],
+                              changed_source["idempotency_key"],
+                              changed_need["idempotency_key"]}), 3)
+        self.assertNotEqual(baseline["evidence"], changed_source["evidence"])
+        self.assertNotEqual(baseline["category"], changed_need["category"])
+        self.assertFalse(changed_source["outreach_allowed"])
+        self.assertFalse(changed_need["outreach_allowed"])
+
+    def test_suppressed_objections_never_generate_draft(self):
+        for objection in (None, "price", "timing", "competitor"):
+            with self.subTest(objection=objection):
+                result = prepare_followup(LEAD, opted_out=True, objection=objection)
+                self.assertEqual(result["status"], "suppressed")
+                self.assertIsNone(result["draft"])
+                self.assertFalse(result["sent"])
+                self.assertFalse(result["send_enabled"])
+                self.assertTrue(result["requires_human_approval"])
+
+
 if __name__ == "__main__":
     unittest.main()
