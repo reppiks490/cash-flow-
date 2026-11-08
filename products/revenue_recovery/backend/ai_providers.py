@@ -25,6 +25,9 @@ class OfflineRulesProvider:
               objection: str | None = None) -> dict[str, object]:
         return prepare_followup(lead, opted_out=opted_out, objection=objection)
 
+_TRUSTED_QUALIFY = OfflineRulesProvider.__dict__["qualify"]
+_TRUSTED_DRAFT = OfflineRulesProvider.__dict__["draft"]
+
 def get_provider(name: str = "offline") -> QualificationProvider:
     if name != "offline":
         raise ValueError("Only the offline rules provider is enabled; no external models configured")
@@ -44,12 +47,26 @@ def build_offline_review_envelope(
     decisions, authorize outreach, or perform model inference or I/O.
     Unknown providers are rejected *before* invoking any provider methods.
     """
+    # Reject class-level monkeypatching before constructing or invoking the adapter.
+    # This is a defense-in-depth integrity check, not a hostile-runtime sandbox.
+    if (OfflineRulesProvider.__dict__.get("qualify") is not _TRUSTED_QUALIFY
+            or OfflineRulesProvider.__dict__.get("draft") is not _TRUSTED_DRAFT):
+        raise ValueError("Untrusted offline provider class methods")
+    # Validate immutable offline provenance *before* the factory can execute.
+    if (OfflineRulesProvider.__dict__.get("provider_id") != "offline-deterministic-rules-v1"
+            or OfflineRulesProvider.__dict__.get("uses_model") is not False
+            or OfflineRulesProvider.__dict__.get("external_calls") is not False):
+        raise ValueError("Untrusted offline provider class metadata")
     provider = get_provider(provider_name)
     # The only enabled adapter is the built-in deterministic implementation.
     # A replacement object can reproduce safe outputs while forging provenance.
     # Reject subclasses/proxies as well: their behavior and identity are untrusted.
     if type(provider) is not OfflineRulesProvider or provider.provider_id != OfflineRulesProvider.provider_id:
         raise ValueError("Untrusted offline provider identity")
+    # An exact-class instance can still carry per-instance callable overrides.
+    # Reject them before invoking qualify/draft; no state is expected here.
+    if vars(provider):
+        raise ValueError("Untrusted offline provider instance overrides")
     if provider.uses_model is not False or provider.external_calls is not False:
         raise ValueError("Only a proven offline deterministic provider is permitted")
     # Freeze the expected deterministic result before any provider method runs.
