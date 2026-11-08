@@ -115,5 +115,31 @@ class QualificationInvariantTests(unittest.TestCase):
                 self.assertTrue(result["requires_human_approval"])
 
 
+    def test_recheck_unknown_to_clear_still_requires_fresh_review(self):
+        prior = prepare_followup(LEAD, opted_out=None, objection="timing")
+        refreshed = recheck_followup_for_review(LEAD, prior, opted_out=False)
+        self.assertEqual(refreshed["review_status"], "fresh_human_review_required")
+        self.assertTrue(refreshed["replay_changed"])
+        self.assertFalse(refreshed["outreach_enabled"])
+        self.assertFalse(refreshed["followup"]["send_enabled"])
+        self.assertTrue(refreshed["followup"]["requires_human_approval"])
+        self.assertNotIn("suppression_status", refreshed["followup"]["qualification"]["unknowns"])
+        self.assertIn("contact_consent", refreshed["followup"]["qualification"]["unknowns"])
+
+    def test_recheck_rejects_tampered_nested_evidence_and_unknowns(self):
+        prior = prepare_followup(LEAD, opted_out=None)
+        for field in ("evidence", "unknowns"):
+            with self.subTest(field=field):
+                tampered = dict(prior)
+                qualification = dict(prior["qualification"])
+                qualification[field] = list(qualification[field])
+                if field == "evidence":
+                    qualification[field][0] = dict(qualification[field][0], provenance="verified_customer")
+                else:
+                    qualification[field].remove("contact_consent")
+                tampered["qualification"] = qualification
+                with self.assertRaises(ValueError):
+                    recheck_followup_for_review(LEAD, tampered, opted_out=False)
+
 if __name__ == "__main__":
     unittest.main()
