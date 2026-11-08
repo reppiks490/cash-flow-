@@ -27,7 +27,7 @@ test("untrusted synthetic flag cannot authorize customer identifiers or extra fi
     {phone:"555-555-1234"}, {synthetic:false}
   ]) assert.equal(safeLead({...valid,...patch}), null, JSON.stringify(patch));
 });
-test("reject prototype-polluted, missing, and non-record lead payloads", () => {
+test("reject missing, malformed, and non-record lead payloads", () => {
   for (const candidate of [null, [], "DEMO-HVAC-001", {}, {...valid,synthetic:"true"},
     {...valid,external_ref:"DEMO-"+"x".repeat(57)}]) {
     assert.equal(safeLead(candidate), null);
@@ -39,4 +39,15 @@ test("draft preview rejects contact destinations and unbounded content", () => {
     assert.equal(safeDraft(candidate), false, JSON.stringify(candidate).slice(0,100));
   }
   assert.equal(safeDraft("UNSENT SYNTHETIC HVAC REVIEW ONLY"), true);
+});
+
+// The view must return an own-key-only normalized record, never an inherited field.
+test("normalize inherited prototype fields without exposing them to the UI", () => {
+  const inherited = Object.create({phone:"555-555-1234",operator_authorized:true});
+  Object.assign(inherited, valid);
+  const accepted = safeLead(inherited);
+  assert.ok(accepted);
+  assert.deepEqual(Object.keys(accepted).sort(), Object.keys(valid).sort());
+  assert.equal(Object.hasOwn(accepted,"phone"), false);
+  assert.equal(Object.hasOwn(accepted,"operator_authorized"), false);
 });
