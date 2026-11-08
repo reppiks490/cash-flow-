@@ -10,6 +10,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import unittest
 
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parent.parent
@@ -30,6 +31,17 @@ def main() -> int:
     if not js_sources or not js_tests:
         print("FAIL: expected browser source and JS regression tests missing", flush=True)
         return 2
+    # A zero-test unittest discovery exits successfully; never treat it as coverage.
+    try:
+        suite = unittest.TestLoader().discover(str(ROOT), pattern="test_*.py", top_level_dir=str(ROOT))
+        python_count = suite.countTestCases()
+    except Exception as exc:
+        print(f"FAIL: Python test discovery: {exc}", flush=True)
+        return 2
+    if python_count == 0:
+        print("FAIL: Python test discovery found zero tests", flush=True)
+        return 2
+    print(f"DISCOVERED: {python_count} Python test cases and {len(js_tests)} JavaScript test files", flush=True)
     commands = [
         ("Python product regressions", [sys.executable, "-m", "unittest", "discover", "-s", str(ROOT), "-p", "test_*.py", "-v"]),
         *[(f"JavaScript syntax: {path.name}", ["node", "--check", str(path)]) for path in js_sources],
