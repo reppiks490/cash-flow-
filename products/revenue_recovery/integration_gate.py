@@ -12,6 +12,8 @@ import subprocess
 import sys
 import unittest
 
+COMMAND_TIMEOUT_SECONDS = 600  # Bound hung tests without skipping any checks.
+
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parent.parent
 
@@ -58,7 +60,10 @@ def main() -> int:
     for label, argv in commands:
         print(f"RUN: {label}", flush=True)
         try:
-            result = subprocess.run(argv, cwd=REPO, env=env, check=False)
+            result = subprocess.run(argv, cwd=REPO, env=env, check=False, timeout=COMMAND_TIMEOUT_SECONDS)
+        except subprocess.TimeoutExpired:
+            print(f"FAIL: {label}: exceeded {COMMAND_TIMEOUT_SECONDS}s timeout", flush=True)
+            return 2
         except OSError as exc:
             print(f"FAIL: {label}: {exc}", flush=True)
             return 2
