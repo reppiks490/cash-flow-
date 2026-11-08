@@ -63,5 +63,34 @@ class QualificationInvariantTests(unittest.TestCase):
                     prepare_followup(LEAD, opted_out=invalid)
 
 
+    def test_recheck_rejects_tampered_cached_snapshot(self):
+        prior = prepare_followup(LEAD, opted_out=False, objection="price")
+        for mutation in ("draft", "sent", "qualification", "objection_category"):
+            with self.subTest(mutation=mutation):
+                changed = dict(prior)
+                if mutation == "draft":
+                    changed["draft"] = "Forged customer-facing content"
+                elif mutation == "sent":
+                    changed["sent"] = True
+                elif mutation == "qualification":
+                    changed["qualification"] = dict(prior["qualification"], outreach_allowed=True)
+                else:
+                    changed["objection_category"] = "competitor"
+                with self.assertRaises(ValueError):
+                    recheck_followup_for_review(LEAD, changed, opted_out=False)
+
+    def test_recheck_rejects_different_lead_reference(self):
+        prior = prepare_followup(LEAD, opted_out=False)
+        other = dict(LEAD, external_ref="QA-INVARIANT-002")
+        with self.assertRaises(ValueError):
+            recheck_followup_for_review(other, prior, opted_out=False)
+
+    def test_unapproved_objection_categories_fail_closed(self):
+        for invalid in ("discount", "safety", "", 0, True):
+            with self.subTest(objection=repr(invalid)):
+                with self.assertRaises(ValueError):
+                    prepare_followup(LEAD, objection=invalid)
+
+
 if __name__ == "__main__":
     unittest.main()
