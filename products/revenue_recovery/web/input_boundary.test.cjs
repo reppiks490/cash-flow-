@@ -10,7 +10,12 @@ const source = fs.readFileSync(path.join(__dirname, "app.js"), "utf8");
 const context = {document:{addEventListener(){}}, AbortController, setTimeout, clearTimeout};
 vm.createContext(context);
 vm.runInContext(source, context, {timeout:1500});
-const safeLead = value => vm.runInContext("safeLead(" + JSON.stringify(value) + ")", context);
+const safeLead = value => {
+  // Pass the actual object into the VM: JSON serialization erases prototypes.
+  context.untrustedLeadInput = value;
+  try { return vm.runInContext("safeLead(untrustedLeadInput)", context); }
+  finally { delete context.untrustedLeadInput; }
+};
 const safeDraft = value => vm.runInContext("safeDraftMessage(" + JSON.stringify(value) + ")", context);
 const valid = {synthetic:true,external_ref:"DEMO-HVAC-001",source:"website",need:"repair",status:"received"};
 
