@@ -1,5 +1,9 @@
 import unittest
-from pilot_gate import _REQUIRED, assess_pilot_controls
+
+try:
+    from .pilot_gate import _REQUIRED, assess_pilot_controls
+except ImportError:
+    from pilot_gate import _REQUIRED, assess_pilot_controls
 
 
 class PilotGateTests(unittest.TestCase):
