@@ -302,6 +302,12 @@ def make_handler(store: DemoStore):
             if origin is not None and origin.lower() != "http://" + self.headers["Host"].lower():
                 self._json(403, {"error": "Cross-origin demo writes blocked"})
                 return
+            # Duplicate Content-Type fields make request interpretation ambiguous.
+            # Reject even identical duplicates before reading or storing a lead.
+            content_types = self.headers.get_all("Content-Type", [])
+            if len(content_types) != 1:
+                self._json(400, {"error": "Invalid content type framing"})
+                return
             if self.headers.get_content_type() != "application/json":
                 self._json(415, {"error": "JSON content type required"})
                 return
