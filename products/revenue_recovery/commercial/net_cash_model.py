@@ -28,7 +28,7 @@ def _cents(value: str) -> int:
     if type(value) is not str or len(value) > 18:
         raise ValueError("Use bounded canonical decimal strings")
     import re
-    if not re.fullmatch(r"(?:0|[1-9][0-9]{0,11})(?:\\.[0-9]{1,2})?", value):
+    if not re.fullmatch(r"(?:0|[1-9][0-9]{0,11})(?:\.[0-9]{1,2})?", value):
         raise ValueError("Use nonnegative decimal amounts with <=2 fractional digits")
     try:
         amount = Decimal(value) * 100
