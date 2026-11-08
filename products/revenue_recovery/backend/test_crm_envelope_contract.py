@@ -65,5 +65,31 @@ class CRMEnvelopeContractTests(unittest.TestCase):
                     preview_crm_envelope({**VALID, **mutation})
 
 
+    def test_invalid_categories_and_non_mapping_fail_closed(self):
+        for field, value in (
+            ("source", "unverified"),
+            ("need", "unknown custom request"),
+            ("status", "closed"),
+            ("external_ref", "LIVE-001"),
+            ("synthetic", "true"),
+        ):
+            with self.subTest(field=field):
+                with self.assertRaises((ValueError, TypeError)):
+                    preview_crm_envelope({**VALID, field: value})
+        for payload in (None, [], "DEMO-HVAC-001"):
+            with self.subTest(payload_type=type(payload).__name__):
+                with self.assertRaises((ValueError, TypeError)):
+                    preview_crm_envelope(payload)
+
+    def test_preview_is_deterministic_and_does_not_mutate_input(self):
+        before = dict(VALID)
+        first = preview_crm_envelope(VALID)
+        second = preview_crm_envelope(VALID)
+        self.assertEqual(first, second)
+        self.assertEqual(VALID, before)
+        self.assertIsNone(first["provider_record_id"])
+        self.assertFalse(first["appointment_confirmed"])
+
+
 if __name__ == "__main__":
     unittest.main()
