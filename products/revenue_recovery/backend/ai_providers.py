@@ -62,6 +62,10 @@ def build_offline_review_envelope(
             or OfflineRulesProvider.__dict__.get("uses_model") is not False
             or OfflineRulesProvider.__dict__.get("external_calls") is not False):
         raise ValueError("Untrusted offline provider class metadata")
+    # An exact-class instance can still carry per-instance callable overrides.
+    # Reject them before invoking qualify/draft; no state is expected here.
+    if vars(provider):
+        raise ValueError("Untrusted offline provider instance overrides")
     if provider.uses_model is not False or provider.external_calls is not False:
         raise ValueError("Only a proven offline deterministic provider is permitted")
     # Freeze the expected deterministic result before any provider method runs.
