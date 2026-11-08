@@ -52,16 +52,17 @@ def build_offline_review_envelope(
     if (OfflineRulesProvider.__dict__.get("qualify") is not _TRUSTED_QUALIFY
             or OfflineRulesProvider.__dict__.get("draft") is not _TRUSTED_DRAFT):
         raise ValueError("Untrusted offline provider class methods")
+    # Validate immutable offline provenance *before* the factory can execute.
+    if (OfflineRulesProvider.__dict__.get("provider_id") != "offline-deterministic-rules-v1"
+            or OfflineRulesProvider.__dict__.get("uses_model") is not False
+            or OfflineRulesProvider.__dict__.get("external_calls") is not False):
+        raise ValueError("Untrusted offline provider class metadata")
     provider = get_provider(provider_name)
     # The only enabled adapter is the built-in deterministic implementation.
     # A replacement object can reproduce safe outputs while forging provenance.
     # Reject subclasses/proxies as well: their behavior and identity are untrusted.
     if type(provider) is not OfflineRulesProvider or provider.provider_id != OfflineRulesProvider.provider_id:
         raise ValueError("Untrusted offline provider identity")
-    if (OfflineRulesProvider.__dict__.get("provider_id") != "offline-deterministic-rules-v1"
-            or OfflineRulesProvider.__dict__.get("uses_model") is not False
-            or OfflineRulesProvider.__dict__.get("external_calls") is not False):
-        raise ValueError("Untrusted offline provider class metadata")
     # An exact-class instance can still carry per-instance callable overrides.
     # Reject them before invoking qualify/draft; no state is expected here.
     if vars(provider):
