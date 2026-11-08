@@ -69,6 +69,33 @@ def run_acceptance() -> None:
         require(status == 404, f"HTTP assertion 17 failed: {status}, {blocked}")
         status, leads = request("GET", "/api/demo/leads")
         require(status == 200 and len(leads["leads"]) == 1, "HTTP assertion 18 failed")
+        # HTTP-level consent gates: revocation must suppress drafts; a mock
+        # consent record must never authorize real contact or transmission.
+        for mode in ("unknown", "revoked_mock", "consent_record_mock"):
+            status, policy_response = request(
+                "GET", f"/api/demo/policy/QA-OPERATOR-01/{mode}"
+            )
+            require(status == 200 and policy_response["synthetic"] is True,
+                    f"Policy fixture unavailable: {mode}")
+            policy = policy_response["policy"]
+            require(policy["consent_verified"] is False
+                    and policy["operator_authorized"] is False
+                    and policy["may_contact_real_person"] is False
+                    and policy["actual_message_sent"] is False,
+                    f"Policy fixture incorrectly authorizes contact: {mode}")
+            require(policy["recipient_address"] is None,
+                    f"Policy fixture exposes recipient: {mode}")
+            if mode == "revoked_mock":
+                require(policy["suppressed"] is True
+                        and policy["draft"] is None
+                        and policy["draft_status"] == "suppressed",
+                        "Revoked policy failed to suppress the draft")
+            else:
+                require(policy["review_required"] is True
+                        and policy["draft_status"] == "pending_human_review",
+                        f"Policy review gate missing: {mode}")
+        status, missing = request("GET", "/api/demo/policy/QA-MISSING-01/revoked_mock")
+        require(status == 404, f"Missing lead policy must fail closed: {status}, {missing}")
         print("PASS: local synthetic HTTP operator acceptance; no external calls")
     finally:
         server.shutdown()
