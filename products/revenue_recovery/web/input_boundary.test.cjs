@@ -62,6 +62,6 @@ test("reject inherited required fields and preserve safe multiline draft text", 
   const inheritedRequired = Object.create({status:"received"});
   Object.assign(inheritedRequired, {synthetic:true,external_ref:"DEMO-HVAC-001",source:"website",need:"repair"});
   assert.equal(safeLead(inheritedRequired), null);
-  assert.equal(safeDraft("UNSENT SYNTHETIC REVIEW\\nNo outreach enabled."), true);
-  assert.equal(safeDraft("UNSENT SYNTHETIC REVIEW\\rNo outreach enabled."), false);
+  assert.equal(safeDraft("UNSENT SYNTHETIC REVIEW\nNo outreach enabled."), true);
+  assert.equal(safeDraft("UNSENT SYNTHETIC REVIEW\rNo outreach enabled."), false);
 });
