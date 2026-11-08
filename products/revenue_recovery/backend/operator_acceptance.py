@@ -12,6 +12,12 @@ from http.server import ThreadingHTTPServer
 from backend.app import DemoStore, make_handler
 
 
+def require(condition: bool, detail: str) -> None:
+    """Raise even under python -O; acceptance must never silently pass."""
+    if not condition:
+        raise RuntimeError(f"Operator acceptance failed: {detail}")
+
+
 def run_acceptance() -> None:
     store = DemoStore()
     server = ThreadingHTTPServer(("127.0.0.1", 0), make_handler(store))
@@ -36,33 +42,33 @@ def run_acceptance() -> None:
         lead = {"synthetic": True, "external_ref": "QA-OPERATOR-01",
                 "source": "website", "need": "AC not cooling"}
         status, health = request("GET", "/health")
-        assert status == 200 and health["synthetic_only"] is True
+        require(status == 200 and health["synthetic_only"] is True, "HTTP assertion 1 failed")
         status, created = request("POST", "/api/demo/leads", lead)
-        assert status == 201 and created["created"] is True
+        require(status == 201 and created["created"] is True, "HTTP assertion 2 failed")
         status, replay = request("POST", "/api/demo/leads", lead)
-        assert status == 200 and replay["created"] is False
+        require(status == 200 and replay["created"] is False, "HTTP assertion 3 failed")
         status, conflict = request("POST", "/api/demo/leads", {**lead, "need": "heating issue"})
-        assert status == 409, (status, conflict)
+        require(status == 409, f"HTTP assertion 4 failed: {status}, {conflict}")
         status, preview = request("GET", "/api/demo/recovery/QA-OPERATOR-01")
-        assert status == 200 and preview["synthetic"] is True
+        require(status == 200 and preview["synthetic"] is True, "HTTP assertion 5 failed")
         result = preview["preview"]
-        assert result["qualification"]["consent_verified"] is False
-        assert result["followup"]["approved"] is False
-        assert result["followup"]["transmitted"] is False
-        assert result["crm"]["transmitted"] is False
-        assert result["appointment"]["confirmed"] is False
-        assert result["attribution"]["verified_payment_receipts"] == 0
+        require(result["qualification"]["consent_verified"] is False, "HTTP assertion 6 failed")
+        require(result["followup"]["approved"] is False, "HTTP assertion 7 failed")
+        require(result["followup"]["transmitted"] is False, "HTTP assertion 8 failed")
+        require(result["crm"]["transmitted"] is False, "HTTP assertion 9 failed")
+        require(result["appointment"]["confirmed"] is False, "HTTP assertion 10 failed")
+        require(result["attribution"]["verified_payment_receipts"] == 0, "HTTP assertion 11 failed")
         status, scenario = request("GET", "/api/demo/scenarios/QA-OPERATOR-01/closed_job_mock")
-        assert status == 200 and scenario["synthetic"] is True
-        assert scenario["scenario"]["metrics"]["actual_messages_sent"] == 0
-        assert scenario["scenario"]["metrics"]["verified_payment_receipts"] == 0
+        require(status == 200 and scenario["synthetic"] is True, "HTTP assertion 12 failed")
+        require(scenario["scenario"]["metrics"]["actual_messages_sent"] == 0, "HTTP assertion 13 failed")
+        require(scenario["scenario"]["metrics"]["verified_payment_receipts"] == 0, "HTTP assertion 14 failed")
         status, scorecard = request("GET", "/api/demo/scorecard")
-        assert status == 200 and scorecard["synthetic"] is True
-        assert scorecard["verified"]["payment_receipts"] == 0
+        require(status == 200 and scorecard["synthetic"] is True, "HTTP assertion 15 failed")
+        require(scorecard["verified"]["payment_receipts"] == 0, "HTTP assertion 16 failed")
         status, blocked = request("POST", "/api/demo/payments", {"synthetic": True})
-        assert status == 404, (status, blocked)
+        require(status == 404, f"HTTP assertion 17 failed: {status}, {blocked}")
         status, leads = request("GET", "/api/demo/leads")
-        assert status == 200 and len(leads["leads"]) == 1
+        require(status == 200 and len(leads["leads"]) == 1, "HTTP assertion 18 failed")
         print("PASS: local synthetic HTTP operator acceptance; no external calls")
     finally:
         server.shutdown()
