@@ -17,7 +17,11 @@ REQUIRED_STEPS = (
 
 @dataclass(frozen=True)
 class DemoEvidence:
-    """Each step is an observed local test result, never a self-attested claim."""
+    """Caller-supplied synthetic trace marker; not authenticated execution evidence.
+
+    The caller controls every field, including ``passed`` and ``run_id``.
+    Validation only checks the shape and consistency of these assertions.
+    """
     step: str
     passed: bool
     synthetic: bool
