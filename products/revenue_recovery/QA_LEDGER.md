@@ -57,3 +57,13 @@
 - **Historical SEC-01 free-text risk:** mitigated for the *synthetic demo* by enumerated values and synthetic-prefixed references. Regex/enum allowlists are not a production PII filter or legal clearance. **No actual identity, authentication, tenancy, private store, verified consent or payment data controls are present.**
 - **Not tested:** real browser layout/screenshots, threat-modeled auth/IDOR, production incident and audit handling, networked CRM/calendar/email/SMS systems, verified payment webhooks or full deployment. A green synthetic suite cannot clear a customer pilot.
 - **Decision:** GREEN for *local-only synthetic baseline*; RED/BLOCKED for public hosting, paid customer onboarding, external messages, actual CRM/calendar writes or authenticated revenue attribution. Retain separate owner approvals for each live integration and expenditure.
+
+
+## QA release-gate checkpoint — 2026-11-08 (PR #162)
+
+- **Main baseline:** `660149782e55e2b4286ce45f65b9f33da87d3ab1` (retrieved 2026-11-08). This checkpoint does not change runtime code or approve a merge.
+- **Combined PR:** #162, exact head `91a2d39a3754f2b56d5cd6352d2c86157fa4c1f3`, integrates PR #157 security tests with PR #159 scoped non-Codex CI.
+- **Previously observed CI:** Revenue Recovery run 42460372251 succeeded (284 Python + 44 existing Node + 5 input-boundary Node tests); MONEYFALL run 42460372388 succeeded. These are *execution counts*, not proof that every fixture tests its claimed condition.
+- **SEC-TEST-02 / BLOCKING:** The fifth input-boundary test's `safeLead` helper serializes the inherited-property fixture with `JSON.stringify` before invoking the VM. Serialization discards inherited `phone` and `operator_authorized`, so the passing test never exercises the intended prototype boundary. Source review and exact correction guidance recorded on PR #162; no corrected test execution verified.
+- **Acceptance for SEC-TEST-02:** construct/pass an inherited object into the VM without JSON serialization, assert inherited fields are absent from the normalized result, demonstrate a negative-control implementation that incorrectly copies inherited properties fails the test, then rerun the five boundary tests plus product-specific and foundation CI on the corrected exact head. Require independent review and confirm no unrelated changed files before merge.
+- **Release decision:** synthetic combined-tree execution GREEN; inherited-property security-test validity FAIL; PR #162 merge HOLD; customer pilot, production activation and verified recurring net profit NOT ESTABLISHED. No live provider calls, data collection, outreach, billing, deployment, or Codex permitted.
