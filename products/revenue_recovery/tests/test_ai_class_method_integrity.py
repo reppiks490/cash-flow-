@@ -36,6 +36,20 @@ class ClassMethodIntegrityTests(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         ai_providers.build_offline_review_envelope(LEAD)
 
+    def test_forged_metadata_rejected_before_provider_factory(self):
+        for name, value in (("provider_id", "forged"),
+                            ("uses_model", True), ("external_calls", True)):
+            with self.subTest(name=name):
+                calls = []
+                def factory(_name="offline"):
+                    calls.append(_name)
+                    raise AssertionError("factory must not execute")
+                with patch.object(ai_providers.OfflineRulesProvider, name, value):
+                    with patch.object(ai_providers, "get_provider", factory):
+                        with self.assertRaisesRegex(ValueError, "class metadata"):
+                            ai_providers.build_offline_review_envelope(LEAD)
+                self.assertEqual(calls, [])
+
     def test_clean_offline_provider_remains_inert(self):
         result = ai_providers.preview_offline_bundle(LEAD)
         self.assertIs(result["synthetic"], True)
