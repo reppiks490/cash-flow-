@@ -5,7 +5,7 @@ from backend.qualification import qualify_lead
 from backend.followups import prepare_followup
 
 
-def fixture(ref="DEMO-001", source="web", need="repair"):
+def fixture(ref="DEMO-001", source="website", need="repair"):
     return {"synthetic": True, "external_ref": ref, "source": source,
             "need": need, "status": "received"}
 
