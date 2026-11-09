@@ -78,5 +78,38 @@ class OfflineDemoRunnerTests(unittest.TestCase):
                 execute_offline_demo()
 
 
+    def test_sent_message_fails_closed_even_when_send_disabled(self):
+        from backend.followups import prepare_followup
+        unsafe = prepare_followup(LEAD)
+        unsafe["sent"] = True
+        with patch(
+            "products.revenue_recovery.commercial.offline_demo_runner.prepare_followup",
+            return_value=unsafe,
+        ):
+            with self.assertRaises(AssertionError):
+                execute_offline_demo()
+
+    def test_crm_provider_record_id_fails_closed(self):
+        from backend.crm import preview_crm_envelope
+        unsafe = preview_crm_envelope(LEAD)
+        unsafe["provider_record_id"] = "fake-live-record"
+        with patch(
+            "products.revenue_recovery.commercial.offline_demo_runner.preview_crm_envelope",
+            return_value=unsafe,
+        ):
+            with self.assertRaises(AssertionError):
+                execute_offline_demo()
+
+    def test_unapproved_qualification_fails_closed(self):
+        from backend.qualification import qualify_lead
+        unsafe = qualify_lead(LEAD)
+        unsafe["outreach_allowed"] = True
+        with patch(
+            "products.revenue_recovery.commercial.offline_demo_runner.qualify_lead",
+            return_value=unsafe,
+        ):
+            with self.assertRaises(AssertionError):
+                execute_offline_demo()
+
 if __name__ == "__main__":
     unittest.main()
