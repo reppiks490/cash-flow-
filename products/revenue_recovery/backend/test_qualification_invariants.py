@@ -141,5 +141,34 @@ class QualificationInvariantTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     recheck_followup_for_review(LEAD, tampered, opted_out=False)
 
+    def test_all_approved_hvac_needs_remain_internal_only(self):
+        from backend.contracts import NEEDS
+        for need in sorted(NEEDS):
+            with self.subTest(need=need):
+                lead = dict(LEAD, need=need)
+                for opted_out in (None, False, True):
+                    with self.subTest(opted_out=opted_out):
+                        result = prepare_followup(lead, opted_out=opted_out)
+                        self.assertIs(result["sent"], False)
+                        self.assertIs(result["send_enabled"], False)
+                        self.assertIs(result["requires_human_approval"], True)
+                        self.assertIs(result["qualification"]["outreach_allowed"], False)
+                        if opted_out is True:
+                            self.assertIsNone(result["draft"])
+                        else:
+                            self.assertIsInstance(result["draft"], str)
+                            self.assertIn("internal synthetic preview only", result["draft"])
+
+    def test_rejects_freeform_lead_fields_before_draft(self):
+        for mutation in (
+            dict(LEAD, email="example@example.invalid"),
+            dict(LEAD, phone="555-0000"),
+            dict(LEAD, need="freeform customer description"),
+            dict(LEAD, synthetic=False),
+        ):
+            with self.subTest(fields=tuple(sorted(mutation))):
+                with self.assertRaises(ValueError):
+                    prepare_followup(mutation)
+
 if __name__ == "__main__":
     unittest.main()
