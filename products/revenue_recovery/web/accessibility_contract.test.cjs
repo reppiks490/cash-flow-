@@ -41,6 +41,11 @@ test("demo clearly disclaims revenue and contains no submit forms or external sc
   assert.match(html, /No authenticated payment receipts/);
   assert.match(html, /NOT FOR CUSTOMER DATA/);
   assert.doesNotMatch(html, /<form\b/i);
-  assert.doesNotMatch(html, /<script\b[^>]*src="(?:https?:)?\/\//i);
+  // Static guard against remote dependencies in either quote style or attribute order.
+  // This is NOT a CSP or browser/network security test.
+  const remoteAsset = /<(?:script|link)\\b[^>]*\\b(?:src|href)\\s*=\\s*(["'])(?:https?:)?\\/\\/[^"']*\\1/i;
+  assert.doesNotMatch(html, remoteAsset);
+  assert.doesNotMatch(html, /<base\\b/i);
+  assert.doesNotMatch(html, /<meta\\b[^>]*http-equiv\\s*=\\s*(["'])refresh\\1/i);
   assert.doesNotMatch(html, /<button\b[^>]*type="submit"/i);
 });
