@@ -54,7 +54,13 @@ def run_bounded(argv: list[str], env: dict[str, str], timeout: int = COMMAND_TIM
         finally:
             # Reap the direct process even if group/tree cleanup failed.
             if process.poll() is None:
-                process.kill()
+                try:
+                    process.kill()
+                except ProcessLookupError:
+                    # Child exited between poll and kill; still reap it below.
+                    pass
+                except OSError as exc:
+                    cleanup_error = RuntimeError(f"direct process kill failed: {exc}")
             try:
                 process.wait(timeout=15)
             except subprocess.TimeoutExpired as exc:
