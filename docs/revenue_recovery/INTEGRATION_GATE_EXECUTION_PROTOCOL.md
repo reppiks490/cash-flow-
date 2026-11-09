@@ -28,7 +28,7 @@ Record each command's exit code, captured output, commit SHA, and workflow run/j
 - **Real timeout:** run a short-lived synthetic subprocess which deliberately exceeds a 0.2-second timeout. This verifies Python subprocess timeout behavior, not the RRE gate's 600-second path or process-tree cleanup:
 
 ```sh
-python -c "import subprocess,sys; p=[sys.executable,'-c','import time;time.sleep(5)']; exec('try:\\n subprocess.run(p,timeout=0.2,check=True)\\n raise SystemExit(1)\\nexcept subprocess.TimeoutExpired:\\n print(\"PASS: real subprocess timeout observed\")')"
+python -c "import subprocess,sys,unittest; unittest.TestCase().assertRaises(subprocess.TimeoutExpired, subprocess.run, [sys.executable,'-c','import time;time.sleep(5)'], timeout=0.2, check=True); print('PASS: real subprocess timeout observed')"
 ```
 
 - **Descendant cleanup is separately unverified.** `subprocess.run(timeout=...)` kills and waits for its direct child; do not infer that grandchildren are terminated. A platform-specific process-group containment change and real descendant test require their own scoped implementation and review.
