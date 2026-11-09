@@ -202,5 +202,26 @@ class QualificationInvariantTests(unittest.TestCase):
                 self.assertIsNone(result["followup"]["draft"])
                 self.assertFalse(result["followup"]["send_enabled"])
 
+    def test_recheck_rejects_nested_evidence_and_unknowns_mutations(self):
+        from copy import deepcopy
+        prior = prepare_followup(LEAD, opted_out=None, objection="timing")
+        for field in ("evidence", "unknowns"):
+            with self.subTest(field=field):
+                forged = deepcopy(prior)
+                if field == "evidence":
+                    forged["qualification"]["evidence"][0]["provenance"] = "verified_customer"
+                else:
+                    forged["qualification"]["unknowns"].remove("contact_consent")
+                with self.assertRaises(ValueError):
+                    recheck_followup_for_review(LEAD, forged, opted_out=None)
+        self.assertEqual(prior, prepare_followup(LEAD, opted_out=None, objection="timing"))
+
+    def test_recheck_invalid_current_suppression_fails_closed(self):
+        prior = prepare_followup(LEAD, opted_out=False)
+        for invalid in (0, 1, "false", [], {}):
+            with self.subTest(value=repr(invalid)):
+                with self.assertRaises(ValueError):
+                    recheck_followup_for_review(LEAD, prior, opted_out=invalid)
+
 if __name__ == "__main__":
     unittest.main()
