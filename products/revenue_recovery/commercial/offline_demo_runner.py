@@ -18,7 +18,7 @@ from products.revenue_recovery.commercial.demo_trace_gate import (
 
 LEAD = {
     "synthetic": True, "external_ref": "DEMO-RRE-COMMERCIAL-1",
-    "source": "web_form", "need": "repair", "status": "received",
+    "source": "website", "need": "repair", "status": "received",
 }
 
 
