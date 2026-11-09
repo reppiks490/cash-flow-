@@ -21,7 +21,16 @@ curl -i -X POST http://127.0.0.1:8765/api/demo/leads -H 'Content-Type: applicati
 curl -i http://127.0.0.1:8765/api/demo/recovery/DEMO-001
 ```
 
-PowerShell users may use `curl.exe` for the commands above. Record **observed** status codes rather than assuming them; the replay is expected to be idempotent, but an expectation is not a result. Record the process exit code, timestamp, Python version, SHA, and sanitized console output. A green unit test or smoke run does not substitute for browser rehearsal. Open `http://127.0.0.1:8765/demo/` on the same computer only. If the route is absent, stop and record a blocker; do not invent a working screen. Never use a public tunnel, LAN bind, real contacts, CRM credentials, or customer examples.
+The `curl` commands above are **Bash/Git Bash** examples; the single-quoted JSON body is not portable to every PowerShell native-argument mode. In PowerShell, use the following native JSON request instead (run it twice and record the observed results):
+
+```powershell
+$payload = @{ synthetic = $true; external_ref = 'DEMO-001'; source = 'website'; need = 'AC not cooling' } | ConvertTo-Json -Compress
+Invoke-WebRequest -Method Post -Uri 'http://127.0.0.1:8765/api/demo/leads' -ContentType 'application/json' -Body $payload
+Invoke-WebRequest -Method Post -Uri 'http://127.0.0.1:8765/api/demo/leads' -ContentType 'application/json' -Body $payload
+Invoke-WebRequest -Uri 'http://127.0.0.1:8765/api/demo/recovery/DEMO-001'
+```
+
+Do not infer a passing replay from a successful HTTP status alone; compare the two returned bodies and the lead list for a single stored record. Record **observed** status codes rather than assuming them; the replay is expected to be idempotent, but an expectation is not a result. Record the process exit code, timestamp, Python version, SHA, and sanitized console output. A green unit test or smoke run does not substitute for browser rehearsal. Open `http://127.0.0.1:8765/demo/` on the same computer only. If the route is absent, stop and record a blocker; do not invent a working screen. Never use a public tunnel, LAN bind, real contacts, CRM credentials, or customer examples.
 
 **Opening statement, read aloud:** “Everything shown is fictional test data. We have not verified recovered revenue, live customer results, booked appointments, payments, or a deployed integration. This is an operator-supervised workflow demonstration, not a promise of business results.”
 
