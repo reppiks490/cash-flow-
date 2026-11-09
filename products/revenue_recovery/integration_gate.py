@@ -33,19 +33,34 @@ def run_bounded(argv: list[str], env: dict[str, str], timeout: int = COMMAND_TIM
     try:
         return process.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
-        if os.name == "nt":
-            # taskkill /T terminates the child process tree, unlike process.kill().
-            subprocess.run(
-                ["taskkill", "/PID", str(process.pid), "/T", "/F"],
-                check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                timeout=15,
-            )
-        else:
+        cleanup_error = None
+        try:
+            if os.name == "nt":
+                # A nonzero taskkill exit must not be silently treated as cleanup.
+                result = subprocess.run(
+                    ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                    check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    timeout=15,
+                )
+                if result.returncode != 0:
+                    cleanup_error = RuntimeError(f"taskkill failed: exit {result.returncode}")
+            else:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            cleanup_error = RuntimeError(f"process-tree cleanup failed: {exc}")
+        finally:
+            # Reap the direct process even if group/tree cleanup failed.
+            if process.poll() is None:
+                process.kill()
             try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-        process.wait(timeout=15)
+                process.wait(timeout=15)
+            except subprocess.TimeoutExpired as exc:
+                cleanup_error = RuntimeError(f"direct process did not exit: {exc}")
+        if cleanup_error is not None:
+            raise cleanup_error
         raise
 
 
@@ -95,7 +110,7 @@ def main() -> int:
         except subprocess.TimeoutExpired:
             print(f"FAIL: {label}: exceeded {COMMAND_TIMEOUT_SECONDS}s timeout", flush=True)
             return 2
-        except OSError as exc:
+        except (OSError, RuntimeError) as exc:
             print(f"FAIL: {label}: {exc}", flush=True)
             return 2
         if returncode != 0:
