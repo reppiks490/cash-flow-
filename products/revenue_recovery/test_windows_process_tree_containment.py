@@ -41,47 +41,74 @@ class WindowsProcessTreeContainmentTests(unittest.TestCase):
                 RRE_CHILD_PID=str(child_pid_file),
                 RRE_GRANDCHILD_PID=str(grandchild_pid_file),
             )
-            with self.assertRaises(subprocess.TimeoutExpired):
-                run_bounded([sys.executable, "-c", child_code], env, timeout=5)
-            self.assertTrue(child_pid_file.is_file(), "child did not initialize")
-            self.assertTrue(grandchild_pid_file.is_file(), "grandchild did not initialize")
-            pids = [int(child_pid_file.read_text()), int(grandchild_pid_file.read_text())]
-
-            kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
-            kernel32.OpenProcess.argtypes = [ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
-            kernel32.OpenProcess.restype = ctypes.c_void_p
-            kernel32.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
-            kernel32.WaitForSingleObject.restype = ctypes.c_ulong
-            kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
-            kernel32.CloseHandle.restype = ctypes.c_int
-
-            def exited(pid):
-                # SYNCHRONIZE access allows waiting on a process handle.
-                handle = kernel32.OpenProcess(0x00100000, 0, pid)
-                if not handle:
-                    error = ctypes.get_last_error()
-                    # ERROR_INVALID_PARAMETER (87) for a stale PID means no
-                    # process exists. Access denied is NOT proof of exit.
-                    if error == 87:
-                        return True
-                    raise AssertionError(
-                        f"cannot inspect process {pid}; Windows error {error}"
-                    )
-                try:
-                    result = kernel32.WaitForSingleObject(handle, 0)
-                    if result == 0:  # WAIT_OBJECT_0: process has exited.
-                        return True
-                    if result == 0x102:  # WAIT_TIMEOUT: still running.
-                        return False
-                    raise AssertionError(f"unexpected process wait status {result} for {pid}")
-                finally:
-                    kernel32.CloseHandle(handle)
-
-            for _ in range(30):
-                if all(exited(pid) for pid in pids):
-                    break
-                time.sleep(0.1)
-            self.assertTrue(all(exited(pid) for pid in pids), f"surviving process IDs: {pids}")
+            # Cleanup runs even if an assertion fails before the PID checks.
+            try:
+                with self.assertRaises(subprocess.TimeoutExpired):
+                    run_bounded([sys.executable, "-c", child_code], env, timeout=5)
+                self.assertTrue(child_pid_file.is_file(), "child did not initialize")
+                self.assertTrue(grandchild_pid_file.is_file(), "grandchild did not initialize")
+                pids = [int(child_pid_file.read_text()), int(grandchild_pid_file.read_text())]
+    
+                kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+                kernel32.OpenProcess.argtypes = [ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
+                kernel32.OpenProcess.restype = ctypes.c_void_p
+                kernel32.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
+                kernel32.WaitForSingleObject.restype = ctypes.c_ulong
+                kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+                kernel32.CloseHandle.restype = ctypes.c_int
+    
+                def exited(pid):
+                    # SYNCHRONIZE access allows waiting on a process handle.
+                    handle = kernel32.OpenProcess(0x00100000, 0, pid)
+                    if not handle:
+                        error = ctypes.get_last_error()
+                        # ERROR_INVALID_PARAMETER (87) for a stale PID means no
+                        # process exists. Access denied is NOT proof of exit.
+                        if error == 87:
+                            return True
+                        raise AssertionError(
+                            f"cannot inspect process {pid}; Windows error {error}"
+                        )
+                    try:
+                        result = kernel32.WaitForSingleObject(handle, 0)
+                        if result == 0:  # WAIT_OBJECT_0: process has exited.
+                            return True
+                        if result == 0x102:  # WAIT_TIMEOUT: still running.
+                            return False
+                        raise AssertionError(f"unexpected process wait status {result} for {pid}")
+                    finally:
+                        kernel32.CloseHandle(handle)
+    
+                for _ in range(30):
+                    if all(exited(pid) for pid in pids):
+                        break
+                    time.sleep(0.1)
+                self.assertTrue(all(exited(pid) for pid in pids), f"surviving process IDs: {pids}")
+            finally:
+                if child_pid_file.is_file():
+                    try:
+                        child_pid = int(child_pid_file.read_text())
+                        # taskkill /T terminates descendants; /F avoids a hanging test.
+                        subprocess.run(
+                            ["taskkill", "/PID", str(child_pid), "/T", "/F"],
+                            capture_output=True,
+                            timeout=10,
+                            check=False,
+                        )
+                    except (OSError, ValueError, subprocess.TimeoutExpired):
+                        # Cleanup is best-effort; never mask the original failure.
+                        pass
+                if grandchild_pid_file.is_file():
+                    try:
+                        grandchild_pid = int(grandchild_pid_file.read_text())
+                        subprocess.run(
+                            ["taskkill", "/PID", str(grandchild_pid), "/F"],
+                            capture_output=True,
+                            timeout=10,
+                            check=False,
+                        )
+                    except (OSError, ValueError, subprocess.TimeoutExpired):
+                        pass
 
     def test_nonzero_exit_code_preserved(self):
         self.assertEqual(
