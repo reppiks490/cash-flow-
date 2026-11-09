@@ -223,5 +223,28 @@ class QualificationInvariantTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     recheck_followup_for_review(LEAD, prior, opted_out=invalid)
 
+    def test_all_suppression_state_transitions_remain_unsent(self):
+        # Every mock consent transition must require review; suppressed targets
+        # must never retain a draft prepared under an earlier state.
+        for previous in (None, False, True):
+            for current in (None, False, True):
+                with self.subTest(previous=previous, current=current):
+                    prior = prepare_followup(LEAD, opted_out=previous, objection="price")
+                    result = recheck_followup_for_review(
+                        LEAD, prior, opted_out=current
+                    )
+                    self.assertIs(result["sent"], False)
+                    self.assertIs(result["outreach_enabled"], False)
+                    self.assertIs(result["requires_human_approval"], True)
+                    self.assertIs(result["followup"]["send_enabled"], False)
+                    self.assertEqual(result["replay_changed"], previous is not current)
+                    if current is True:
+                        self.assertEqual(result["review_status"], "suppressed")
+                        self.assertIsNone(result["followup"]["draft"])
+                    else:
+                        self.assertEqual(
+                            result["review_status"], "fresh_human_review_required"
+                        )
+
 if __name__ == "__main__":
     unittest.main()
