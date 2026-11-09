@@ -43,9 +43,9 @@ test("demo clearly disclaims revenue and contains no submit forms or external sc
   assert.doesNotMatch(html, /<form\b/i);
   // Static guard against remote dependencies in either quote style or attribute order.
   // This is NOT a CSP or browser/network security test.
-  const remoteAsset = /<(?:script|link)\\b[^>]*\\b(?:src|href)\\s*=\\s*(["'])(?:https?:)?\\/\\/[^"']*\\1/i;
+  const remoteAsset = /<(?:script|link)\b[^>]*\b(?:src|href)\s*=\s*(["'])(?:https?:)?\/\/[^"']*\1/i;
   assert.doesNotMatch(html, remoteAsset);
-  assert.doesNotMatch(html, /<base\\b/i);
-  assert.doesNotMatch(html, /<meta\\b[^>]*http-equiv\\s*=\\s*(["'])refresh\\1/i);
+  assert.doesNotMatch(html, /<base\b/i);
+  assert.doesNotMatch(html, /<meta\b[^>]*http-equiv\s*=\s*(["'])refresh\1/i);
   assert.doesNotMatch(html, /<button\b[^>]*type="submit"/i);
 });
