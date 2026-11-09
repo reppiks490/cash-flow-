@@ -170,5 +170,37 @@ class QualificationInvariantTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     prepare_followup(mutation)
 
+    def test_all_approved_sources_preserve_provenance_and_no_send(self):
+        from backend.contracts import SOURCES
+        for source in sorted(SOURCES):
+            with self.subTest(source=source):
+                lead = dict(LEAD, source=source)
+                qualified = qualify_lead(lead)
+                self.assertEqual(qualified["evidence"][1], {
+                    "field": "source", "value": source,
+                    "rule": "accepted_source_category",
+                    "provenance": "synthetic_intake",
+                })
+                self.assertIsNone(qualified["confidence"])
+                self.assertFalse(qualified["outreach_allowed"])
+                for objection in (None, "price", "timing", "competitor"):
+                    with self.subTest(objection=objection):
+                        draft = prepare_followup(lead, objection=objection)
+                        self.assertFalse(draft["sent"])
+                        self.assertFalse(draft["send_enabled"])
+                        self.assertTrue(draft["requires_human_approval"])
+                        self.assertEqual(draft["qualification"]["evidence"], qualified["evidence"])
+
+    def test_suppressed_recheck_across_all_objections_never_restores_draft(self):
+        for objection in (None, "price", "timing", "competitor"):
+            with self.subTest(objection=objection):
+                prior = prepare_followup(LEAD, opted_out=False, objection=objection)
+                result = recheck_followup_for_review(LEAD, prior, opted_out=True)
+                self.assertEqual(result["review_status"], "suppressed")
+                self.assertTrue(result["replay_changed"])
+                self.assertFalse(result["outreach_enabled"])
+                self.assertIsNone(result["followup"]["draft"])
+                self.assertFalse(result["followup"]["send_enabled"])
+
 if __name__ == "__main__":
     unittest.main()
