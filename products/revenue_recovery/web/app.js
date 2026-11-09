@@ -18,6 +18,7 @@ const SYNTHETIC_EVIDENCE_CODE = /^[a-z][a-z0-9_]{0,95}$/;
 const $ = id => document.getElementById(id);
 let leads = [];
 let selectionSequence = 0;
+let draftEditSequence = 0;
 let selectedReference = null;
 let scenarioRequestSequence = 0;
 let policyRequestSequence = 0;
@@ -57,6 +58,7 @@ async function selectLead(index) {
   $("auditEvents").textContent = "Lead " + selectedReference + " selected. Choose a mock scenario to inspect.";
   $("policyEvents").textContent = "Lead " + selectedReference + " selected. Choose a synthetic consent case to inspect.";
   const requestNumber = ++selectionSequence;
+  const draftEditAtStart = draftEditSequence;
   $("draft").value = "Preparing local synthetic preview...";
   $("copyStatus").textContent = "Checking read-only preview for " + lead.external_ref + " (no messages sent).";
   const controller = new AbortController();
@@ -79,12 +81,12 @@ async function selectLead(index) {
         !p.attribution || p.attribution.verified_recovered_revenue_cents !== 0) {
       throw new Error("Unsafe or incompatible review preview");
     }
-    if (requestNumber !== selectionSequence) return;
+    if (requestNumber !== selectionSequence || draftEditAtStart !== draftEditSequence) return;
     $("draft").value = p.followup.message;
     $("copyStatus").textContent = "Read-only local API preview for " + lead.external_ref +
        ". UNSENT; not approved; qualification and consent require human review.";
   } catch (_error) {
-    if (requestNumber !== selectionSequence) return;
+    if (requestNumber !== selectionSequence || draftEditAtStart !== draftEditSequence) return;
     $("draft").value = "OFFLINE SYNTHETIC FALLBACK — NOT SERVER GENERATED.\n\n" + draftFor(lead);
     $("copyStatus").textContent = "Offline fixture draft for " + lead.external_ref +
        ". Not sent, approved, or verified.";
@@ -320,6 +322,8 @@ async function seedDemo() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // A user's edits take precedence over an outstanding asynchronous preview.
+  $("draft").addEventListener("input", () => { draftEditSequence += 1; });
   $("seedDemo").addEventListener("click", seedDemo);
   $("runScenario").addEventListener("click", loadScenario);
   $("runPolicy").addEventListener("click", loadPolicy);
