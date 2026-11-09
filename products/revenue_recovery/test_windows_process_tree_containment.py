@@ -59,10 +59,13 @@ class WindowsProcessTreeContainmentTests(unittest.TestCase):
                 # SYNCHRONIZE access allows waiting on a process handle.
                 handle = kernel32.OpenProcess(0x00100000, 0, pid)
                 if not handle:
-                    # A vanished PID may be inaccessible; absence is not
-                    # enough to prove termination, so fail closed.
+                    error = ctypes.get_last_error()
+                    # ERROR_INVALID_PARAMETER (87) for a stale PID means no
+                    # process exists. Access denied is NOT proof of exit.
+                    if error == 87:
+                        return True
                     raise AssertionError(
-                        f"cannot inspect process {pid}; Windows error {ctypes.get_last_error()}"
+                        f"cannot inspect process {pid}; Windows error {error}"
                     )
                 try:
                     result = kernel32.WaitForSingleObject(handle, 0)
