@@ -18,6 +18,36 @@ class OfflineDemoRunnerTests(unittest.TestCase):
         self.assertFalse(result["billing_authorized"])
         self.assertIsNone(result["verified_revenue_cents"])
 
+    def test_offline_runner_never_opens_socket_transport(self):
+        """Fail immediately if a future dependency attempts a socket connection."""
+        import socket
+
+        attempts = []
+
+        def deny(*args, **kwargs):
+            attempts.append((args, kwargs))
+            raise AssertionError("Outbound socket transport attempted")
+
+        with patch.object(socket.socket, "connect", side_effect=deny), \
+             patch.object(socket.socket, "connect_ex", side_effect=deny), \
+             patch.object(socket, "create_connection", side_effect=deny):
+            result = execute_offline_demo()
+
+        self.assertEqual(attempts, [])
+        self.assertTrue(result["synthetic_trace_shape_valid"])
+        self.assertFalse(result["execution_independently_verified"])
+
+    def test_offline_runner_rejects_unapproved_draft_send_flag(self):
+        from backend.followups import prepare_followup
+        unsafe = prepare_followup(LEAD)
+        unsafe["send_enabled"] = True
+        with patch(
+            "products.revenue_recovery.commercial.offline_demo_runner.prepare_followup",
+            return_value=unsafe,
+        ):
+            with self.assertRaises(AssertionError):
+                execute_offline_demo()
+
     def test_revocation_failure_prevents_passing_trace(self):
         with patch(
             "products.revenue_recovery.commercial.offline_demo_runner.simulate_contact_policy",
