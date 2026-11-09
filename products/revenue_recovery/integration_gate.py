@@ -6,6 +6,7 @@ No provider calls, deployment, customer records, or network service startup.
 from __future__ import annotations
 
 import os
+import signal
 from pathlib import Path
 import shutil
 import subprocess
@@ -16,6 +17,51 @@ COMMAND_TIMEOUT_SECONDS = 600  # Bound hung tests without skipping any checks.
 
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parent.parent
+
+
+def run_bounded(argv: list[str], env: dict[str, str], timeout: int = COMMAND_TIMEOUT_SECONDS) -> int:
+    """Run a test in its own process group and terminate its descendants on timeout.
+
+    This is local regression tooling, not a sandbox for untrusted executables.
+    """
+    options = {"cwd": REPO, "env": env}
+    if os.name == "nt":
+        options["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+    else:
+        options["start_new_session"] = True
+    process = subprocess.Popen(argv, **options)
+    try:
+        return process.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        cleanup_error = None
+        try:
+            if os.name == "nt":
+                # A nonzero taskkill exit must not be silently treated as cleanup.
+                result = subprocess.run(
+                    ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                    check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    timeout=15,
+                )
+                if result.returncode != 0:
+                    cleanup_error = RuntimeError(f"taskkill failed: exit {result.returncode}")
+            else:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            cleanup_error = RuntimeError(f"process-tree cleanup failed: {exc}")
+        finally:
+            # Reap the direct process even if group/tree cleanup failed.
+            if process.poll() is None:
+                process.kill()
+            try:
+                process.wait(timeout=15)
+            except subprocess.TimeoutExpired as exc:
+                cleanup_error = RuntimeError(f"direct process did not exit: {exc}")
+        if cleanup_error is not None:
+            raise cleanup_error
+        raise
 
 
 def main() -> int:
@@ -60,15 +106,15 @@ def main() -> int:
     for label, argv in commands:
         print(f"RUN: {label}", flush=True)
         try:
-            result = subprocess.run(argv, cwd=REPO, env=env, check=False, timeout=COMMAND_TIMEOUT_SECONDS)
+            returncode = run_bounded(argv, env)
         except subprocess.TimeoutExpired:
             print(f"FAIL: {label}: exceeded {COMMAND_TIMEOUT_SECONDS}s timeout", flush=True)
             return 2
-        except OSError as exc:
+        except (OSError, RuntimeError) as exc:
             print(f"FAIL: {label}: {exc}", flush=True)
             return 2
-        if result.returncode != 0:
-            print(f"FAIL: {label}: exit {result.returncode}", flush=True)
+        if returncode != 0:
+            print(f"FAIL: {label}: exit {returncode}", flush=True)
             return 1
         print(f"PASS: {label}", flush=True)
     print("PASS: local synthetic regression gate; NOT production certification", flush=True)
