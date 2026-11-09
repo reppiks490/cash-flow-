@@ -30,7 +30,7 @@ test("synthetic pipeline table has caption and explicit column headers", () => {
 test("editable draft and scenario controls have associated labels", () => {
   for (const id of ["draft", "scenarioChoice", "policyChoice"]) {
     assert.ok(html.includes('for="' + id + '"'), "missing label for " + id);
-    assert.match(html, new RegExp('<(?:textarea|select)\\s+id="' + id + '"'));
+    assert.match(html, new RegExp(String.raw`<(?:textarea|select)\s+id="${id}"`));
   }
   assert.match(html, /id="draft"[^>]*aria-describedby="draftWarning"/);
   assert.match(html, /id="copyStatus"[^>]*role="status"/);
