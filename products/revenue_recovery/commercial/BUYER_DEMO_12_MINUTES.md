@@ -4,7 +4,24 @@
 
 ## Operator prerequisites and safety stop
 
-Use a clean checkout of the PR's exact reviewed commit and follow `products/revenue_recovery/RUNBOOK_LOCAL.md` for Python 3.11+ and loopback-only startup. The runbook contains a historical candidate-branch instruction: **do not assume that branch is the latest main or the PR head**. Before a rehearsal, record the commit SHA, run the product unittest suite, and use `PYTHONPATH=products/revenue_recovery python -m backend.app --port 8765` from the repository root. On Windows use `py -3 -m backend.app --port 8765` with the same PYTHONPATH. Open `http://127.0.0.1:8765/demo/` on the same computer only. If the route is absent, stop and record a blocker; do not invent a working screen. Never use a public tunnel, LAN bind, real contacts, CRM credentials, or customer examples.
+Use a clean checkout of the PR's exact reviewed commit and follow `products/revenue_recovery/RUNBOOK_LOCAL.md` for Python 3.11+ and loopback-only startup. The runbook contains a historical candidate-branch instruction: **do not assume that branch is the latest main or the PR head**. Before a rehearsal, record the commit SHA and run the product unittest suite. Use the following commands from the repository root **after checking out the exact reviewed PR commit**, not a historical runbook branch:
+
+```bash
+git rev-parse HEAD
+PYTHONPATH=products/revenue_recovery python -m unittest discover -s products/revenue_recovery -p 'test_*.py' -v
+PYTHONPATH=products/revenue_recovery python -m backend.smoke
+PYTHONPATH=products/revenue_recovery python -m backend.app --port 8765
+```
+
+For PowerShell, set `$env:PYTHONPATH = "products/revenue_recovery"` and replace `python` with `py -3`; run the same modules. In a **separate terminal** with the server running, record the response to `curl http://127.0.0.1:8765/health` and POST the following **fictional** payload twice, recording both HTTP status codes and response bodies:
+
+```bash
+curl -i -X POST http://127.0.0.1:8765/api/demo/leads -H 'Content-Type: application/json' -d '{"synthetic":true,"external_ref":"DEMO-001","source":"website","need":"AC not cooling"}'
+curl -i -X POST http://127.0.0.1:8765/api/demo/leads -H 'Content-Type: application/json' -d '{"synthetic":true,"external_ref":"DEMO-001","source":"website","need":"AC not cooling"}'
+curl -i http://127.0.0.1:8765/api/demo/recovery/DEMO-001
+```
+
+PowerShell users may use `curl.exe` for the commands above. Record **observed** status codes rather than assuming them; the replay is expected to be idempotent, but an expectation is not a result. Record the process exit code, timestamp, Python version, SHA, and sanitized console output. A green unit test or smoke run does not substitute for browser rehearsal. Open `http://127.0.0.1:8765/demo/` on the same computer only. If the route is absent, stop and record a blocker; do not invent a working screen. Never use a public tunnel, LAN bind, real contacts, CRM credentials, or customer examples.
 
 **Opening statement, read aloud:** “Everything shown is fictional test data. We have not verified recovered revenue, live customer results, booked appointments, payments, or a deployed integration. This is an operator-supervised workflow demonstration, not a promise of business results.”
 
