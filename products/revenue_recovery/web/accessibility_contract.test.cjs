@@ -48,4 +48,8 @@ test("demo clearly disclaims revenue and contains no submit forms or external sc
   assert.doesNotMatch(html, /<base\b/i);
   assert.doesNotMatch(html, /<meta\b[^>]*http-equiv\s*=\s*(["'])refresh\1/i);
   assert.doesNotMatch(html, /<button\b[^>]*type="submit"/i);
+  // Reject inline event handlers and scriptable URLs in static demo markup.
+  assert.doesNotMatch(html, /\son[a-z]+\s*=/i);
+  assert.doesNotMatch(html, /\b(?:href|src)\s*=\s*([\x22\x27])\s*javascript:/i);
+  assert.doesNotMatch(html, /<(?:iframe|object|embed)\b/i);
 });
