@@ -47,14 +47,17 @@ function harness() {
     navigator:{clipboard:{writeText:async()=>{}}}
   });
   vm.runInContext(app, context, {filename:"app.js"});
-  // Register the same input listener as browser startup, but avoid startup fetch.
-  nodes.set("draft", element());
-  nodes.get("draft").addEventListener("input", () => vm.runInContext("draftEditSequence += 1", context));
+  // Exercise the real DOMContentLoaded registration, including the production
+  // draft input handler. Discard the unresolved startup GET from test accounting.
+  assert.equal(typeof document.ready, "function");
+  document.ready();
+  assert.equal(typeof document.getElementById("draft").listeners.input, "function");
+  requests.length = 0;
   vm.runInContext("render([FIXTURES[0], FIXTURES[1]], 'Fixture')", context);
   return {
     nodes, requests, context,
     select(index) {return vm.runInContext("selectLead(" + index + ")", context);},
-    edit(text) {nodes.get("draft").value = text; nodes.get("draft").listeners.input();}
+    edit(text) {nodes.get("draft").value = text; nodes.get("draft").listeners.input({type:"input"});}
   };
 }
 test("delayed success cannot overwrite operator edits or status", async () => {
