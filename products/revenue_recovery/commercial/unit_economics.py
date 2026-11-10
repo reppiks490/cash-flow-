@@ -56,8 +56,8 @@ def evaluate(scenario: Scenario) -> dict:
             needed = None
     return {
         "classification": "hypothetical_not_verified",
-        "verified_revenue_usd": "0.00",
-        "verified_net_profit_usd": "0.00",
+        "verified_revenue_usd": None,
+        "verified_net_profit_usd": None,
         "hypothetical_customers": scenario.customers,
         "hypothetical_gross_usd": f"{gross:.2f}",
         "hypothetical_costs_usd": f"{costs:.2f}",
