@@ -26,6 +26,27 @@ class UnitEconomicsTests(unittest.TestCase):
         result = evaluate(Scenario(monthly_price_usd="700.00", monthly_fixed_cost_usd="0.00", monthly_cost_per_customer_usd="0.00", monthly_target_net_usd="2500.00"))
         self.assertEqual(result["minimum_customers_for_target_under_assumptions"], 4)
 
+    def test_zero_target_with_zero_fixed_cost_requires_no_customers(self):
+        result = evaluate(Scenario(customers=0, monthly_fixed_cost_usd="0.00", monthly_target_net_usd="0.00"))
+        self.assertEqual(result["minimum_customers_for_target_under_assumptions"], 0)
+        self.assertEqual(result["hypothetical_contribution_usd"], "0.00")
+        self.assertFalse(result["target_is_verified"])
+
+    def test_boundary_counts_and_large_bounded_amounts(self):
+        result = evaluate(Scenario(customers=100000, monthly_price_usd="99999999.99", monthly_fixed_cost_usd="99999999.99", monthly_cost_per_customer_usd="0.00"))
+        self.assertEqual(result["hypothetical_gross_usd"], "9999999999000.00")
+        self.assertEqual(result["hypothetical_costs_usd"], "99999999.99")
+        self.assertFalse(result["billing_enabled"])
+
+    def test_unmodeled_refunds_are_not_inferred_as_zero(self):
+        result = evaluate(Scenario())
+        self.assertIn("refunds", result["excluded_costs"])
+        self.assertIn("payment_fees", result["excluded_costs"])
+        self.assertIn("owner_compensation", result["excluded_costs"])
+        self.assertEqual(result["classification"], "hypothetical_not_verified")
+        self.assertEqual(result["verified_revenue_usd"], "0.00")
+        self.assertFalse(result["target_is_verified"])
+
     def test_reject_unsafe_money(self):
         for value in ("NaN", "Infinity", "-1", "1e3", " 700", "700.000", "00700", "100000000", 700, 700.0, None, True):
             with self.subTest(value=value), self.assertRaises(ValueError):
