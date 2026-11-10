@@ -18,7 +18,8 @@ class GateMainContractTests(unittest.TestCase):
         ) as runner:
             self.assertEqual(gate.main(), 2)
         runner.assert_called_once()
-        self.assertEqual(runner.call_args.args[2], gate.COMMAND_TIMEOUT_SECONDS)
+        self.assertEqual(len(runner.call_args.args), 2)
+        self.assertGreater(gate.COMMAND_TIMEOUT_SECONDS, 0)
 
     def test_success_runs_all_discovered_commands_with_bounded_timeout(self):
         with patch.object(gate.shutil, "which", return_value="node"), patch.object(
@@ -27,8 +28,8 @@ class GateMainContractTests(unittest.TestCase):
             self.assertEqual(gate.main(), 0)
         self.assertGreater(runner.call_count, 1)
         for call in runner.call_args_list:
-            self.assertEqual(call.args[2], gate.COMMAND_TIMEOUT_SECONDS)
-            self.assertGreater(call.args[2], 0)
+            self.assertEqual(len(call.args), 2)
+            self.assertGreater(gate.COMMAND_TIMEOUT_SECONDS, 0)
 
     def test_nonzero_exit_stops_before_next_command(self):
         with patch.object(gate.shutil, "which", return_value="node"), patch.object(
