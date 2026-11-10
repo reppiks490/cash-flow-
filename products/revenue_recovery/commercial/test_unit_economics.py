@@ -10,9 +10,17 @@ class UnitEconomicsTests(unittest.TestCase):
         self.assertEqual(result["hypothetical_costs_usd"], "875.00")
         self.assertEqual(result["hypothetical_contribution_usd"], "2625.00")
         self.assertEqual(result["minimum_customers_for_target_under_assumptions"], 5)
-        self.assertEqual(result["verified_net_profit_usd"], "0.00")
+        self.assertIsNone(result["verified_net_profit_usd"])
         self.assertFalse(result["target_is_verified"])
         self.assertFalse(result["billing_enabled"])
+
+    def test_no_receipts_cannot_establish_verified_zero(self):
+        for count in (0, 5, 100):
+            result = evaluate(Scenario(customers=count))
+            self.assertIsNone(result["verified_revenue_usd"])
+            self.assertIsNone(result["verified_net_profit_usd"])
+            self.assertEqual(result["classification"], "hypothetical_not_verified")
+            self.assertFalse(result["target_is_verified"])
 
     def test_zero_customers_still_incur_fixed_costs(self):
         result = evaluate(Scenario(customers=0))
@@ -44,7 +52,7 @@ class UnitEconomicsTests(unittest.TestCase):
         self.assertIn("payment_fees", result["excluded_costs"])
         self.assertIn("owner_compensation", result["excluded_costs"])
         self.assertEqual(result["classification"], "hypothetical_not_verified")
-        self.assertEqual(result["verified_revenue_usd"], "0.00")
+        self.assertIsNone(result["verified_revenue_usd"])
         self.assertFalse(result["target_is_verified"])
 
     def test_reject_unsafe_money(self):
