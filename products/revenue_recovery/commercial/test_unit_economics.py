@@ -1,4 +1,5 @@
 """Synthetic commercial unit-economics negative controls (stdlib only)."""
+import json
 import unittest
 from commercial.unit_economics import Scenario, evaluate
 
@@ -54,6 +55,21 @@ class UnitEconomicsTests(unittest.TestCase):
         self.assertEqual(result["classification"], "hypothetical_not_verified")
         self.assertIsNone(result["verified_revenue_usd"])
         self.assertFalse(result["target_is_verified"])
+
+    def test_nullable_evidence_survives_json_round_trip(self):
+        result = evaluate(Scenario(customers=5))
+        restored = json.loads(json.dumps(result, allow_nan=False))
+        self.assertIsNone(restored["verified_revenue_usd"])
+        self.assertIsNone(restored["verified_net_profit_usd"])
+        self.assertEqual(restored["classification"], "hypothetical_not_verified")
+        self.assertFalse(restored["target_is_verified"])
+        self.assertFalse(restored["billing_enabled"])
+
+    def test_reject_invalid_cost_and_target_fields(self):
+        for field in ("monthly_fixed_cost_usd", "monthly_cost_per_customer_usd", "monthly_target_net_usd"):
+            for value in ("NaN", "-0.01", "1e2", "999999999", None, True):
+                with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                    evaluate(Scenario(**{field: value}))
 
     def test_reject_unsafe_money(self):
         for value in ("NaN", "Infinity", "-1", "1e3", " 700", "700.000", "00700", "100000000", 700, 700.0, None, True):
