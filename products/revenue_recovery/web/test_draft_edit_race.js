@@ -103,3 +103,17 @@ test("new selection after previous manual edit accepts its own response", async 
   assert.equal(h.nodes.get("draft").value,"New selected preview");
   assert.match(h.nodes.get("copyStatus").textContent,/DEMO-HVAC-002/);
 });
+
+test("manual edit on latest selection survives both current and older responses", async () => {
+  const h = harness();
+  const old = h.select(0);
+  const current = h.select(1);
+  h.edit("Keep latest operator revision");
+  const status = h.nodes.get("copyStatus").textContent;
+  h.requests[1].resolve({ok:true,json:async()=>preview("DEMO-HVAC-002","Late current preview")});
+  await current;
+  h.requests[0].resolve({ok:true,json:async()=>preview(lead.external_ref,"Stale older preview")});
+  await old;
+  assert.equal(h.nodes.get("draft").value,"Keep latest operator revision");
+  assert.equal(h.nodes.get("copyStatus").textContent,status);
+});
