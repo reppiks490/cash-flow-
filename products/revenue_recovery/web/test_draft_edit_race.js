@@ -117,3 +117,18 @@ test("manual edit on latest selection survives both current and older responses"
   assert.equal(h.nodes.get("draft").value,"Keep latest operator revision");
   assert.equal(h.nodes.get("copyStatus").textContent,status);
 });
+
+test("operator edit during delayed JSON parsing survives response completion", async () => {
+  const h = harness();
+  const parsing = deferred();
+  const done = h.select(0);
+  h.requests[0].resolve({ok:true,json:()=>parsing.promise});
+  // Allow fetch resolution to enter the still-pending JSON parsing phase.
+  await Promise.resolve();
+  h.edit("Edited after response headers, before JSON completion");
+  const status = h.nodes.get("copyStatus").textContent;
+  parsing.resolve(preview(lead.external_ref,"Late parsed server draft"));
+  await done;
+  assert.equal(h.nodes.get("draft").value,"Edited after response headers, before JSON completion");
+  assert.equal(h.nodes.get("copyStatus").textContent,status);
+});
