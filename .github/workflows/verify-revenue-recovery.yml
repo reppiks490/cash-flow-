@@ -25,6 +25,11 @@ jobs:
           PYTHONPATH: products/revenue_recovery
         run: python -m unittest discover -s products/revenue_recovery -p 'test_*.py' -v
 
+      - name: Discover QA-owned nested regression tests explicitly
+        env:
+          PYTHONPATH: products/revenue_recovery
+        run: python -m unittest discover -s products/revenue_recovery/tests -p 'test_*.py' -v
+
       - name: Verify browser JavaScript syntax (non-Codex, no dependencies)
         run: node --check products/revenue_recovery/web/app.js
 
