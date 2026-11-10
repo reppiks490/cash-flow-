@@ -26,7 +26,7 @@ test("interactive synthetic controls have accessible labels and status regions",
     assert.ok(html.includes('for="' + id + '"'), "missing label for " + id);
   }
   for (const id of ["connection", "copyStatus", "auditEvents", "policyEvents"]) {
-    const tag = [...html.matchAll(/<[^>]+>/g)].map(match => match[0]).find(markup => new RegExp('\\bid="' + id + '"').test(markup));
+    const tag = [...html.matchAll(/<[^>]+>/g)].map(match => match[0]).find(markup => markup.includes('id="' + id + '"'));
     assert.ok(tag, "missing status element: " + id);
     assert.match(tag, /\brole="status"/, "missing status role for " + id);
   }
