@@ -9,8 +9,8 @@ from datetime import date, datetime, time, timezone
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import re
 
-_DATE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}\\Z", re.ASCII)
-_ZONE = re.compile(r"[A-Za-z][A-Za-z0-9_+.-]*(?:/[A-Za-z0-9_+.-]+)+\\Z", re.ASCII)
+_DATE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}\Z", re.ASCII)
+_ZONE = re.compile(r"[A-Za-z][A-Za-z0-9_+.-]*(?:/[A-Za-z0-9_+.-]+)+\Z", re.ASCII)
 
 
 def reporting_window(start_date: str, end_date: str, timezone_name: str) -> dict[str, str]:
