@@ -37,5 +37,25 @@ class ReportingPeriodTests(unittest.TestCase):
                 reporting_window(*args)
 
 
+    def test_leap_day_and_maximum_interval(self):
+        window = reporting_window("2024-02-29", "2024-03-01", "America/Chicago")
+        self.assertEqual(window["start_utc_inclusive"], "2024-02-29T06:00:00+00:00")
+        self.assertEqual(window["end_utc_exclusive"], "2024-03-01T06:00:00+00:00")
+        maximum = reporting_window("2024-01-01", "2025-01-01", "America/Chicago")
+        self.assertEqual(maximum["start_local_date"], "2024-01-01")
+        self.assertEqual(maximum["end_local_date_exclusive"], "2025-01-01")
+
+    def test_reject_nonstring_and_noncanonical_dates(self):
+        invalid = [
+            (20261110, "2026-11-11", "America/Chicago"),
+            ("2026-11-10", ["2026-11-11"], "America/Chicago"),
+            ("2026-11-10", "2026-11-11", 7),
+            ("2026-1-10", "2026-11-11", "America/Chicago"),
+            ("2026-11-10", "2026-11-11", "America/Chicago/../../etc"),
+        ]
+        for args in invalid:
+            with self.subTest(args=args), self.assertRaises(ValueError):
+                reporting_window(*args)
+
 if __name__ == "__main__":
     unittest.main()
