@@ -46,12 +46,12 @@ test("page is explicitly synthetic and loads only same-origin assets", () => {
 
 
 test("navigation targets exist and dashboard buttons cannot submit forms", () => {
-  const ids = new Set([...html.matchAll(/\\bid="([^"]+)"/g)].map(match => match[1]));
-  const anchors = [...html.matchAll(/<a\\b[^>]*\\bhref="#([^"]+)"[^>]*>/g)];
+  const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]));
+  const anchors = [...html.matchAll(/<a\b[^>]*\bhref="#([^"]+)"[^>]*>/g)];
   assert.ok(anchors.length >= 4, "missing dashboard navigation links");
   for (const [, target] of anchors) assert.ok(ids.has(target), "missing navigation target: " + target);
-  const buttons = [...html.matchAll(/<button\\b[^>]*>/g)].map(match => match[0]);
+  const buttons = [...html.matchAll(/<button\b[^>]*>/g)].map(match => match[0]);
   assert.ok(buttons.length >= 5, "missing dashboard actions");
-  for (const button of buttons) assert.match(button, /\\btype="button"/, "button must not submit: " + button);
-  assert.doesNotMatch(html, /\\son[a-z]+\\s*=/i, "inline event handlers are not allowed");
+  for (const button of buttons) assert.match(button, /\btype="button"/, "button must not submit: " + button);
+  assert.doesNotMatch(html, /\son[a-z]+\s*=/i, "inline event handlers are not allowed");
 });
