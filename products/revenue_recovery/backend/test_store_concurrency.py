@@ -22,7 +22,7 @@ class DemoStoreConcurrencyTests(unittest.TestCase):
     def test_simultaneous_conflicting_replays_do_not_overwrite(self):
         store = DemoStore()
         store.add(lead("QA-CONCURRENT-2"))
-        variants = ["AC not cooling", "Heating not working"] * 32
+        variants = ["AC not cooling", "heating issue"] * 32
 
         def attempt(need):
             try:
