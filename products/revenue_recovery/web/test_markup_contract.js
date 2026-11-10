@@ -55,3 +55,15 @@ test("navigation targets exist and dashboard buttons cannot submit forms", () =>
   for (const button of buttons) assert.match(button, /\btype="button"/, "button must not submit: " + button);
   assert.doesNotMatch(html, /\son[a-z]+\s*=/i, "inline event handlers are not allowed");
 });
+
+test("dashboard script avoids executable HTML sinks and browser persistence", () => {
+  // This is a source-level tripwire, not a runtime security guarantee.
+  assert.doesNotMatch(js, /\\.innerHTML\\s*=|\\.outerHTML\\s*=|insertAdjacentHTML\\s*\\(/,
+    "dashboard must use textContent and DOM nodes for untrusted values");
+  assert.doesNotMatch(js, /\\beval\\s*\\(|\\bnew\\s+Function\\s*\\(/,
+    "dynamic code evaluation is not permitted");
+  assert.doesNotMatch(js, /\\b(?:localStorage|sessionStorage|indexedDB)\\b/,
+    "synthetic lead or draft data must not persist in browser storage");
+  assert.doesNotMatch(js, /\\b(?:WebSocket|EventSource|sendBeacon)\\s*\\(/,
+    "dashboard must not introduce background outbound channels");
+});
