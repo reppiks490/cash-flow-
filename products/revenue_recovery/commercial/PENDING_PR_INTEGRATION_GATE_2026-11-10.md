@@ -6,7 +6,7 @@
 
 | PR | Exact previously reported head | Changed paths (verified by GitHub changed-file API) | Evidence / outstanding gate |
 |---|---|---|---|
-| #205 | `0e3a5a19934ae3a91ce78c60df45d1ddbfc36197` | `commercial/unit_economics.py`, `commercial/test_unit_economics.py` | RRE 42744479492 and foundation 42744479653 previously passed; QA COMMENTED, not approved |
+| #205 | `057b115779968a6e5aadc1a98d00dfcbf0665d22` | `commercial/unit_economics.py`, `commercial/test_unit_economics.py` | RRE 42916254210 and foundation 42916254342 passed on updated head; nullable verified financial fields; QA COMMENTED, not approved |
 | #210 | `91fd4a5474920579913286788f8eb93dad43490c` | `commercial/HVAC_PILOT_MEASUREMENT_CONTRACT.md` | Documentation only; independent review pending |
 | #215 | `e400128762f02d88d2a28c7df425b9732cf44263` | `commercial/reporting_period.py`, `commercial/test_reporting_period.py` | RRE 42825836038 and foundation 42825836081 previously passed; combined-tree test pending |
 | #218 | `7d31a91b613b4f54684df887d0bbb1b0e1ed06bd` | `commercial/kpi_ratios.py`, `commercial/test_kpi_ratios.py` | RRE 42855839987 and foundation 42855840257 previously passed; combined-tree test pending |
@@ -27,3 +27,10 @@ These four PRs have **no identical changed file paths**, based on the GitHub cha
 Five hypothetical subscribers at $700/month imply $3,500 *modeled* gross. The #205 assumed $500 fixed plus $75/subscriber costs imply $2,625 *modeled operating contribution before excluded costs*, **not verified net profit**. Real subscription collections, refunds, processor fees, support, acquisition, taxes and owner compensation require reconciled private accounting evidence before net profit can be calculated. A missing receipt or expense is **unknown**, not verified zero. Contractor recovered-job revenue is a separate metric, never the product's subscription revenue.
 
 No live customer, payment, outreach, provider integration, legal compliance, pilot-readiness, or actual $2,500/month net-profit claim is supported. All commercial changes remain nonproduction and require independent acceptance.
+
+## 2026-11-10 exact-head reconciliation (commercial owner)
+
+- PR #205 advanced to `057b115779968a6e5aadc1a98d00dfcbf0665d22` after fixing unavailable verified revenue/profit to `None` (`null` in JSON), with JSON-roundtrip and invalid-input regressions. Both non-Codex workflows succeeded on that head: RRE 42916254210; foundation 42916254342. These are individual-PR checks, **not** combined-tree acceptance.
+- PR #210 remains `91fd4a5474920579913286788f8eb93dad43490c`; #215 remains `e400128762f02d88d2a28c7df425b9732cf44263`; #218 remains `7d31a91b613b4f54684df887d0bbb1b0e1ed06bd`, per PR metadata read at this checkpoint. All remain draft and unmerged.
+- Compatibility requirement: any downstream consumer of #205 `verified_revenue_usd` / `verified_net_profit_usd` must accept `null` as unknown. Do not coerce it to numeric zero or use it in a profit calculation. Recheck current main and each head immediately before integration.
+- No combined-tree execution, independent approval, authenticated financial evidence, customer validation, or release authorization is established by this document.
