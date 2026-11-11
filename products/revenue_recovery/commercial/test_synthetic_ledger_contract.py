@@ -78,5 +78,14 @@ class DualLedgerContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "bounded batch size"):
             reconcile([], expenses=["0.01"] * 10001, expenses_complete=True)
 
+    def test_rejects_unbounded_or_unsafe_event_identifiers(self):
+        for ident in ("", " ", "../escape", "x/y", "line\nfeed", "x" * 129, "é", "\\u0000", "x\\ty"):
+            with self.subTest(ident=repr(ident)), self.assertRaises(ValueError):
+                reconcile([receipt(ident, "saas", "1.00")])
+        valid = "A" * 128
+        self.assertEqual(reconcile([receipt(valid, "saas", "1.00")])["saas_collected_usd"], "1.00")
+        with self.assertRaises(ValueError):
+            reconcile([receipt("ok", "saas", "1.00"), adjustment("bad/id", "saas", "ok", "0.01")])
+
 if __name__ == "__main__":
     unittest.main()
