@@ -72,5 +72,11 @@ class DualLedgerContractTests(unittest.TestCase):
             with self.subTest(expenses=type(expenses).__name__), self.assertRaises(ValueError):
                 reconcile([], expenses=expenses)
 
+    def test_rejects_oversized_synthetic_batches(self):
+        with self.assertRaisesRegex(ValueError, "bounded batch size"):
+            reconcile([receipt("x", "saas", "1.00")] * 10001)
+        with self.assertRaisesRegex(ValueError, "bounded batch size"):
+            reconcile([], expenses=["0.01"] * 10001, expenses_complete=True)
+
 if __name__ == "__main__":
     unittest.main()
