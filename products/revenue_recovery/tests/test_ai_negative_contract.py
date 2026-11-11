@@ -15,7 +15,7 @@ from backend.ai_providers import build_offline_review_envelope
 
 LEAD = {
     "synthetic": True, "external_ref": "DEMO-001",
-    "source": "web", "need": "repair", "status": "received",
+    "source": "website", "need": "repair", "status": "received",
 }
 
 
