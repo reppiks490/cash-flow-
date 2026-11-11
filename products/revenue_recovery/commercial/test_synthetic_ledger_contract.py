@@ -56,5 +56,21 @@ class DualLedgerContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             reconcile([event])
 
+    def test_rejects_noncanonical_or_unbounded_money(self):
+        for amount in ("1e2", "01.00", "+1.00", " 1.00", "1.00 ", ".50", "1.", "100000000", "-0.00", "0.000", "", True, None):
+            with self.subTest(amount=amount), self.assertRaises(ValueError):
+                reconcile([receipt("sub", "saas", amount)])
+        for expense in ("1e2", "0001.00", "100000000", "-0.00", True):
+            with self.subTest(expense=expense), self.assertRaises(ValueError):
+                reconcile([], expenses_complete=True, expenses=[expense])
+
+    def test_rejects_nonfinite_event_and_expense_containers(self):
+        for events in (None, {}, "events", (item for item in [])):
+            with self.subTest(events=type(events).__name__), self.assertRaises(ValueError):
+                reconcile(events)
+        for expenses in (None, {}, "expenses", (item for item in [])):
+            with self.subTest(expenses=type(expenses).__name__), self.assertRaises(ValueError):
+                reconcile([], expenses=expenses)
+
 if __name__ == "__main__":
     unittest.main()
