@@ -43,6 +43,11 @@ def reconcile(events, *, expenses_complete=False, expenses=()):
     for event in events:
         if not isinstance(event, dict) or event.get("synthetic") is not True:
             raise ValueError("synthetic events only")
+        # Refuse unmodeled fields, including contact data or forged provider evidence.
+        # This fixture is not a customer-data ingestion boundary.
+        allowed = {"id", "ledger", "kind", "amount", "synthetic", "parent_id", "attribution"}
+        if not all(type(key) is str and key in allowed for key in event):
+            raise ValueError("unsupported synthetic event field")
         ident, ledger, kind = event.get("id"), event.get("ledger"), event.get("kind")
         if type(ident) is not str or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", ident, re.ASCII) or ident in seen:
             raise ValueError("missing or duplicate event id")
