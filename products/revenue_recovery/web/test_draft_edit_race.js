@@ -65,6 +65,8 @@ test("delayed success cannot overwrite operator edits or status", async () => {
   const done = h.select(0);
   h.edit("Operator's exact unsent edit");
   const status = h.nodes.get("copyStatus").textContent;
+  assert.match(status, /Operator-edited UNSENT synthetic draft/);
+  assert.doesNotMatch(status, /Checking read-only preview/);
   h.requests[0].resolve({ok:true,json:async()=>preview(lead.external_ref,"Server preview")});
   await done;
   assert.equal(h.nodes.get("draft").value,"Operator's exact unsent edit");
@@ -75,6 +77,8 @@ test("delayed failure cannot inject offline fallback over operator edits", async
   const done = h.select(0);
   h.edit("Keep this human draft");
   const status = h.nodes.get("copyStatus").textContent;
+  assert.match(status, /Operator-edited UNSENT synthetic draft/);
+  assert.doesNotMatch(status, /Checking read-only preview/);
   h.requests[0].reject(new Error("synthetic offline"));
   await done;
   assert.equal(h.nodes.get("draft").value,"Keep this human draft");
@@ -110,6 +114,8 @@ test("manual edit on latest selection survives both current and older responses"
   const current = h.select(1);
   h.edit("Keep latest operator revision");
   const status = h.nodes.get("copyStatus").textContent;
+  assert.match(status, /Operator-edited UNSENT synthetic draft/);
+  assert.doesNotMatch(status, /Checking read-only preview/);
   h.requests[1].resolve({ok:true,json:async()=>preview("DEMO-HVAC-002","Late current preview")});
   await current;
   h.requests[0].resolve({ok:true,json:async()=>preview(lead.external_ref,"Stale older preview")});
@@ -127,6 +133,8 @@ test("operator edit during delayed JSON parsing survives response completion", a
   await Promise.resolve();
   h.edit("Edited after response headers, before JSON completion");
   const status = h.nodes.get("copyStatus").textContent;
+  assert.match(status, /Operator-edited UNSENT synthetic draft/);
+  assert.doesNotMatch(status, /Checking read-only preview/);
   parsing.resolve(preview(lead.external_ref,"Late parsed server draft"));
   await done;
   assert.equal(h.nodes.get("draft").value,"Edited after response headers, before JSON completion");
