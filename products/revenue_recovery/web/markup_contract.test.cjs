@@ -67,3 +67,16 @@ test("dashboard script avoids executable HTML sinks and browser persistence", ()
   assert.doesNotMatch(js, /\b(?:WebSocket|EventSource|sendBeacon)\s*\(/,
     "dashboard must not introduce background outbound channels");
 });
+
+test("synthetic dashboard fetches remain read-only and omit browser credentials", () => {
+  // Defense-in-depth source tripwire; server authorization must independently enforce read-only access.
+  const calls = [...js.matchAll(/\\bfetch\\s*\\(([^;]+?)\\)\\s*;/gs)].map(match => match[1]);
+  assert.ok(calls.length >= 5, "expected dashboard API reads");
+  for (const call of calls) {
+    assert.match(call, /credentials\\s*:\\s*["']omit["']/, "API fetch must omit credentials");
+    assert.doesNotMatch(call, /\\bmethod\\s*:\\s*["'](?:POST|PUT|PATCH|DELETE)["']/i,
+      "synthetic dashboard must not mutate server data");
+  }
+  assert.doesNotMatch(js, /\\b(?:XMLHttpRequest|navigator\\.sendBeacon)\\b/,
+    "unexpected alternate network transport");
+});
