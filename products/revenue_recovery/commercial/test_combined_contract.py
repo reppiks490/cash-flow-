@@ -47,5 +47,30 @@ class CommercialIntegrationContractTests(unittest.TestCase):
         self.assertIn("customer_acquisition", report["excluded_costs"])
 
 
+    def test_invalid_funnel_counts_fail_closed(self):
+        for numerator, denominator in ((True, 2), (1, False), (-1, 3), (4, 3), (1.5, 2)):
+            with self.subTest(numerator=numerator, denominator=denominator):
+                with self.assertRaises(ValueError):
+                    conversion_rate(numerator, denominator)
+
+    def test_zero_activity_is_not_verified_zero_profit(self):
+        report = evaluate(Scenario(customers=0))
+        self.assertEqual(report["hypothetical_gross_usd"], "0.00")
+        self.assertIsNone(report["verified_revenue_usd"])
+        self.assertIsNone(report["verified_net_profit_usd"])
+        self.assertFalse(report["target_is_verified"])
+
+    def test_reporting_window_rejects_ambiguous_or_invalid_intervals(self):
+        for start, end, zone in (
+            ("2026-11-01", "2026-11-01", "America/Chicago"),
+            ("2026-11-02", "2026-11-01", "America/Chicago"),
+            ("2026-01-01", "2027-02-01", "America/Chicago"),
+            ("2026-11-01", "2026-11-02", "UTC"),
+            ("2026-11-01", "2026-11-02", "../etc/passwd"),
+        ):
+            with self.subTest(start=start, end=end, zone=zone):
+                with self.assertRaises(ValueError):
+                    reporting_window(start, end, zone)
+
 if __name__ == "__main__":
     unittest.main()
