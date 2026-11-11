@@ -305,9 +305,13 @@ async function seedDemo() {
       });
       if (!response.ok) throw new Error("Synthetic seed rejected");
     }
-    const refreshed = await refresh();
-    // POST success does not prove that the subsequent GET succeeded.
-    if (refreshed === true) {
+    // Capture the refresh generation after invoking it: refresh() increments it
+    // synchronously. A newer user refresh must own the connection status.
+    const pendingRefresh = refresh();
+    const seedRefreshGeneration = refreshSequence;
+    const refreshed = await pendingRefresh;
+    // POST success alone does not prove GET success or current UI ownership.
+    if (refreshed === true && refreshSequence === seedRefreshGeneration) {
       $("connection").textContent = "Three explicitly synthetic examples loaded into local process memory only. No live integrations.";
     }
   } catch (_error) {
