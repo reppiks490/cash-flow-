@@ -34,3 +34,11 @@ No live customer, payment, outreach, provider integration, legal compliance, pil
 - PR #210 remains `91fd4a5474920579913286788f8eb93dad43490c`; #215 remains `e400128762f02d88d2a28c7df425b9732cf44263`; #218 remains `7d31a91b613b4f54684df887d0bbb1b0e1ed06bd`, per PR metadata read at this checkpoint. All remain draft and unmerged.
 - Compatibility requirement: any downstream consumer of #205 `verified_revenue_usd` / `verified_net_profit_usd` must accept `null` as unknown. Do not coerce it to numeric zero or use it in a profit calculation. Recheck current main and each head immediately before integration.
 - No combined-tree execution, independent approval, authenticated financial evidence, customer validation, or release authorization is established by this document.
+
+## 2026-11-11 combined-tree verification checkpoint (commercial owner)
+
+- Integration draft PR **#227** at exact head `6521460621f1b764e6a0154138e1cb4ace8ea0b0` combines the source snapshots from #205, #210, #215, #218, and #220. GitHub changed-file inventory confirms **eight files**, all within `products/revenue_recovery/commercial/`. Original source branches remain preserved.
+- GitHub Actions reports **completed/success** for non-Codex Revenue Recovery workflow **42954356610** and MONEYFALL foundation workflow **42954356626** on that exact integration head. This verifies workflow conclusions, **not** an independent inspection of each test assertion or a live end-to-end pilot.
+- The earlier phrases “combined-tree test pending” and “No combined-tree execution” above describe the *pre-#227 checkpoint* and are superseded for the **CI workflow conclusion only**. The proposed additional cross-module negative controls in acceptance step 4 are **not verified implemented or executed**; do not treat CI success as proof of those specific scenarios.
+- GitHub's submitted-review listing for #227 is **empty** at this checkpoint. Independent QA/security acceptance and Principal Architect approval are outstanding. **Do not merge** or mark pilot/production ready.
+- Verified subscription receipts, complete expense reconciliation, paying customers, customer contact permission, and attributable net profit remain **unestablished**. Missing financial evidence stays **unknown**, not zero. The $700 price and $2,500/month net-profit objective remain hypotheses/targets, not results.
