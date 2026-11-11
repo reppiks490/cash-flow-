@@ -332,6 +332,12 @@ document.addEventListener("DOMContentLoaded", () => {
   $("runPolicy").addEventListener("click", loadPolicy);
   $("refresh").addEventListener("click", refresh);
   $("copyDraft").addEventListener("click", async () => {
+    // A loading placeholder or an unselected draft is not operator-reviewed content.
+    if (!selectedReference || $("draft").value === "Preparing local synthetic preview..." ||
+        $("draft").value === "Select a synthetic lead above.") {
+      $("copyStatus").textContent = "Select a lead and wait for or edit an UNSENT draft before copying. Nothing sent.";
+      return;
+    }
     try {
       await navigator.clipboard.writeText($("draft").value);
       $("copyStatus").textContent = "Copied locally; not sent.";
