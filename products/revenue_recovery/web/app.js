@@ -323,7 +323,10 @@ async function seedDemo() {
 
 document.addEventListener("DOMContentLoaded", () => {
   // A user's edits take precedence over an outstanding asynchronous preview.
-  $("draft").addEventListener("input", () => { draftEditSequence += 1; });
+  $("draft").addEventListener("input", () => {
+    draftEditSequence += 1;
+    $("copyStatus").textContent = "Operator-edited UNSENT synthetic draft. Pending preview will not replace these edits; no message sent or approved.";
+  });
   $("seedDemo").addEventListener("click", seedDemo);
   $("runScenario").addEventListener("click", loadScenario);
   $("runPolicy").addEventListener("click", loadPolicy);
