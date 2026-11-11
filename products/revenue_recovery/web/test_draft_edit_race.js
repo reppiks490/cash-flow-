@@ -40,11 +40,12 @@ function harness() {
     addEventListener(type, callback) {if (type === "DOMContentLoaded") this.ready = callback;}
   };
   const requests = [];
+  const copied = [];
   const context = vm.createContext({
     document, AbortController, setTimeout, clearTimeout,
     fetch(url) {const pending = deferred(); requests.push({url, ...pending}); return pending.promise;},
     location:{hostname:"localhost"},
-    navigator:{clipboard:{writeText:async()=>{}}}
+    navigator:{clipboard:{writeText:async value=>{copied.push(value);}}}
   });
   vm.runInContext(app, context, {filename:"app.js"});
   // Exercise the real DOMContentLoaded registration, including the production
@@ -55,7 +56,7 @@ function harness() {
   requests.length = 0;
   vm.runInContext("render([FIXTURES[0], FIXTURES[1]], 'Fixture')", context);
   return {
-    nodes, requests, context,
+    nodes, requests, context, copied,
     select(index) {return vm.runInContext("selectLead(" + index + ")", context);},
     edit(text) {nodes.get("draft").value = text; nodes.get("draft").listeners.input({type:"input"});}
   };
@@ -155,4 +156,21 @@ test("unsafe preview validation failure cannot replace operator edits", async ()
   assert.equal(h.nodes.get("draft").value,"Keep reviewed text despite invalid API response");
   assert.equal(h.nodes.get("copyStatus").textContent,status);
   assert.match(status,/Operator-edited UNSENT synthetic draft/);
+});
+
+
+test("copy blocks unselected and pending placeholder but permits reviewed unsent edit", async () => {
+  const h = harness();
+  const copy = h.nodes.get("copyDraft").listeners.click;
+  await copy();
+  assert.deepEqual(h.copied, []);
+  assert.match(h.nodes.get("copyStatus").textContent, /Select a lead/);
+  const done = h.select(0);
+  await copy();
+  assert.deepEqual(h.copied, []);
+  h.edit("Operator-reviewed UNSENT synthetic draft");
+  await copy();
+  assert.deepEqual(h.copied, ["Operator-reviewed UNSENT synthetic draft"]);
+  h.requests[0].reject(new Error("offline"));
+  await done;
 });
