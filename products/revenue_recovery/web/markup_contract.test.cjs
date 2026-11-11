@@ -68,15 +68,21 @@ test("dashboard script avoids executable HTML sinks and browser persistence", ()
     "dashboard must not introduce background outbound channels");
 });
 
-test("synthetic dashboard fetches remain read-only and omit browser credentials", () => {
-  // Defense-in-depth source tripwire; server authorization must independently enforce read-only access.
+test("synthetic dashboard network calls omit credentials and gate fixture seeding", () => {
+  // Static tripwire only; server must independently validate every request.
   const calls = [...js.matchAll(/\bfetch\s*\(([^;]+?)\)\s*;/gs)].map(match => match[1]);
-  assert.ok(calls.length >= 5, "expected dashboard API reads");
+  assert.ok(calls.length >= 6, "expected synthetic API reads and fixture seed");
   for (const call of calls) {
     assert.match(call, /credentials\s*:\s*["']omit["']/, "API fetch must omit credentials");
-    assert.doesNotMatch(call, /\bmethod\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/i,
-      "synthetic dashboard must not mutate server data");
+    assert.doesNotMatch(call, /\bmethod\s*:\s*["'](?:PUT|PATCH|DELETE)["']/i,
+      "unsupported mutating method");
   }
+  const mutations = calls.filter(call => /\bmethod\s*:\s*["']POST["']/i.test(call));
+  assert.equal(mutations.length, 1, "only the synthetic fixture intake may POST");
+  assert.match(mutations[0], /^["']\/api\/demo\/leads["']/);
+  assert.match(mutations[0], /body\s*:\s*JSON\.stringify\(safe\)/);
+  assert.match(js, /if\s*\(!\["127\.0\.0\.1",\s*"localhost"\]\.includes\(location\.hostname\)\)/,
+    "fixture POST must remain gated to local loopback");
   assert.doesNotMatch(js, /\b(?:XMLHttpRequest|navigator\.sendBeacon)\b/,
     "unexpected alternate network transport");
 });
