@@ -1,0 +1,51 @@
+name: Revenue Recovery native Windows containment acceptance
+on:
+  pull_request:
+    paths:
+      - 'products/revenue_recovery/**'
+      - '.github/workflows/verify-rre-windows.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-windows-containment:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Execute native Windows process-tree regressions
+        shell: pwsh
+        env:
+          PYTHONPATH: products/revenue_recovery
+        run: |
+          python -m unittest discover -s products/revenue_recovery/backend -p 'test_gate_windows*.py' -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify native containment test is discovered and not skipped
+        shell: pwsh
+        env:
+          PYTHONPATH: products/revenue_recovery
+        run: |
+          @'
+          import importlib.util
+          import pathlib
+          import sys
+          import unittest
+          if sys.platform != "win32":
+              raise SystemExit("Native Windows runner required")
+          path = pathlib.Path("products/revenue_recovery/backend/test_gate_windows_native.py")
+          if not path.is_file():
+              raise SystemExit("Native Windows acceptance test missing")
+          spec = importlib.util.spec_from_file_location("rre_windows_native_acceptance", path)
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          suite = unittest.defaultTestLoader.loadTestsFromModule(mod)
+          if suite.countTestCases() < 1:
+              raise SystemExit("No native Windows tests discovered")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if not result.wasSuccessful() or result.skipped or result.testsRun < 1:
+              raise SystemExit("Native Windows acceptance failed or skipped")
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
