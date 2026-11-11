@@ -38,6 +38,8 @@ def reconcile(events, *, expenses_complete=False, expenses=()):
         raise ValueError("events must be a finite sequence")
     if type(expenses) not in (list, tuple):
         raise ValueError("expenses must be a finite sequence")
+    if len(events) > 10000 or len(expenses) > 10000:
+        raise ValueError("synthetic ledger input exceeds bounded batch size")
     for event in events:
         if not isinstance(event, dict) or event.get("synthetic") is not True:
             raise ValueError("synthetic events only")
