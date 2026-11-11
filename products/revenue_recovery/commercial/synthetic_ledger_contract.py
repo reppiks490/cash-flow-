@@ -44,7 +44,7 @@ def reconcile(events, *, expenses_complete=False, expenses=()):
         if not isinstance(event, dict) or event.get("synthetic") is not True:
             raise ValueError("synthetic events only")
         ident, ledger, kind = event.get("id"), event.get("ledger"), event.get("kind")
-        if not isinstance(ident, str) or not ident or ident in seen:
+        if type(ident) is not str or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", ident, re.ASCII) or ident in seen:
             raise ValueError("missing or duplicate event id")
         if ledger not in ("contractor", "saas") or kind not in ("receipt", "refund", "chargeback"):
             raise ValueError("invalid ledger or kind")
@@ -64,7 +64,7 @@ def reconcile(events, *, expenses_complete=False, expenses=()):
                 totals["contractor_attributable"] += amount
         else:
             parent = event.get("parent_id")
-            if not isinstance(parent, str) or parent not in receipts:
+            if type(parent) is not str or parent not in receipts:
                 raise ValueError("adjustment must reference preceding receipt")
             parent_ledger, original, attribution = receipts[parent]
             if ledger != parent_ledger:
