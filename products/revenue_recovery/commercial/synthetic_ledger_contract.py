@@ -64,7 +64,7 @@ def reconcile(events, *, expenses_complete=False, expenses=()):
                 totals["contractor_attributable"] += amount
         else:
             parent = event.get("parent_id")
-            if type(parent) is not str or parent not in receipts:
+            if type(parent) is not str or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", parent, re.ASCII) or parent not in receipts:
                 raise ValueError("adjustment must reference preceding receipt")
             parent_ledger, original, attribution = receipts[parent]
             if ledger != parent_ledger:
