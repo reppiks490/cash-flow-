@@ -35,7 +35,7 @@ jobs:
           import unittest
           if sys.platform != "win32":
               raise SystemExit("Native Windows runner required")
-          path = pathlib.Path("products/revenue_recovery/backend/test_gate_windows_native.py")
+          path = pathlib.Path("products/revenue_recovery/backend/test_gate_windows_native_tree.py")
           if not path.is_file():
               raise SystemExit("Native Windows acceptance test missing")
           spec = importlib.util.spec_from_file_location("rre_windows_native_acceptance", path)
