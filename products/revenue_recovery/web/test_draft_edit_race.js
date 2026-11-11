@@ -140,3 +140,19 @@ test("operator edit during delayed JSON parsing survives response completion", a
   assert.equal(h.nodes.get("draft").value,"Edited after response headers, before JSON completion");
   assert.equal(h.nodes.get("copyStatus").textContent,status);
 });
+
+test("unsafe preview validation failure cannot replace operator edits", async () => {
+  const h = harness();
+  const done = h.select(0);
+  h.edit("Keep reviewed text despite invalid API response");
+  const status = h.nodes.get("copyStatus").textContent;
+  // An otherwise plausible preview with a forged transmitted flag must fail
+  // validation; the fallback path must not overwrite a human revision.
+  const forged = preview(lead.external_ref, "Unsafe preview");
+  forged.preview.followup.transmitted = true;
+  h.requests[0].resolve({ok:true,json:async()=>forged});
+  await done;
+  assert.equal(h.nodes.get("draft").value,"Keep reviewed text despite invalid API response");
+  assert.equal(h.nodes.get("copyStatus").textContent,status);
+  assert.match(status,/Operator-edited UNSENT synthetic draft/);
+});
