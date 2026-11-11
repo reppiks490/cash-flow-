@@ -5,10 +5,13 @@ payment verification, or an operational integration.
 """
 from decimal import Decimal, InvalidOperation
 from collections import defaultdict
+import re
+
+_CANONICAL_USD = re.compile(r'(?:0|[1-9][0-9]{0,7})(?:\.[0-9]{1,2})?\Z', re.ASCII)
 
 def _money(value):
-    if not isinstance(value, str):
-        raise ValueError("amount must be a decimal string")
+    if type(value) is not str or not _CANONICAL_USD.fullmatch(value):
+        raise ValueError("amount must be bounded canonical USD decimal string")
     try:
         amount = Decimal(value)
     except InvalidOperation as exc:
@@ -31,6 +34,10 @@ def reconcile(events, *, expenses_complete=False, expenses=()):
     totals = defaultdict(lambda: Decimal("0.00"))
     receipts = {}
     adjustments = defaultdict(lambda: Decimal("0.00"))
+    if type(events) not in (list, tuple):
+        raise ValueError("events must be a finite sequence")
+    if type(expenses) not in (list, tuple):
+        raise ValueError("expenses must be a finite sequence")
     for event in events:
         if not isinstance(event, dict) or event.get("synthetic") is not True:
             raise ValueError("synthetic events only")
