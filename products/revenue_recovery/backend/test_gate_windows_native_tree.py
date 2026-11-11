@@ -44,22 +44,37 @@ class NativeWindowsTreeTimeout(unittest.TestCase):
                 "pathlib.Path(sys.argv[2]).write_text(str(child.pid))\n"
                 "time.sleep(120)\n"
             )
-            with self.assertRaises(subprocess.TimeoutExpired):
-                gate.run_bounded(
-                    [sys.executable, "-c", parent_script, str(parent_pid_file), str(child_pid_file)],
-                    os.environ.copy(), timeout=3,
-                )
-            self.assertTrue(parent_pid_file.exists(), "parent PID was never recorded")
-            self.assertTrue(child_pid_file.exists(), "grandchild PID was never recorded")
-            pids = [int(parent_pid_file.read_text()), int(child_pid_file.read_text())]
-            self.assertEqual(len(set(pids)), 2)
-            deadline = time.monotonic() + 5
-            while time.monotonic() < deadline:
-                if not any(pid_is_running(pid) for pid in pids):
-                    break
-                time.sleep(0.1)
-            self.assertFalse(pid_is_running(pids[0]), "parent survived timeout cleanup")
-            self.assertFalse(pid_is_running(pids[1]), "grandchild survived timeout cleanup")
+            try:
+                with self.assertRaises(subprocess.TimeoutExpired):
+                    gate.run_bounded(
+                        [sys.executable, "-c", parent_script, str(parent_pid_file), str(child_pid_file)],
+                        os.environ.copy(), timeout=3,
+                    )
+                self.assertTrue(parent_pid_file.exists(), "parent PID was never recorded")
+                self.assertTrue(child_pid_file.exists(), "grandchild PID was never recorded")
+                pids = [int(parent_pid_file.read_text()), int(child_pid_file.read_text())]
+                self.assertEqual(len(set(pids)), 2)
+                deadline = time.monotonic() + 5
+                while time.monotonic() < deadline:
+                    if not any(pid_is_running(pid) for pid in pids):
+                        break
+                    time.sleep(0.1)
+                self.assertFalse(pid_is_running(pids[0]), "parent survived timeout cleanup")
+                self.assertFalse(pid_is_running(pids[1]), "grandchild survived timeout cleanup")
+            finally:
+                # Test-harness safety only: never count emergency cleanup as a gate pass.
+                # Read the grandchild first, because killing the parent can orphan it.
+                for pid_file in (child_pid_file, parent_pid_file):
+                    try:
+                        pid = int(pid_file.read_text().strip())
+                        if pid > 0 and pid_is_running(pid):
+                            subprocess.run(
+                                ["taskkill", "/PID", str(pid), "/T", "/F"],
+                                capture_output=True, text=True, timeout=10, check=False,
+                            )
+                    except (OSError, ValueError, subprocess.SubprocessError):
+                        # Preserve the original test failure; cleanup is best effort.
+                        pass
 
 
 if __name__ == "__main__":
