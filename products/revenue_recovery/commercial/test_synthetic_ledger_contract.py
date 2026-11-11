@@ -95,5 +95,17 @@ class DualLedgerContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             reconcile([receipt("ok", "saas", "1.00"), adjustment("bad/id", "saas", "ok", "0.01")])
 
+    def test_rejects_unmodeled_event_fields_and_contact_data(self):
+        for key, value in (("email", "synthetic@example.invalid"),
+                           ("provider_receipt", "forged"),
+                           ("tenant_id", "another-tenant"),
+                           ("contact_phone", "5550100"),
+                           (42, "invalid-key")):
+            event = receipt("sub", "saas", "10.00")
+            event[key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "unsupported synthetic event field"):
+                reconcile([event])
+        self.assertEqual(reconcile([receipt("sub", "saas", "10.00")])["saas_collected_usd"], "10.00")
+
 if __name__ == "__main__":
     unittest.main()
