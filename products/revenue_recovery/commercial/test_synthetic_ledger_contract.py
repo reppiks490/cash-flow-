@@ -78,6 +78,14 @@ class DualLedgerContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "bounded batch size"):
             reconcile([], expenses=["0.01"] * 10001, expenses_complete=True)
 
+    def test_malformed_adjustment_parent_ids_fail_with_value_error(self):
+        for parent in (None, [], {}, 42, True, "../escape", "x/y", "x" * 129, "é"):
+            with self.subTest(parent=repr(parent)), self.assertRaises(ValueError):
+                reconcile([receipt("sub", "saas", "10.00"),
+                           adjustment("refund", "saas", parent, "1.00")])
+        self.assertEqual(reconcile([receipt("sub", "saas", "10.00"),
+                                    adjustment("refund", "saas", "sub", "1.00")])["saas_collected_usd"], "9.00")
+
     def test_rejects_unbounded_or_unsafe_event_identifiers(self):
         for ident in ("", " ", "../escape", "x/y", "line\nfeed", "x" * 129, "é", "\\u0000", "x\\ty"):
             with self.subTest(ident=repr(ident)), self.assertRaises(ValueError):
