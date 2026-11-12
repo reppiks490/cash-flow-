@@ -66,6 +66,37 @@ class OnboardingFailClosedContractTests(unittest.TestCase):
             with self.subTest(value=repr(value)), self.assertRaises(OnboardingError):
                 draft_subscription_quote(value)
 
+    def test_workspace_identifier_boundaries_and_immutability(self):
+        base = {
+            "workspace_id": "demo-" + "a" * 59,
+            "industry": "hvac",
+            "synthetic": True,
+            "consent_mode": "manual_review_only",
+        }
+        workspace = prepare_demo_workspace(base)
+        self.assertEqual(len(workspace.workspace_id), 64)
+        base["workspace_id"] = "demo-changed"
+        self.assertEqual(workspace.workspace_id, "demo-" + "a" * 59)
+        for identifier in ("demo-" + "a" * 60, "demo-.", "demo-/",
+                           "demo-\\t", "demo-\\u200b", "demo-\\u00e9"):
+            with self.subTest(identifier=repr(identifier)), self.assertRaises(OnboardingError):
+                prepare_demo_workspace({**base, "workspace_id": identifier})
+        with self.assertRaises((AttributeError, TypeError)):
+            workspace.billing_status = "enabled"
+
+    def test_price_boundary_quotes_remain_nonbinding(self):
+        for raw, normalized in (("0.01", "0.01"), ("0.1", "0.10"),
+                                ("9999.99", "9999.99"), ("10000", "10000.00"),
+                                ("10000.00", "10000.00")):
+            with self.subTest(raw=raw):
+                quote = draft_subscription_quote(raw)
+                self.assertEqual(quote["monthly_price_usd"], normalized)
+                self.assertTrue(quote["synthetic"])
+                self.assertTrue(quote["nonbinding"])
+                self.assertEqual(quote["billing_status"], "disabled")
+                self.assertIsNone(quote["payment_receipt"])
+                self.assertFalse(quote["send_enabled"])
+
     def test_billing_and_outbound_are_unconditionally_disabled(self):
         for action in (activate_billing, send_followup):
             with self.subTest(action=action.__name__), self.assertRaises(PermissionError):
