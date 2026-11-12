@@ -1,4 +1,4 @@
-"""Synthetic-only regression: reject instance-level provider overrides before invocation."""
+"""Synthetic-only regression: reject substituted factories before provider invocation."""
 import unittest
 from unittest.mock import patch
 
@@ -27,7 +27,7 @@ class ProviderInstanceOverrideTests(unittest.TestCase):
             for entry in (ai_providers.build_offline_review_envelope,
                           ai_providers.preview_offline_bundle):
                 with self.subTest(entry=entry.__name__):
-                    with self.assertRaisesRegex(ValueError, "instance overrides"):
+                    with self.assertRaisesRegex(ValueError, "provider factory"):
                         entry(LEAD)
         self.assertEqual(called, [])
 
@@ -41,7 +41,7 @@ class ProviderInstanceOverrideTests(unittest.TestCase):
 
         provider.draft = untrusted
         with patch.object(ai_providers, "get_provider", return_value=provider):
-            with self.assertRaisesRegex(ValueError, "instance overrides"):
+            with self.assertRaisesRegex(ValueError, "provider factory"):
                 ai_providers.build_offline_review_envelope(LEAD)
         self.assertEqual(called, [])
 
