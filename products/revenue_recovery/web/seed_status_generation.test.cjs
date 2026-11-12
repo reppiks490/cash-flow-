@@ -10,6 +10,17 @@ const start = source.indexOf("async function seedDemo() {");
 const end = source.indexOf('\ndocument.addEventListener("DOMContentLoaded"', start);
 assert.ok(start >= 0 && end > start, "seedDemo function found");
 
+// Evaluate only the static fixture declaration from the actual dashboard source.
+const fixtureStart = source.indexOf("const FIXTURES = Object.freeze([");
+const fixtureEnd = source.indexOf("// Mirror backend/contracts.py", fixtureStart);
+assert.ok(fixtureStart >= 0 && fixtureEnd > fixtureStart, "dashboard fixtures found");
+const realFixtures = vm.runInNewContext(source.slice(fixtureStart, fixtureEnd) + "\nFIXTURES");
+assert.equal(realFixtures.length, 3, "dashboard exposes exactly three synthetic examples");
+for (const fixture of realFixtures) {
+  assert.equal(fixture.synthetic, true);
+  assert.match(fixture.external_ref, /^DEMO-HVAC-00[1-3]$/);
+}
+
 function deferred() {
   let resolve;
   const promise = new Promise(r => { resolve = r; });
@@ -23,11 +34,7 @@ function harness({hostname = "localhost", rejectAt = null, pauseAt = null} = {})
   const posted = [];
   const ctx = vm.createContext({
     location: {hostname},
-    FIXTURES: [
-      {external_ref: "DEMO-HVAC-001", source: "website", need: "repair"},
-      {external_ref: "DEMO-HVAC-002", source: "phone", need: "maintenance"},
-      {external_ref: "DEMO-HVAC-003", source: "referral", need: "AC maintenance"}
-    ],
+    FIXTURES: realFixtures,
     $: id => id === "connection" ? connection : button,
     fetch: async (url, options) => {
       assert.equal(url, "/api/demo/leads");
