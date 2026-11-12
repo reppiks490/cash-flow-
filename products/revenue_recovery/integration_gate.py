@@ -80,6 +80,10 @@ def main() -> int:
     env = os.environ.copy()
     env["PYTHONPATH"] = str(ROOT)
     web = ROOT / "web"
+    # index.html loads app.js; test-only trees must not pass the browser gate.
+    if not (web / "app.js").is_file():
+        print("FAIL: expected app.js browser entrypoint missing", flush=True)
+        return 2
     js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])
     js_tests = sorted({
         *web.glob("*.test.cjs"), *web.glob("test_*.cjs"),
