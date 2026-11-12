@@ -38,6 +38,19 @@ class OfflineFactoryIntegrityTests(unittest.TestCase):
                 ai_providers.preview_offline_bundle(LEAD)
         self.assertEqual(invoked, [])
 
+    def test_modified_constructor_never_runs_for_either_entrypoint(self):
+        invoked = []
+        def hostile_constructor(instance):
+            invoked.append("constructor")
+            raise AssertionError("constructor executed")
+        with patch.object(ai_providers.OfflineRulesProvider, "__init__", hostile_constructor):
+            for entry in (ai_providers.build_offline_review_envelope,
+                          ai_providers.preview_offline_bundle):
+                with self.subTest(entry=entry.__name__):
+                    with self.assertRaisesRegex(ValueError, "provider constructor"):
+                        entry(LEAD)
+        self.assertEqual(invoked, [])
+
     def test_clean_offline_factory_remains_inert(self):
         envelope = ai_providers.build_offline_review_envelope(LEAD)
         self.assertEqual(envelope["generation_kind"],
@@ -56,7 +69,7 @@ class OfflineFactoryIntegrityTests(unittest.TestCase):
 
 
     def test_instance_method_override_rejected_by_original_factory(self):
-        """Exercise the instance guard without replacing the trusted factory."""
+        """A modified constructor must be rejected before it can attach an override."""
         invoked = []
         def attach_override(instance):
             def unsafe_qualify(*args, **kwargs):
@@ -64,12 +77,12 @@ class OfflineFactoryIntegrityTests(unittest.TestCase):
                 raise AssertionError("override must not execute")
             instance.qualify = unsafe_qualify
         with patch.object(ai_providers.OfflineRulesProvider, "__init__", attach_override):
-            with self.assertRaisesRegex(ValueError, "instance overrides"):
+            with self.assertRaisesRegex(ValueError, "provider constructor"):
                 ai_providers.build_offline_review_envelope(LEAD)
         self.assertEqual(invoked, [])
 
     def test_instance_draft_override_rejected_by_original_factory(self):
-        """Both provider methods remain protected after the factory guard."""
+        """Draft overrides via a modified constructor are blocked before creation."""
         invoked = []
         def attach_override(instance):
             def unsafe_draft(*args, **kwargs):
@@ -77,7 +90,7 @@ class OfflineFactoryIntegrityTests(unittest.TestCase):
                 raise AssertionError("override must not execute")
             instance.draft = unsafe_draft
         with patch.object(ai_providers.OfflineRulesProvider, "__init__", attach_override):
-            with self.assertRaisesRegex(ValueError, "instance overrides"):
+            with self.assertRaisesRegex(ValueError, "provider constructor"):
                 ai_providers.preview_offline_bundle(LEAD)
         self.assertEqual(invoked, [])
 
