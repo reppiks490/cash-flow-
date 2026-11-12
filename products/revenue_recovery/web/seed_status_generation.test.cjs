@@ -15,13 +15,13 @@ function deferred() {
   const promise = new Promise(r => { resolve = r; });
   return {promise, resolve};
 }
-function harness() {
+function harness({hostname = "localhost", rejectAt = null} = {}) {
   const connection = {textContent: ""};
   const button = {disabled: false};
   const pending = deferred();
   const posted = [];
   const ctx = vm.createContext({
-    location: {hostname: "localhost"},
+    location: {hostname},
     FIXTURES: [
       {external_ref: "DEMO-HVAC-001", source: "website", need: "repair"},
       {external_ref: "DEMO-HVAC-002", source: "phone", need: "maintenance"},
@@ -36,7 +36,7 @@ function harness() {
       assert.equal(payload.synthetic, true);
       assert.deepEqual(Object.keys(payload).sort(), ["external_ref", "need", "source", "synthetic"]);
       posted.push(payload.external_ref);
-      return {ok: true};
+      return {ok: payload.external_ref !== rejectAt};
     },
     refreshSequence: 0,
     refresh: () => {ctx.refreshSequence++; return pending.promise;}
@@ -72,4 +72,22 @@ test("failed seed refresh never reports successful load", async () => {
   h.pending.resolve(false);
   await work;
   assert.doesNotMatch(h.connection.textContent, /Three explicitly synthetic examples/);
+});
+
+test("non-loopback host refuses synthetic seeding before any POST", async () => {
+  const h = harness({hostname: "example.org"});
+  await h.run();
+  assert.deepEqual(h.posted, []);
+  assert.equal(h.ctx.refreshSequence, 0);
+  assert.match(h.connection.textContent, /local loopback demo/);
+  assert.equal(h.button.disabled, false);
+});
+test("rejected synthetic POST stops remaining fixtures and never claims loaded", async () => {
+  const h = harness({rejectAt: "DEMO-HVAC-002"});
+  await h.run();
+  assert.deepEqual(h.posted, ["DEMO-HVAC-001", "DEMO-HVAC-002"]);
+  assert.equal(h.ctx.refreshSequence, 0);
+  assert.match(h.connection.textContent, /seeding unavailable/);
+  assert.doesNotMatch(h.connection.textContent, /Three explicitly synthetic examples loaded/);
+  assert.equal(h.button.disabled, false);
 });
