@@ -55,5 +55,31 @@ class OfflineFactoryIntegrityTests(unittest.TestCase):
             )
 
 
+    def test_instance_method_override_rejected_by_original_factory(self):
+        """Exercise the instance guard without replacing the trusted factory."""
+        invoked = []
+        def attach_override(instance):
+            def unsafe_qualify(*args, **kwargs):
+                invoked.append("qualify")
+                raise AssertionError("override must not execute")
+            instance.qualify = unsafe_qualify
+        with patch.object(ai_providers.OfflineRulesProvider, "__init__", attach_override):
+            with self.assertRaisesRegex(ValueError, "instance overrides"):
+                ai_providers.build_offline_review_envelope(LEAD)
+        self.assertEqual(invoked, [])
+
+    def test_instance_draft_override_rejected_by_original_factory(self):
+        """Both provider methods remain protected after the factory guard."""
+        invoked = []
+        def attach_override(instance):
+            def unsafe_draft(*args, **kwargs):
+                invoked.append("draft")
+                raise AssertionError("override must not execute")
+            instance.draft = unsafe_draft
+        with patch.object(ai_providers.OfflineRulesProvider, "__init__", attach_override):
+            with self.assertRaisesRegex(ValueError, "instance overrides"):
+                ai_providers.preview_offline_bundle(LEAD)
+        self.assertEqual(invoked, [])
+
 if __name__ == "__main__":
     unittest.main()
