@@ -33,6 +33,8 @@ def get_provider(name: str = "offline") -> QualificationProvider:
         raise ValueError("Only the offline rules provider is enabled; no external models configured")
     return OfflineRulesProvider()
 
+_TRUSTED_FACTORY = get_provider
+
 
 def build_offline_review_envelope(
     lead: Mapping[str, object], *,
@@ -57,6 +59,10 @@ def build_offline_review_envelope(
             or OfflineRulesProvider.__dict__.get("uses_model") is not False
             or OfflineRulesProvider.__dict__.get("external_calls") is not False):
         raise ValueError("Untrusted offline provider class metadata")
+    # A substituted factory can execute side effects before its return value is checked.
+    # Fail before calling a replaced factory; still not a hostile-process sandbox.
+    if get_provider is not _TRUSTED_FACTORY:
+        raise ValueError("Untrusted offline provider factory")
     provider = get_provider(provider_name)
     # The only enabled adapter is the built-in deterministic implementation.
     # A replacement object can reproduce safe outputs while forging provenance.
