@@ -1,0 +1,50 @@
+name: RRE JavaScript regression discovery (non-Codex)
+on:
+  pull_request:
+    paths:
+      - 'products/revenue_recovery/web/**'
+      - '.github/workflows/verify-rre-node-discovery.yml'
+  push:
+    paths:
+      - 'products/revenue_recovery/web/**'
+      - '.github/workflows/verify-rre-node-discovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  node-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Discover and execute all product browser regression modules
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          root = Path("products/revenue_recovery/web")
+          files = sorted(
+              p for p in root.rglob("*")
+              if p.is_file()
+              and not set(p.relative_to(root).parts[:-1]).intersection(
+                  {"node_modules", "fixtures", "vendor", "dist", "build"}
+              )
+              and (
+                  p.name.startswith("test_") and p.suffix in (".js", ".cjs", ".mjs")
+                  or p.name.endswith((".test.js", ".test.cjs", ".test.mjs"))
+              )
+          )
+          if not files:
+              print("ERROR: no JavaScript regression files discovered", file=sys.stderr)
+              sys.exit(1)
+          print("Discovered", len(files), "JavaScript test modules:", flush=True)
+          for path in files:
+              print(" -", path, flush=True)
+          sys.exit(subprocess.call(["node", "--test", *map(str, files)]))
+          PY
