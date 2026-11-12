@@ -30,8 +30,12 @@ jobs:
 
           root = Path("products/revenue_recovery/web")
           files = sorted(
-              p for p in root.iterdir()
-              if p.is_file() and (
+              p for p in root.rglob("*")
+              if p.is_file()
+              and not set(p.relative_to(root).parts[:-1]).intersection(
+                  {"node_modules", "fixtures", "vendor", "dist", "build"}
+              )
+              and (
                   p.name.startswith("test_") and p.suffix in (".js", ".cjs", ".mjs")
                   or p.name.endswith((".test.js", ".test.cjs", ".test.mjs"))
               )
