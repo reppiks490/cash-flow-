@@ -68,5 +68,30 @@ class BuyerBreakEvenTests(unittest.TestCase):
             with self.subTest(bad=repr(bad)), self.assertRaises(ScenarioError):
                 calculate_buyer_scenario(self.make(staff_hours_opportunity_cost_usd=bad))
 
+    def test_seller_profit_and_verified_outcomes_remain_unknown_across_scenarios(self):
+        cases = (
+            self.make(incremental_paid_jobs=0),
+            self.make(incremental_paid_jobs=10000),
+            self.make(subscription_usd="0", staff_hours_opportunity_cost_usd="0",
+                      incremental_paid_job_contribution_usd="0"),
+        )
+        for case in cases:
+            with self.subTest(case=case):
+                result = calculate_buyer_scenario(case)
+                self.assertEqual(result["classification"], "hypothetical_buyer_scenario_only")
+                self.assertIs(result["synthetic"], True)
+                for key in ("verified_paid_jobs", "verified_buyer_roi",
+                            "actual_net_profit_usd", "seller_net_profit_usd"):
+                    self.assertIsNone(result[key], key)
+
+    def test_rejects_invalid_dataclass_and_each_monetary_field(self):
+        with self.assertRaises(ScenarioError):
+            calculate_buyer_scenario({"subscription_usd": "700"})
+        for field in ("subscription_usd", "incremental_paid_job_contribution_usd",
+                      "staff_hours_opportunity_cost_usd"):
+            for bad in ("NaN", "Infinity", "1e2", "12.345", "1\u200b", None, False):
+                with self.subTest(field=field, bad=repr(bad)), self.assertRaises(ScenarioError):
+                    calculate_buyer_scenario(self.make(**{field: bad}))
+
 if __name__ == "__main__":
     unittest.main()
