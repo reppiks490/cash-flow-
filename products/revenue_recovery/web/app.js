@@ -305,6 +305,9 @@ async function seedDemo() {
       });
       if (!response.ok) throw new Error("Synthetic seed rejected");
     }
+    // A user refresh begun during the POST loop owns the newer UI state.
+    // Do not start another refresh from an older seed operation.
+    if (refreshSequence !== refreshAtSeedStart) return;
     // Capture the refresh generation after invoking it: refresh() increments it
     // synchronously. A newer user refresh must own the connection status.
     const pendingRefresh = refresh();
