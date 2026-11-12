@@ -27,6 +27,7 @@ class OfflineRulesProvider:
 
 _TRUSTED_QUALIFY = OfflineRulesProvider.__dict__["qualify"]
 _TRUSTED_DRAFT = OfflineRulesProvider.__dict__["draft"]
+_TRUSTED_CONSTRUCTOR = OfflineRulesProvider.__dict__.get("__init__", object.__init__)
 
 def get_provider(name: str = "offline") -> QualificationProvider:
     if name != "offline":
@@ -63,6 +64,9 @@ def build_offline_review_envelope(
     # Fail before calling a replaced factory; still not a hostile-process sandbox.
     if get_provider is not _TRUSTED_FACTORY:
         raise ValueError("Untrusted offline provider factory")
+    # A modified constructor could run arbitrary code before instance validation.
+    if OfflineRulesProvider.__dict__.get("__init__", object.__init__) is not _TRUSTED_CONSTRUCTOR:
+        raise ValueError("Untrusted offline provider constructor")
     provider = get_provider(provider_name)
     # The only enabled adapter is the built-in deterministic implementation.
     # A replacement object can reproduce safe outputs while forging provenance.
