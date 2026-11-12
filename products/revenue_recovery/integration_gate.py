@@ -80,7 +80,7 @@ def main() -> int:
     env = os.environ.copy()
     env["PYTHONPATH"] = str(ROOT)
     web = ROOT / "web"
-    js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])
+    # A test-only directory is not an executable browser product.\n    if not (web / "dashboard.js").is_file():\n        print("FAIL: expected dashboard.js browser entrypoint missing", flush=True)\n        return 2\n    js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])
     js_tests = sorted({
         *web.glob("*.test.cjs"), *web.glob("test_*.cjs"),
         *web.glob("*.test.mjs"), *web.glob("test_*.mjs"),
