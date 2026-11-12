@@ -81,7 +81,11 @@ def main() -> int:
     env["PYTHONPATH"] = str(ROOT)
     web = ROOT / "web"
     js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])
-    js_tests = sorted({*web.glob("*.test.cjs"), *web.glob("test_*.cjs"), *web.glob("*.test.mjs"), *web.glob("test_*.mjs")})
+    js_tests = sorted({
+        *web.glob("*.test.cjs"), *web.glob("test_*.cjs"),
+        *web.glob("*.test.mjs"), *web.glob("test_*.mjs"),
+        *web.glob("*.test.js"), *web.glob("test_*.js"),
+    })
     if not js_sources or not js_tests:
         print("FAIL: expected browser source and JS regression tests missing", flush=True)
         return 2
