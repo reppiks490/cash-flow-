@@ -15,10 +15,11 @@ function deferred() {
   const promise = new Promise(r => { resolve = r; });
   return {promise, resolve};
 }
-function harness({hostname = "localhost", rejectAt = null} = {}) {
+function harness({hostname = "localhost", rejectAt = null, pauseAt = null} = {}) {
   const connection = {textContent: ""};
   const button = {disabled: false};
   const pending = deferred();
+  const pendingPost = deferred();
   const posted = [];
   const ctx = vm.createContext({
     location: {hostname},
@@ -36,13 +37,14 @@ function harness({hostname = "localhost", rejectAt = null} = {}) {
       assert.equal(payload.synthetic, true);
       assert.deepEqual(Object.keys(payload).sort(), ["external_ref", "need", "source", "synthetic"]);
       posted.push(payload.external_ref);
+      if (payload.external_ref === pauseAt) await pendingPost.promise;
       return {ok: payload.external_ref !== rejectAt};
     },
     refreshSequence: 0,
     refresh: () => {ctx.refreshSequence++; return pending.promise;}
   });
   vm.runInContext(source.slice(start, end), ctx);
-  return {ctx, connection, button, pending, posted, run: () => vm.runInContext("seedDemo()", ctx)};
+  return {ctx, connection, button, pending, pendingPost, posted, run: () => vm.runInContext("seedDemo()", ctx)};
 }
 test("seed success may set status only when its own refresh remains latest", async () => {
   const h = harness();
@@ -89,5 +91,20 @@ test("rejected synthetic POST stops remaining fixtures and never claims loaded",
   assert.equal(h.ctx.refreshSequence, 0);
   assert.match(h.connection.textContent, /seeding unavailable/);
   assert.doesNotMatch(h.connection.textContent, /Three explicitly synthetic examples loaded/);
+  assert.equal(h.button.disabled, false);
+});
+
+test("user refresh during seed POST loop prevents stale seed from launching another refresh", async () => {
+  const h = harness({pauseAt: "DEMO-HVAC-001"});
+  const work = h.run();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(h.posted, ["DEMO-HVAC-001"]);
+  h.ctx.refreshSequence++;
+  h.connection.textContent = "User refresh in progress";
+  h.pendingPost.resolve();
+  await work;
+  assert.deepEqual(h.posted, ["DEMO-HVAC-001", "DEMO-HVAC-002", "DEMO-HVAC-003"]);
+  assert.equal(h.ctx.refreshSequence, 1, "stale seed must not launch refresh");
+  assert.equal(h.connection.textContent, "User refresh in progress");
   assert.equal(h.button.disabled, false);
 });
