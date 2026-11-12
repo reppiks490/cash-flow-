@@ -19,16 +19,30 @@ function harness() {
   const connection = {textContent: ""};
   const button = {disabled: false};
   const pending = deferred();
+  const posted = [];
   const ctx = vm.createContext({
     location: {hostname: "localhost"},
-    FIXTURES: [{external_ref: "DEMO-HVAC-001", source: "website", need: "repair"}],
+    FIXTURES: [
+      {external_ref: "DEMO-HVAC-001", source: "website", need: "repair"},
+      {external_ref: "DEMO-HVAC-002", source: "phone", need: "maintenance"},
+      {external_ref: "DEMO-HVAC-003", source: "referral", need: "AC maintenance"}
+    ],
     $: id => id === "connection" ? connection : button,
-    fetch: async () => ({ok: true}),
+    fetch: async (url, options) => {
+      assert.equal(url, "/api/demo/leads");
+      assert.equal(options.method, "POST");
+      assert.equal(options.credentials, "omit");
+      const payload = JSON.parse(options.body);
+      assert.equal(payload.synthetic, true);
+      assert.deepEqual(Object.keys(payload).sort(), ["external_ref", "need", "source", "synthetic"]);
+      posted.push(payload.external_ref);
+      return {ok: true};
+    },
     refreshSequence: 0,
     refresh: () => {ctx.refreshSequence++; return pending.promise;}
   });
   vm.runInContext(source.slice(start, end), ctx);
-  return {ctx, connection, button, pending, run: () => vm.runInContext("seedDemo()", ctx)};
+  return {ctx, connection, button, pending, posted, run: () => vm.runInContext("seedDemo()", ctx)};
 }
 test("seed success may set status only when its own refresh remains latest", async () => {
   const h = harness();
@@ -37,6 +51,7 @@ test("seed success may set status only when its own refresh remains latest", asy
   h.pending.resolve(true);
   await work;
   assert.match(h.connection.textContent, /Three explicitly synthetic examples/);
+  assert.deepEqual(h.posted, ["DEMO-HVAC-001", "DEMO-HVAC-002", "DEMO-HVAC-003"]);
   assert.equal(h.button.disabled, false);
 });
 test("newer refresh status cannot be overwritten by late seed success", async () => {
