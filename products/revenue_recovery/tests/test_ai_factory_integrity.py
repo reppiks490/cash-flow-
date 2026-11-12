@@ -94,5 +94,39 @@ class OfflineFactoryIntegrityTests(unittest.TestCase):
                 ai_providers.preview_offline_bundle(LEAD)
         self.assertEqual(invoked, [])
 
+    def test_instance_qualify_override_reaches_instance_guard(self):
+        """Isolate the downstream instance guard with a deliberately trusted test factory."""
+        provider = ai_providers.OfflineRulesProvider()
+        invoked = []
+        def hostile(*args, **kwargs):
+            invoked.append("qualify")
+            raise AssertionError("instance override executed")
+        provider.qualify = hostile
+        def controlled_factory(name="offline"):
+            return provider
+        # Both bindings are replaced together ONLY to exercise the downstream
+        # instance guard; production factory identity remains protected.
+        with patch.object(ai_providers, "get_provider", controlled_factory):
+            with patch.object(ai_providers, "_TRUSTED_FACTORY", controlled_factory):
+                with self.assertRaisesRegex(ValueError, "instance overrides"):
+                    ai_providers.build_offline_review_envelope(LEAD)
+        self.assertEqual(invoked, [])
+
+    def test_instance_draft_override_reaches_instance_guard(self):
+        """Exercise vars(provider) without a modified constructor."""
+        provider = ai_providers.OfflineRulesProvider()
+        invoked = []
+        def hostile(*args, **kwargs):
+            invoked.append("draft")
+            raise AssertionError("instance override executed")
+        provider.draft = hostile
+        def controlled_factory(name="offline"):
+            return provider
+        with patch.object(ai_providers, "get_provider", controlled_factory):
+            with patch.object(ai_providers, "_TRUSTED_FACTORY", controlled_factory):
+                with self.assertRaisesRegex(ValueError, "instance overrides"):
+                    ai_providers.preview_offline_bundle(LEAD)
+        self.assertEqual(invoked, [])
+
 if __name__ == "__main__":
     unittest.main()
