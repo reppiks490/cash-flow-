@@ -41,5 +41,32 @@ class BuyerBreakEvenTests(unittest.TestCase):
         self.assertTrue(r["threshold_outside_supported_range"])
         self.assertGreater(r["minimum_incremental_paid_jobs_to_break_even"], 10000)
 
+    def test_cent_level_ceiling_boundary(self):
+        r = calculate_buyer_scenario(self.make(subscription_usd="0.03",
+            staff_hours_opportunity_cost_usd="0", incremental_paid_job_contribution_usd="0.01",
+            incremental_paid_jobs=2))
+        self.assertEqual(r["minimum_incremental_paid_jobs_to_break_even"], 3)
+        self.assertEqual(r["hypothetical_buyer_net_value_usd"], "-0.01")
+
+    def test_maximum_supported_jobs_and_zero_jobs(self):
+        for jobs in (0, 10000):
+            with self.subTest(jobs=jobs):
+                r = calculate_buyer_scenario(self.make(incremental_paid_jobs=jobs))
+                self.assertEqual(r["assumed_incremental_paid_jobs"], jobs)
+                self.assertTrue(r["synthetic"])
+                self.assertIsNone(r["verified_paid_jobs"])
+                self.assertIsNone(r["actual_net_profit_usd"])
+
+    def test_zero_cost_and_zero_contribution_still_requires_zero_jobs(self):
+        r = calculate_buyer_scenario(self.make(subscription_usd="0",
+            staff_hours_opportunity_cost_usd="0", incremental_paid_job_contribution_usd="0"))
+        self.assertEqual(r["minimum_incremental_paid_jobs_to_break_even"], 0)
+        self.assertFalse(r["break_even_unknown_due_to_zero_contribution"])
+
+    def test_rejects_unicode_and_non_string_monetary_inputs(self):
+        for bad in ("١٠", "１０", "10\u200b", "10\n", None, 10, True):
+            with self.subTest(bad=repr(bad)), self.assertRaises(ScenarioError):
+                calculate_buyer_scenario(self.make(staff_hours_opportunity_cost_usd=bad))
+
 if __name__ == "__main__":
     unittest.main()
