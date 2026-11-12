@@ -127,3 +127,18 @@ test("network failure during synthetic POST fails closed and restores seed contr
   assert.doesNotMatch(h.connection.textContent, /examples loaded/);
   assert.equal(h.button.disabled, false);
 });
+
+test("failed seed POST cannot overwrite newer user refresh status", async () => {
+  const h = harness({pauseAt: "DEMO-HVAC-001", rejectAt: "DEMO-HVAC-002"});
+  const work = h.run();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(h.posted, ["DEMO-HVAC-001"]);
+  h.ctx.refreshSequence++;
+  h.connection.textContent = "Newer refresh retains ownership";
+  h.pendingPost.resolve();
+  await work;
+  assert.deepEqual(h.posted, ["DEMO-HVAC-001", "DEMO-HVAC-002"]);
+  assert.equal(h.ctx.refreshSequence, 1, "rejected seed must not start refresh");
+  assert.equal(h.connection.textContent, "Newer refresh retains ownership");
+  assert.equal(h.button.disabled, false);
+});
