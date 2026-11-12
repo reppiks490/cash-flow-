@@ -4,6 +4,7 @@ Run: PYTHONPATH=products/revenue_recovery python -m unittest discover
      -s products/revenue_recovery/tests -p 'test_ai_consent_matrix.py' -v
 No live consent, model inference, recipient lookup, or outbound operation.
 """
+import copy
 import unittest
 
 from backend.qualification import qualify_lead, RULES
@@ -66,7 +67,7 @@ class SyntheticConsentMatrixTests(unittest.TestCase):
                     with self.subTest(objection=objection, old=old, new=new):
                         prior = prepare_followup(
                             lead, opted_out=old, objection=objection)
-                        snapshot = dict(prior)
+                        snapshot = copy.deepcopy(prior)
                         checked = recheck_followup_for_review(
                             lead, prior, opted_out=new)
                         expected = prepare_followup(
@@ -83,6 +84,16 @@ class SyntheticConsentMatrixTests(unittest.TestCase):
                         self.assertIs(checked["outreach_enabled"], False)
                         self.assertIs(checked["sent"], False)
                         self.assertIs(checked["requires_human_approval"], True)
+
+    def test_deep_snapshot_detects_nested_qualification_mutation(self):
+        prior = prepare_followup(self.lead("repair"), opted_out=None)
+        shallow = dict(prior)
+        deep = copy.deepcopy(prior)
+        # Negative control: demonstrate why a shallow snapshot is insufficient.
+        self.assertIn("unknowns", prior["qualification"])
+        prior["qualification"]["unknowns"].append("synthetic_mutation_probe")
+        self.assertEqual(prior, shallow)
+        self.assertNotEqual(prior, deep)
 
     def test_replay_identity_distinguishes_consent_and_objections(self):
         lead = self.lead("repair")
