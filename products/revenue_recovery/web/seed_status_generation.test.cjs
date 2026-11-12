@@ -26,7 +26,7 @@ function deferred() {
   const promise = new Promise(r => { resolve = r; });
   return {promise, resolve};
 }
-function harness({hostname = "localhost", rejectAt = null, pauseAt = null} = {}) {
+function harness({hostname = "localhost", rejectAt = null, throwAt = null, pauseAt = null} = {}) {
   const connection = {textContent: ""};
   const button = {disabled: false};
   const pending = deferred();
@@ -45,6 +45,7 @@ function harness({hostname = "localhost", rejectAt = null, pauseAt = null} = {})
       assert.deepEqual(Object.keys(payload).sort(), ["external_ref", "need", "source", "synthetic"]);
       posted.push(payload.external_ref);
       if (payload.external_ref === pauseAt) await pendingPost.promise;
+      if (payload.external_ref === throwAt) throw new Error("Synthetic network unavailable");
       return {ok: payload.external_ref !== rejectAt};
     },
     refreshSequence: 0,
@@ -113,5 +114,16 @@ test("user refresh during seed POST loop prevents stale seed from launching anot
   assert.deepEqual(h.posted, ["DEMO-HVAC-001", "DEMO-HVAC-002", "DEMO-HVAC-003"]);
   assert.equal(h.ctx.refreshSequence, 1, "stale seed must not launch refresh");
   assert.equal(h.connection.textContent, "User refresh in progress");
+  assert.equal(h.button.disabled, false);
+});
+
+
+test("network failure during synthetic POST fails closed and restores seed control", async () => {
+  const h = harness({throwAt: "DEMO-HVAC-002"});
+  await h.run();
+  assert.deepEqual(h.posted, ["DEMO-HVAC-001", "DEMO-HVAC-002"]);
+  assert.equal(h.ctx.refreshSequence, 0, "failed POST must not start refresh");
+  assert.match(h.connection.textContent, /seeding unavailable/);
+  assert.doesNotMatch(h.connection.textContent, /examples loaded/);
   assert.equal(h.button.disabled, false);
 });
