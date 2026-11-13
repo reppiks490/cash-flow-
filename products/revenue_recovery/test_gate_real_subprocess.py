@@ -21,7 +21,12 @@ class RealSubprocessGateAcceptance(unittest.TestCase):
     def make_fixture(self, root: Path, malformed: bool = False) -> None:
         (root / "backend").mkdir()
         (root / "backend" / "app.py").write_text("# synthetic fixture\n", encoding="utf-8")
-        # Give each temporary fixture a distinct import name: unittest caches modules.\n        # Reusing test_smoke across directories makes later discovery fail.\n        fixture_module = "test_smoke_" + "".join(\n            char if char.isalnum() else "_" for char in root.name\n        )\n        (root / f"{fixture_module}.py").write_text(
+        # Give each temporary fixture a distinct import name: unittest caches modules.
+        # Reusing test_smoke across directories makes later discovery fail.
+        fixture_module = "test_smoke_" + "".join(
+            char if char.isalnum() else "_" for char in root.name
+        )
+        (root / f"{fixture_module}.py").write_text(
             "import unittest\nclass Smoke(unittest.TestCase):\n"
             "    def test_synthetic(self): self.assertTrue(True)\n",
             encoding="utf-8",
