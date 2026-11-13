@@ -25,8 +25,7 @@ def calculate_buyer_scenario(s: BuyerScenario) -> dict:
     contribution = usd(s.incremental_paid_job_contribution_usd)
     staff = usd(s.staff_hours_opportunity_cost_usd)
     monthly_cost = subscription + staff
-    threshold = (0 if monthly_cost == 0 else
-                 int((monthly_cost / contribution).to_integral_value(rounding=ROUND_CEILING))
+    threshold = (int((monthly_cost / contribution).to_integral_value(rounding=ROUND_CEILING))
                  if contribution > 0 else None)
     net = contribution * s.incremental_paid_jobs - monthly_cost
     return {
