@@ -57,11 +57,12 @@ class BuyerBreakEvenTests(unittest.TestCase):
                 self.assertIsNone(r["verified_paid_jobs"])
                 self.assertIsNone(r["actual_net_profit_usd"])
 
-    def test_zero_cost_and_zero_contribution_still_requires_zero_jobs(self):
+    def test_zero_cost_and_zero_contribution_is_unknown(self):
         r = calculate_buyer_scenario(self.make(subscription_usd="0",
             staff_hours_opportunity_cost_usd="0", incremental_paid_job_contribution_usd="0"))
-        self.assertEqual(r["minimum_incremental_paid_jobs_to_break_even"], 0)
-        self.assertFalse(r["break_even_unknown_due_to_zero_contribution"])
+        self.assertIsNone(r["minimum_incremental_paid_jobs_to_break_even"])
+        self.assertTrue(r["break_even_unknown_due_to_zero_contribution"])
+        self.assertFalse(r["threshold_outside_supported_range"])
 
     def test_rejects_unicode_and_non_string_monetary_inputs(self):
         for bad in ("١٠", "１０", "10\u200b", "10\n", None, 10, True):
