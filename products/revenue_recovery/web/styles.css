@@ -17,3 +17,13 @@
   .table-scroll:focus-visible { outline-offset: 2px; }
   .top-actions button { min-height: 44px; }
 }
+
+/* Narrow mobile: avoid two compressed metric columns and cramped actions. */
+@media (max-width: 420px) {
+  .metrics { grid-template-columns: minmax(0, 1fr); }
+  .top-actions { align-items: stretch; }
+  .top-actions button { width: 100%; min-height: 44px; }
+  .badge { max-width: 100%; }
+  .outcome { flex-wrap: wrap; }
+  .outcome strong { overflow-wrap: anywhere; }
+}
