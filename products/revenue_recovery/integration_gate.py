@@ -70,6 +70,42 @@ def run_bounded(argv: list[str], env: dict[str, str], timeout: int = COMMAND_TIM
         raise
 
 
+
+# Skip dependencies, generated output, and any symlinked directory/file.
+# Resolve every candidate defensively to avoid executing tests outside web/.
+EXCLUDED_TEST_DIRS = frozenset({
+    "node_modules", "vendor", "vendors", "dist", "build", "coverage",
+    ".git", ".cache", "__pycache__",
+})
+
+
+def discover_js_tests(web: Path) -> list[Path]:
+    """Find nested Node regressions deterministically without following symlinks."""
+    if not web.is_dir() or web.is_symlink():
+        return []
+    root = web.resolve()
+    found: set[Path] = set()
+    for current, dirs, files in os.walk(web, topdown=True, followlinks=False):
+        parent = Path(current)
+        dirs[:] = sorted(
+            name for name in dirs
+            if name not in EXCLUDED_TEST_DIRS
+            and not (parent / name).is_symlink()
+        )
+        for name in files:
+            if not (
+                name.startswith("test_") or ".test." in name
+            ) or not name.endswith((".js", ".mjs", ".cjs")):
+                continue
+            candidate = parent / name
+            if candidate.is_symlink() or not candidate.is_file():
+                continue
+            resolved = candidate.resolve()
+            if resolved.is_relative_to(root):
+                found.add(resolved)
+    return sorted(found)
+
+
 def main() -> int:
     if not (ROOT / "backend" / "app.py").is_file():
         print("FAIL: expected RRE source tree missing", flush=True)
@@ -85,11 +121,7 @@ def main() -> int:
         print("FAIL: expected app.js browser entrypoint missing", flush=True)
         return 2
     js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])
-    js_tests = sorted({
-        *web.glob("*.test.cjs"), *web.glob("test_*.cjs"),
-        *web.glob("*.test.mjs"), *web.glob("test_*.mjs"),
-        *web.glob("*.test.js"), *web.glob("test_*.js"),
-    })
+    js_tests = discover_js_tests(web)
     if not js_sources or not js_tests:
         print("FAIL: expected browser source and JS regression tests missing", flush=True)
         return 2
