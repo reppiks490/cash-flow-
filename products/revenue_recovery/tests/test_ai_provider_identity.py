@@ -36,9 +36,9 @@ class OfflineProviderProvenanceTests(unittest.TestCase):
                 raise AssertionError("untrusted provider must not run")
 
         with patch.object(ai_providers, "get_provider", return_value=Forged()):
-            with self.assertRaisesRegex(ValueError, "Untrusted offline provider identity"):
+            with self.assertRaisesRegex(ValueError, "Untrusted offline provider factory"):
                 ai_providers.build_offline_review_envelope(LEAD)
-            with self.assertRaisesRegex(ValueError, "Untrusted offline provider identity"):
+            with self.assertRaisesRegex(ValueError, "Untrusted offline provider factory"):
                 ai_providers.preview_offline_bundle(LEAD)
 
     def test_subclass_cannot_claim_trusted_provenance(self):
@@ -46,14 +46,14 @@ class OfflineProviderProvenanceTests(unittest.TestCase):
             pass
 
         with patch.object(ai_providers, "get_provider", return_value=Substitute()):
-            with self.assertRaisesRegex(ValueError, "Untrusted offline provider identity"):
+            with self.assertRaisesRegex(ValueError, "Untrusted offline provider factory"):
                 ai_providers.build_offline_review_envelope(LEAD)
 
     def test_modified_builtin_instance_identity_rejected(self):
         provider = ai_providers.OfflineRulesProvider()
         provider.provider_id = "forged-provider"
         with patch.object(ai_providers, "get_provider", return_value=provider):
-            with self.assertRaisesRegex(ValueError, "Untrusted offline provider identity"):
+            with self.assertRaisesRegex(ValueError, "Untrusted offline provider factory"):
                 ai_providers.build_offline_review_envelope(LEAD)
 
 
