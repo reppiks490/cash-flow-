@@ -33,7 +33,7 @@ class RealSubprocessGateAcceptance(unittest.TestCase):
             "export const answer = ;\n" if malformed else "export const answer = 42;\n",
             encoding="utf-8",
         )
-        (web / "nested.test.cjs").write_text(
+        (web / "modules" / "nested.test.cjs").write_text(
             "const test = require('node:test');\n"
             "const assert = require('node:assert/strict');\n"
             "test('synthetic', () => assert.equal(2 + 2, 4));\n",
@@ -63,6 +63,20 @@ class RealSubprocessGateAcceptance(unittest.TestCase):
             self.assertEqual(status, 1, log)
             self.assertIn("FAIL: JavaScript syntax: helper.mjs", log)
             self.assertNotIn("RUN: JavaScript interaction regressions", log)
+
+    def test_real_nested_node_failure_blocks_acceptance(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.make_fixture(root)
+            (root / "web" / "modules" / "nested.test.cjs").write_text(
+                "const test = require('node:test');\n"
+                "test('synthetic negative', () => { throw Error('expected synthetic failure'); });\n",
+                encoding="utf-8",
+            )
+            status, log = self.run_fixture(root)
+            self.assertEqual(status, 1, log)
+            self.assertIn("FAIL: JavaScript interaction regressions", log)
+            self.assertNotIn("PASS: local synthetic regression gate", log)
 
     def test_missing_entrypoint_fails_closed_without_child_process(self):
         with tempfile.TemporaryDirectory() as tmp:
