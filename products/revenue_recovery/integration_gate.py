@@ -120,7 +120,11 @@ def main() -> int:
     if web.is_symlink() or not web.is_dir() or (web / "app.js").is_symlink() or not (web / "app.js").is_file():
         print("FAIL: expected app.js browser entrypoint missing", flush=True)
         return 2
-    # Refuse symlinked auxiliary scripts: node --check must never read outside web/.\n    js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])\n    if any(path.is_symlink() or not path.is_file() or not path.resolve().is_relative_to(web.resolve()) for path in js_sources):\n        print("FAIL: browser JavaScript source escapes web root", flush=True)\n        return 2
+    # Refuse symlinked auxiliary scripts: node --check must never read outside web/.
+    js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])
+    if any(path.is_symlink() or not path.is_file() or not path.resolve().is_relative_to(web.resolve()) for path in js_sources):
+        print("FAIL: browser JavaScript source escapes web root", flush=True)
+        return 2
     js_tests = discover_js_tests(web)
     if not js_sources or not js_tests:
         print("FAIL: expected browser source and JS regression tests missing", flush=True)
