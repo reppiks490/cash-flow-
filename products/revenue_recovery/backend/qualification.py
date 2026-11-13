@@ -6,17 +6,18 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Mapping
+from types import MappingProxyType
 from backend.contracts import SOURCES, NEEDS, REF
 
 RUBRIC_VERSION = "hvac-demo-v1"
-RULES = {
+RULES = MappingProxyType({
     "AC not cooling": ("urgent_service", 90, "cooling_failure"),
     "heating issue": ("urgent_service", 90, "heating_failure"),
     "repair": ("service", 75, "repair_request"),
     "estimate follow-up": ("estimate_follow_up", 80, "estimate_follow_up"),
     "AC maintenance": ("maintenance", 65, "maintenance_request"),
     "maintenance": ("maintenance", 65, "maintenance_request"),
-}
+})
 
 def validate_lead(lead: Mapping[str, object]) -> dict[str, object]:
     """Accept only the shared synthetic v0.1a lead contract.
