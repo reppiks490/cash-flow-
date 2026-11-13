@@ -117,7 +117,7 @@ def main() -> int:
     env["PYTHONPATH"] = str(ROOT)
     web = ROOT / "web"
     # index.html loads app.js; test-only trees must not pass the browser gate.
-    if not (web / "app.js").is_file():
+    if web.is_symlink() or not web.is_dir() or (web / "app.js").is_symlink() or not (web / "app.js").is_file():
         print("FAIL: expected app.js browser entrypoint missing", flush=True)
         return 2
     js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])
