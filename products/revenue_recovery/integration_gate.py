@@ -106,6 +106,31 @@ def discover_js_tests(web: Path) -> list[Path]:
     return sorted(found)
 
 
+def discover_js_sources(web: Path) -> list[Path]:
+    """Discover browser scripts recursively; reject symlinked JS sources."""
+    if web.is_symlink() or not web.is_dir():
+        return []
+    root = web.resolve()
+    found: set[Path] = set()
+    for current, dirs, files in os.walk(web, topdown=True, followlinks=False):
+        parent = Path(current)
+        dirs[:] = sorted(
+            name for name in dirs
+            if name not in EXCLUDED_TEST_DIRS and not (parent / name).is_symlink()
+        )
+        for name in files:
+            if not name.endswith((".js", ".mjs")):
+                continue
+            candidate = parent / name
+            if candidate.is_symlink() or not candidate.is_file():
+                raise ValueError(f"unsafe JavaScript source: {candidate}")
+            resolved = candidate.resolve()
+            if not resolved.is_relative_to(root):
+                raise ValueError(f"JavaScript source outside web root: {candidate}")
+            found.add(resolved)
+    return sorted(found)
+
+
 def main() -> int:
     if not (ROOT / "backend" / "app.py").is_file():
         print("FAIL: expected RRE source tree missing", flush=True)
@@ -120,10 +145,10 @@ def main() -> int:
     if web.is_symlink() or not web.is_dir() or (web / "app.js").is_symlink() or not (web / "app.js").is_file():
         print("FAIL: expected app.js browser entrypoint missing", flush=True)
         return 2
-    # Refuse symlinked auxiliary scripts: node --check must never read outside web/.
-    js_sources = sorted([*web.glob("*.js"), *web.glob("*.mjs")])
-    if any(path.is_symlink() or not path.is_file() or not path.resolve().is_relative_to(web.resolve()) for path in js_sources):
-        print("FAIL: browser JavaScript source escapes web root", flush=True)
+    try:
+        js_sources = discover_js_sources(web)
+    except (OSError, ValueError) as exc:
+        print(f"FAIL: browser JavaScript source discovery: {exc}", flush=True)
         return 2
     js_tests = discover_js_tests(web)
     if not js_sources or not js_tests:
