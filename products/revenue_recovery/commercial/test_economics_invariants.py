@@ -65,5 +65,36 @@ class EconomicsInvariantTests(unittest.TestCase):
                 self.assertLess(profit(minimum - 1), result["target_profit_cents"])
 
 
+    def test_nonpositive_contribution_cannot_reach_positive_target(self):
+        for price, variable in (("1.00", "1.00"), ("1.00", "2.00"), ("0.01", "0.00")):
+            with self.subTest(price=price, variable=variable):
+                result = model_subscription_scenario(
+                    customers=100,
+                    monthly_price_usd=price,
+                    fixed_monthly_cost_usd="0.00",
+                    variable_monthly_cost_per_customer_usd=variable,
+                    processor_rate_bps=0,
+                    processor_flat_fee_usd="0.01",
+                )
+                self.assertIsNone(result["minimum_customers_for_target"])
+                self.assertFalse(result["minimum_customers_outside_supported_range"])
+                self.assertFalse(result["scenario_meets_target"])
+                self.assertTrue(result["planning_only"])
+                self.assertIsNone(result["verified_customers"])
+                self.assertIsNone(result["verified_net_profit_cents"])
+
+    def test_reachable_threshold_outside_supported_customer_range(self):
+        result = model_subscription_scenario(
+            customers=0,
+            monthly_price_usd="0.01",
+            fixed_monthly_cost_usd="0.00",
+            variable_monthly_cost_per_customer_usd="0.00",
+        )
+        self.assertEqual(result["minimum_customers_for_target"], 250000)
+        self.assertTrue(result["minimum_customers_outside_supported_range"])
+        self.assertFalse(result["scenario_meets_target"])
+        self.assertIsNone(result["verified_gross_revenue_cents"])
+        self.assertIsNone(result["verified_net_profit_cents"])
+
 if __name__ == "__main__":
     unittest.main()
