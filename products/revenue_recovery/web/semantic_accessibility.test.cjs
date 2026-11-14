@@ -43,7 +43,7 @@ test("draft and simulator inputs have explicit labels and status feedback", () =
 
 test("synthetic actions are buttons, not navigation to outbound endpoints", () => {
   for (const id of ["seedDemo", "refresh", "copyDraft", "runScenario", "runPolicy"]) {
-    assert.match(html, new RegExp('<button\\s+type="button"\\s+id="' + id + '"'));
+    assert.match(html, new RegExp('<button(?=[^>]*\\btype="button")(?=[^>]*\\bid="' + id + '")[^>]*>'));
   }
   assert.doesNotMatch(html, /<form\b/i);
   assert.doesNotMatch(html, /<script[^>]+src="https?:\/\//i);
