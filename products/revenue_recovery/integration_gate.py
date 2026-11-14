@@ -114,10 +114,14 @@ def discover_js_sources(web: Path) -> list[Path]:
     found: set[Path] = set()
     for current, dirs, files in os.walk(web, topdown=True, followlinks=False):
         parent = Path(current)
-        dirs[:] = sorted(
-            name for name in dirs
-            if name not in EXCLUDED_TEST_DIRS and not (parent / name).is_symlink()
-        )
+        # Excluded generated/vendor directories are never traversed.
+        # A symlinked source directory can be served by a browser even when
+        # os.walk(followlinks=False) would silently omit it: fail closed.
+        source_dirs = [name for name in dirs if name not in EXCLUDED_TEST_DIRS]
+        unsafe_dirs = [name for name in source_dirs if (parent / name).is_symlink()]
+        if unsafe_dirs:
+            raise ValueError(f"unsafe symlinked browser directory: {parent / sorted(unsafe_dirs)[0]}")
+        dirs[:] = sorted(source_dirs)
         for name in files:
             if not name.endswith((".js", ".mjs")):
                 continue
