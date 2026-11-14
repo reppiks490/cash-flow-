@@ -87,11 +87,11 @@ def discover_js_tests(web: Path) -> list[Path]:
     found: set[Path] = set()
     for current, dirs, files in os.walk(web, topdown=True, followlinks=False):
         parent = Path(current)
-        dirs[:] = sorted(
-            name for name in dirs
-            if name not in EXCLUDED_TEST_DIRS
-            and not (parent / name).is_symlink()
-        )
+        included_dirs = [name for name in dirs if name not in EXCLUDED_TEST_DIRS]
+        unsafe_dirs = [name for name in included_dirs if (parent / name).is_symlink()]
+        if unsafe_dirs:
+            raise ValueError(f"unsafe symlinked JavaScript test directory: {parent / sorted(unsafe_dirs)[0]}")
+        dirs[:] = sorted(included_dirs)
         for name in files:
             if not (
                 name.startswith("test_") or ".test." in name
@@ -99,10 +99,11 @@ def discover_js_tests(web: Path) -> list[Path]:
                 continue
             candidate = parent / name
             if candidate.is_symlink() or not candidate.is_file():
-                continue
+                raise ValueError(f"unsafe JavaScript test file: {candidate}")
             resolved = candidate.resolve()
-            if resolved.is_relative_to(root):
-                found.add(resolved)
+            if not resolved.is_relative_to(root):
+                raise ValueError(f"JavaScript test outside web root: {candidate}")
+            found.add(resolved)
     return sorted(found)
 
 
@@ -154,7 +155,11 @@ def main() -> int:
     except (OSError, ValueError) as exc:
         print(f"FAIL: browser JavaScript source discovery: {exc}", flush=True)
         return 2
-    js_tests = discover_js_tests(web)
+    try:
+        js_tests = discover_js_tests(web)
+    except (OSError, ValueError) as exc:
+        print(f"FAIL: JavaScript test discovery: {exc}", flush=True)
+        return 2
     if not js_sources or not js_tests:
         print("FAIL: expected browser source and JS regression tests missing", flush=True)
         return 2
