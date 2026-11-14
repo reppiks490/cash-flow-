@@ -36,7 +36,7 @@ class RecursiveDiscoveryContracts(unittest.TestCase):
                 (folder / "test_should_not_run.js").write_text("// synthetic\n")
             self.assertEqual(discover_js_tests(web), [good.resolve()])
 
-    def test_symlinked_file_and_directory_are_not_followed(self):
+    def test_symlinked_test_file_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
             web = base / "web"
@@ -47,7 +47,36 @@ class RecursiveDiscoveryContracts(unittest.TestCase):
             external.write_text("// synthetic\n")
             try:
                 (web / "test_link.js").symlink_to(external)
+            except (OSError, NotImplementedError):
+                self.skipTest("symlinks unavailable on this platform")
+            with self.assertRaisesRegex(ValueError, "unsafe JavaScript test file"):
+                discover_js_tests(web)
+
+    def test_symlinked_test_directory_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            web = base / "web"
+            outside = base / "outside"
+            web.mkdir()
+            outside.mkdir()
+            (outside / "test_external.js").write_text("// synthetic\n")
+            try:
                 (web / "linked").symlink_to(outside, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("symlinks unavailable on this platform")
+            with self.assertRaisesRegex(ValueError, "unsafe symlinked JavaScript test directory"):
+                discover_js_tests(web)
+
+    def test_excluded_symlinked_vendor_directory_is_ignored(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            web = base / "web"
+            outside = base / "outside"
+            web.mkdir()
+            outside.mkdir()
+            (outside / "test_external.js").write_text("// synthetic\n")
+            try:
+                (web / "vendor").symlink_to(outside, target_is_directory=True)
             except (OSError, NotImplementedError):
                 self.skipTest("symlinks unavailable on this platform")
             self.assertEqual(discover_js_tests(web), [])
