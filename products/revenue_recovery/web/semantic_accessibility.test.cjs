@@ -37,7 +37,7 @@ test("draft and simulator inputs have explicit labels and status feedback", () =
     assert.match(html, new RegExp('<(?:textarea|select)\\s+id="' + id + '"'));
   }
   for (const id of ["connection", "copyStatus", "auditEvents", "policyEvents"]) {
-    assert.match(html, new RegExp('<[^>]+\\bid="' + id + '"[^>]+\\brole="status"'));
+    assert.match(html, new RegExp('<[^>]*(?=[^>]*\\bid="' + id + '")(?=[^>]*\\brole="status")[^>]*>'));
   }
 });
 
